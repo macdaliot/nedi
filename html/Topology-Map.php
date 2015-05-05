@@ -5,6 +5,7 @@
 $nocache   = 1;
 $refresh   = 600;
 $printable = 1;
+$exportxls = 0;
 
 include_once ("inc/header.php");
 include_once ("inc/libdev.php");
@@ -27,12 +28,15 @@ $in = isset($_GET['in']) ? $_GET['in'] : array('location');
 $op = isset($_GET['op']) ? $_GET['op'] : array('LIKE');
 $co = isset($_GET['co']) ? $_GET['co'] : array();
 
+$cor = isset($_GET['cor']) ? $_GET['cor'] : '';
+$hop = isset($_GET['hop']) ? $_GET['hop'] : '';
+
 $fmt = isset($_GET['fmt']) ? $_GET['fmt'] : "";
 $dim = isset($_GET['dim']) ? $_GET['dim'] : "800x600";
 list($xm,$ym) = explode("x",$dim);
 
-$fsz = isset($_GET['fsz']) ? $_GET['fsz'] : intval($xm)/8;
-$len = isset($_GET['len']) ? $_GET['len'] : intval($xm)/4;
+$fsz = isset($_GET['fsz']) ? $_GET['fsz'] : intval($xm/10);
+$len = isset($_GET['len']) ? $_GET['len'] : intval($xm/100)*10;
 
 $tit = isset($_GET['tit']) ? $_GET['tit'] : "$netlbl";
 $mde = isset($_GET['mde']) ? $_GET['mde'] : "b";
@@ -62,18 +66,18 @@ $lit = isset($_GET['lit']) ? $_GET['lit'] : "";
 $lil = isset($_GET['lil']) ? $_GET['lil'] : 0;
 $lal = isset($_GET['lal']) ? $_GET['lal'] : 50;
 $pos = isset($_GET['pos']) ? $_GET['pos'] : "";
-$pwt = isset($_GET['pwt']) ? $_GET['pwt'] : 10;
-$lsf = isset($_GET['lsf']) ? $_GET['lsf'] : 10;
+$pwt = isset($_GET['pwt']) ? $_GET['pwt'] : intval($xm/200)*10;
+$lsf = isset($_GET['lsf']) ? $_GET['lsf'] : 5;
 $fco = isset($_GET['fco']) ? $_GET['fco'] : 6;
 
-$imas= ($pos == "d")?4:18;
+$imas= ($pos == "d" or $pos == "a")?4:18;
 
 $oc = "";
 $oi = "";
 $dyn= "";
 if($_GET['dyn']){
 	# $oi = 'oninput="this.form.submit();"'; deactivated cauz Safari goes haywire
-	$oi = $oc = 'onchange="this.form.submit();"';
+	$oi = $oc = 'onchange="this.form.submit();"'; # and this doesn't seem to work with Chrome?
 	$dyn = "checked";
 }
 
@@ -109,169 +113,204 @@ $link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 ?>
 <h1>Topology Map</h1>
 
-<?php  if( !isset($_GET['print']) ) { ?>
-
+<?php
+if( $isadmin and isset($_GET['mon']) ){
+	$hdle = fopen("log/montools.php", "a");
+	if( fwrite($hdle, "<img class=\"genpad bctr\" src=\"inc/drawmap.php?$_SERVER[QUERY_STRING]\"><br>\n") ){
+		echo "<h5>$wrtlbl log/montools.php OK</h5>\n";
+	}else{
+		echo "<h4>$errlbl $wrtlbl log/montools.php!</h4>\n";
+	}
+	fclose($hdle);
+}
+if( !isset($_GET['print']) ){ ?>
 <form method="get" name="dynfrm" action="<?= $self ?>.php">
-<table class="content" ><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td valign="top">
-<h3><?= $fltlbl ?></h3>
-
+<table class="content" ><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td class="top">
+	<h3><?= $fltlbl ?></h3>
+<!--
+	<input type="text" <?= $cor ?> name="cor" value="<?= $cor ?>" placeholder="<?= $corlbl ?>" class="l">
+	<input type="text" <?= $hop ?> name="hop" value="<?= $hop ?>" placeholder="Hops" class="xs">
+-->
+	<a href="?in[]=snmpversion&op[]=>&st[]=0&fmt=png"><img src="img/16/dev.png" title="SNMP Devices"></a><br>
 <?php Filters(); ?>
-
 </td>
-<td valign="top" nowrap>
+<td class="top">
+	<h3><?= $manlbl ?></h3>
+	<img src="img/16/say.png" title="Map <?= $namlbl ?>">
+	<input type="text" <?= $oc ?> name="tit" value="<?= $tit ?>" class="l"><br>
+	<img src="img/16/img.png" title="<?= $sizlbl ?> & <?= $frmlbl ?>">
+	<select size="1" <?= $oc ?> name="dim" class="m">
+<?= ($dim)?"\t\t<option value=\"$dim\">$dim</option>":"" ?>
 
-<h3><?= $manlbl ?></h3>
-<img src="img/16/say.png" title="Map <?= $namlbl ?>">
-<input type="text" <?= $oc ?> name="tit" value="<?= $tit ?>" class="l">
-<br>
+		<option value="320x240">320x240
+		<option value="640x480">640x480
+		<option value="800x600">800x600
+		<option value="1024x600">1024x600
+		<option value="1024x768">1024x768
+		<option value="1280x768">1280x768
+		<option value="1280x1024">1280x1024
+		<option value="1600x900">1600x900
+		<option value="1920x1200">1920x1200
+	</select>
+	<select size="1" <?= $oc ?> name="fmt">
+		<option value="png">png
+		<option value="png8" <?= ($fmt == "png8")?" selected":"" ?>>8bit
+		<option value="svg" <?= ($fmt == "svg")?" selected":"" ?>>svg
+		<option value="json" <?= ($fmt == "json")?" selected":"" ?>>json
+	</select><br>
 
-<img src="img/16/img.png" title="<?= $sizlbl ?> & <?= $frmlbl ?>">
-<select size="1" <?= $oc ?> name="dim">
-<?= ($dim)?"<option value=\"$dim\">$dim</option>":"" ?>
-<option value="320x200">320x200
-<option value="320x240">320x240
-<option value="640x400">640x400
-<option value="640x480">640x480
-<option value="800x600">800x600
-<option value="1024x600">1024x600
-<option value="1024x768">1024x768
-<option value="1280x768">1280x768
-<option value="1280x1024">1280x1024
-<option value="1600x900">1600x900
-<option value="1600x1200">1600x1200
-<option value="1920x1200">1920x1200
-</select>
-<select size="1" <?= $oc ?> name="fmt">
-<option value="png">png
-<option value="png8" <?= ($fmt == "png8")?" selected":"" ?>>8bit
-<option value="svg" <?= ($fmt == "svg")?" selected":"" ?>>svg
-<option value="json" <?= ($fmt == "json")?" selected":"" ?>>json
-</select>
-<br>
+	<img src="img/16/abc.png" title="Map <?= $typlbl ?>">
+	<select size="1" <?= $oc ?> name="lev" title="<?= $levlbl ?>" class="m">
+		<option value="1"><?= $place['r'] ?>
 
-<img src="img/16/abc.png" title="Map <?= $typlbl ?>">
-<select size="1" <?= $oc ?> name="lev" title="<?= $levlbl ?>">
-<option value="1"><?= $place['r'] ?>
-<option value="2" <?= ($lev == "2")?" selected":"" ?>><?= $place['c'] ?>
-<option value="3" <?= ($lev == "3")?" selected":"" ?>><?= $place['b'] ?>
-<option value="4" <?= ($lev == "4")?" selected":"" ?>>Devices
-<option value="6" <?= ($lev == "6")?" selected":"" ?>>Nodes
-</select>
-<select size="1" <?= $oc ?> name="mde" title="Map <?= $typlbl ?>">
-<option value="b">bld
-<option value="r" <?= ($mde == "r")?" selected":"" ?>>ring
-<option value="f" <?= ($mde == "f")?" selected":"" ?>>flat
-<option value="g" <?= ($mde == "g")?" selected":"" ?>>geo
-</select>
-<br>
+		<option value="2" <?= ($lev == "2")?" selected":"" ?>><?= $place['c'] ?>
 
-<img src="img/16/geom.png" title="Map <?= $loclbl ?>">
-<input type="number" min="-1000" max="1000" step="10" <?= $oi ?> name="xo" value="<?= $xo ?>" class="s" title="X <?= $loclbl ?>">
-<input type="number" min="-1000" max="1000" step="10" <?= $oi ?> name="yo" value="<?= $yo ?>" class="s" title="Y <?= $loclbl ?>">
-<br>
+		<option value="3" <?= ($lev == "3")?" selected":"" ?>><?= $place['b'] ?>
 
-<img src="img/16/brld.png" title="Map <?= $rotlbl ?>">
-<input type="number" min="-180" max="180" <?= $oi ?> name="rot" value="<?= $rot ?>" class="s" title="<?= $place['r'] ?>">
-<input type="number" min="-180" max="180" <?= $oi ?> name="cro" <?= ($mde == "f" or $lev < 2 and $dyn)?"disabled":"" ?> value="<?= $cro ?>" class="s" title="<?= $place['c'] ?>">
-<input type="number" min="-180" max="180" <?= $oi ?> name="bro" <?= ($mde == "f" or $lev < 3 and $dyn)?"disabled":"" ?> value="<?= $bro ?>" class="s" title="<?= $place['b'] ?>">
+		<option value="4" <?= ($lev == "4")?" selected":"" ?>>Devices
+		<option value="6" <?= ($lev == "6")?" selected":"" ?>>Nodes
+	</select>
+	<select size="1" <?= $oc ?> name="mde" title="Map <?= $typlbl ?>">
+		<option value="b">bld
+		<option value="r" <?= ($mde == "r")?" selected":"" ?>>ring
+		<option value="f" <?= ($mde == "f")?" selected":"" ?>>flat
+		<option value="g" <?= ($mde == "g")?" selected":"" ?>>geo
+	</select><br>
 
+	<img src="img/16/geom.png" title="Map <?= $loclbl ?>">
+	<input type="number" min="-1000" max="1000" step="10" <?= $oi ?> name="xo" value="<?= $xo ?>" class="xs" title="X <?= $loclbl ?>">
+	<input type="number" min="-1000" max="1000" step="10" <?= $oi ?> name="yo" value="<?= $yo ?>" class="xs" title="Y <?= $loclbl ?>"><br>
+
+	<img src="img/16/brld.png" title="Map <?= $rotlbl ?>">
+	<input type="number" min="-180" max="180" <?= $oi ?> name="rot" value="<?= $rot ?>" class="xs" title="<?= $place['r'] ?>">
+	<input type="number" min="-180" max="180" <?= $oi ?> name="cro" <?= ($mde == "f" or $lev < 2 and $dyn)?"disabled":"" ?> value="<?= $cro ?>" class="xs" title="<?= $place['c'] ?>">
+	<input type="number" min="-180" max="180" <?= $oi ?> name="bro" <?= ($mde == "f" or $lev < 3 and $dyn)?"disabled":"" ?> value="<?= $bro ?>" class="xs" title="<?= $place['b'] ?>">
 </td>
-<td valign="top" nowrap><h3>Layout</h3>
+<td class="top">
+	<h3>Layout</h3>
+	<img src="img/16/link.png" title="<?= $cnclbl ?> <?= $endlbl ?>">
+	<input type="number" min="1" max="100" <?= $oi ?> name="lsf" <?= ($mde == "f" and $lev < 6 and $dyn and $fmt != "json")?"disabled":"" ?> value="<?= $lsf ?>" class="xs" title="<?= ($fmt == 'json')?$cnclbl:"$lenlbl/$levlbl" ?>">
+	<input type="number" min="0" <?= $oi ?> step="5" name="lal" <?= (!$ifi and !$ifa and !$ipi and $dyn and $fmt != "json")?"disabled":"" ?> value="<?= $lal ?>" class="xs" title="<?= ($fmt == 'json')?$metlbl:"IF/IP $loclbl" ?>"><br>
 
-<img src="img/16/ncfg.png" title="<?= $cnclbl ?> <?= $frmlbl ?>">
-<input type="number" min="0" max="1000"  <?= $oi ?> step="10" name="len" value="<?= $len ?>" class="s" title="<?= $lenlbl ?>">
-<select size="1" <?= $oc ?> name="lis">
-<option value=""><?= $strlbl ?>
-<option value="a1" <?= ($lis == "a1")?" selected":"" ?>><?= $arclbl ?>
-<option value="a2" <?= ($lis == "a2")?" selected":"" ?>><?= $arclbl ?> 2
-<option value="a3" <?= ($lis == "a3")?" selected":"" ?>><?= $arclbl ?> 3
-<option value="a4" <?= ($lis == "a4")?" selected":"" ?>><?= $arclbl ?> 4
-</select>
-<br>
+	<img src="img/16/ncfg.png" title="<?= $cnclbl ?> <?= $frmlbl ?>">
+	<input type="number" min="0" max="1000" <?= $oi ?> name="len" value="<?= $len ?>" class="xs" title="<?= $lenlbl ?>">
+	<select size="1" <?= $oc ?> name="lis">
+		<option value=""><?= $strlbl ?>
 
-<img src="img/16/ncon.png" title="<?= $cnclbl ?> <?= $inflbl ?>">
-<input type="number" min="-100" max="100" <?= $oi ?> name="lil" <?= ($fmt == "json" or !$lit and $dyn)?"disabled":"" ?> value="<?= $lil ?>" class="s" title="<?= $inflbl ?> <?= $loclbl ?>">
-<select size="1" <?= $oc ?> name="lit">
-<option value=""><?= $inflbl ?>
-<option value="w" <?= ($lit == "w")?" selected":"" ?>><?= $bwdlbl ?>
-<option value="l" <?= ($lit == "l")?" selected":"" ?>>Link <?= $lodlbl ?>
-<option value="t" <?= ($lit == "t")?" selected":"" ?>>Link <?= $typlbl ?>
+		<option value="a1" <?= ($lis == "a1")?" selected":"" ?>><?= $arclbl ?>
+
+		<option value="a2" <?= ($lis == "a2")?" selected":"" ?>><?= $arclbl ?> 2
+		<option value="a3" <?= ($lis == "a3")?" selected":"" ?>><?= $arclbl ?> 3
+		<option value="a4" <?= ($lis == "a4")?" selected":"" ?>><?= $arclbl ?> 4
+	</select><br>
+	<img src="img/16/ncon.png" title="<?= $cnclbl ?> <?= $inflbl ?>">
+	<input type="number" min="-100" max="100" <?= $oi ?> name="lil" <?= ($fmt == "json" or !$lit and $dyn)?"disabled":"" ?> value="<?= $lil ?>" class="xs" title="<?= $inflbl ?> <?= $loclbl ?>">
+	<select size="1" <?= $oc ?> name="lit">
+		<option value=""><?= $inflbl ?>
+
+		<option value="w" <?= ($lit == "w")?" selected":"" ?>><?= $bwdlbl ?>
+
+		<option value="l" <?= ($lit == "l")?" selected":"" ?>>Link <?= $lodlbl ?>
+
+		<option value="t" <?= ($lit == "t")?" selected":"" ?>>Link <?= $typlbl ?>
+
 <?php if($rrdcmd){ ?>
-<option value="" class="noti">- <?= $trflbl ?>
-<option value="f1" <?= ($lit == "f1")?" selected":"" ?>> <?= $siz['t'] ?>
-<option value="f2" <?= ($lit == "f2")?" selected":"" ?>> <?= $siz['s'] ?>
-<option value="f3" <?= ($lit == "f3")?" selected":"" ?>> <?= $siz['m'] ?>
-<option value="f4" <?= ($lit == "f4")?" selected":"" ?>> <?= $siz['l'] ?>
-<option value="" class="crit">- <?= $errlbl ?>
-<option value="e1" <?= ($lit == "e1")?" selected":"" ?>> <?= $siz['t'] ?>
-<option value="e2" <?= ($lit == "e2")?" selected":"" ?>> <?= $siz['s'] ?>
-<option value="e3" <?= ($lit == "e3")?" selected":"" ?>> <?= $siz['m'] ?>
-<option value="e4" <?= ($lit == "e4")?" selected":"" ?>> <?= $siz['l'] ?>
-<option value="" class="warn">- Bcast
-<option value="b1" <?= ($lit == "b1")?" selected":"" ?>> <?= $siz['t'] ?>
-<option value="b2" <?= ($lit == "b2")?" selected":"" ?>> <?= $siz['s'] ?>
-<option value="b3" <?= ($lit == "b3")?" selected":"" ?>> <?= $siz['m'] ?>
-<option value="b4" <?= ($lit == "b4")?" selected":"" ?>> <?= $siz['l'] ?>
-<option value="" class="alrm">- Discard 
-<option value="d1" <?= ($lit == "d1")?" selected":"" ?>> <?= $siz['t'] ?>
-<option value="d2" <?= ($lit == "d2")?" selected":"" ?>> <?= $siz['s'] ?>
-<option value="d3" <?= ($lit == "d3")?" selected":"" ?>> <?= $siz['m'] ?>
-<option value="d4" <?= ($lit == "d4")?" selected":"" ?>> <?= $siz['l'] ?>
+		<option value="" class="noti">- <?= $trflbl ?>
+
+		<option value="f1" <?= ($lit == "f1")?" selected":"" ?>> <?= $siz['t'] ?>
+
+		<option value="f2" <?= ($lit == "f2")?" selected":"" ?>> <?= $siz['s'] ?>
+
+		<option value="f3" <?= ($lit == "f3")?" selected":"" ?>> <?= $siz['m'] ?>
+
+		<option value="f4" <?= ($lit == "f4")?" selected":"" ?>> <?= $siz['l'] ?>
+
+		<option value="" class="crit">- <?= $errlbl ?>
+
+		<option value="e1" <?= ($lit == "e1")?" selected":"" ?>> <?= $siz['t'] ?>
+
+		<option value="e2" <?= ($lit == "e2")?" selected":"" ?>> <?= $siz['s'] ?>
+
+		<option value="e3" <?= ($lit == "e3")?" selected":"" ?>> <?= $siz['m'] ?>
+
+		<option value="e4" <?= ($lit == "e4")?" selected":"" ?>> <?= $siz['l'] ?>
+
+		<option value="" class="warn">- Bcast
+		<option value="b1" <?= ($lit == "b1")?" selected":"" ?>> <?= $siz['t'] ?>
+
+		<option value="b2" <?= ($lit == "b2")?" selected":"" ?>> <?= $siz['s'] ?>
+
+		<option value="b3" <?= ($lit == "b3")?" selected":"" ?>> <?= $siz['m'] ?>
+
+		<option value="b4" <?= ($lit == "b4")?" selected":"" ?>> <?= $siz['l'] ?>
+
+		<option value="" class="alrm">- Discard
+		<option value="d1" <?= ($lit == "d1")?" selected":"" ?>> <?= $siz['t'] ?>
+
+		<option value="d2" <?= ($lit == "d2")?" selected":"" ?>> <?= $siz['s'] ?>
+
+		<option value="d3" <?= ($lit == "d3")?" selected":"" ?>> <?= $siz['m'] ?>
+
+		<option value="d4" <?= ($lit == "d4")?" selected":"" ?>> <?= $siz['l'] ?>
+
 <?php } ?>
-</select>
-<br>
+	</select><br>
+	<img src="img/16/dev.png" title="<?= $nodlbl ?> <?= $cfglbl ?>">
+	<input type="number" min="-1" max="100" <?= $oi ?> name="pwt" <?= ($fmt == "json")?"disabled":"" ?> value="<?= $pwt ?>" class="xs" title="<?= $nodlbl ?> <?= $rnglbl ?>">
+	<select size="1" <?= $oc ?> name="pos" title="<?= $nodlbl ?> <?= $typlbl ?>">
+		<option value="">Icon
+		<option value="d" <?= ($pos == "d")?" selected":"" ?>><?= $shplbl ?> <?= $siz['t'] ?>
 
-<img src="img/16/link.png" title="<?= $cnclbl ?> <?= $endlbl ?>">
-<input type="number" min="1" max="100"  <?= $oi ?> name="lsf" <?= ($mde == "f" and $lev < 6 and $dyn and $fmt != "json")?"disabled":"" ?> value="<?= $lsf ?>" class="s" title="<?= ($fmt == 'json')?$cnclbl:"$lenlbl/$levlbl" ?>">
-<input type="number" min="0" <?= $oi ?> step="5" name="lal" <?= (!$ifi and !$ifa and !$ipi and $dyn and $fmt != "json")?"disabled":"" ?> value="<?= $lal ?>" class="s" title="<?= ($fmt == 'json')?$metlbl:"IF/IP $loclbl" ?>">
-<br>
+		<option value="s" <?= ($pos == "s")?" selected":"" ?>><?= $shplbl ?> <?= $siz['s'] ?>
 
-<img src="img/16/dev.png" title="<?= $nodlbl ?> <?= $cfglbl ?>">
-<input type="number" min="0" max="100" <?= $oi ?> name="pwt" <?= ($fmt == "json")?"disabled":"" ?> value="<?= $pwt ?>" class="s" title="<?= $nodlbl ?> <?= $loclbl ?>/#<?= $cnclbl ?>">
-<select size="1" <?= $oc ?> name="pos" title="<?= $nodlbl ?> <?= $typlbl ?>">
-<option value="">Icon
-<option value="d" <?= ($pos == "d")?" selected":"" ?>><?= $shplbl ?> <?= $siz['t'] ?>
-<option value="s" <?= ($pos == "s")?" selected":"" ?>><?= $shplbl ?> <?= $siz['s'] ?>
-<option value="D" <?= ($pos == "D")?" selected":"" ?>><?= $imglbl ?> <?= $siz['s'] ?>
-<option value="p" <?= ($pos == "p")?" selected":"" ?>><?= $imglbl ?> <?= $siz['m'] ?>
-<option value="P" <?= ($pos == "P")?" selected":"" ?>><?= $imglbl ?> <?= $siz['l'] ?>
-<option value="a" <?= ($pos == "a")?" selected":"" ?>><?= $avalbl ?>
-<option value="c" <?= ($pos == "c")?" selected":"" ?>>CPU <?= $lodlbl ?>
-<option value="h" <?= ($pos == "h")?" selected":"" ?>><?= $tmplbl ?>
+		<option value="D" <?= ($pos == "D")?" selected":"" ?>><?= $imglbl ?> <?= $siz['s'] ?>
 
-</select>
-<br>
-<img src="img/16/home.png" title="<?= $place['b'] ?> <?= $cfglbl ?>">
-<input type="number" min="6" max="1000" <?= $oi ?> name="fsz" <?= ($mde == "f" or $fmt == "json" or $lev < 4 and $dyn)?"disabled":"" ?> value="<?= $fsz ?>" class="s" title="<?= $place['f'] ?> <?= $sizlbl ?>">
-<input type="number" min="1" max="50" <?= $oi ?> name="fco" <?= ($mde == "f" or $fmt == "json" or $lev < 4 and $dyn)?"disabled":"" ?> value="<?= $fco ?>" class="s" title="<?= $collbl ?>">
+		<option value="p" <?= ($pos == "p")?" selected":"" ?>><?= $imglbl ?> <?= $siz['m'] ?>
 
+		<option value="P" <?= ($pos == "P")?" selected":"" ?>><?= $imglbl ?> <?= $siz['l'] ?>
+
+		<option value="a" <?= ($pos == "a")?" selected":"" ?>><?= $avalbl ?> <?= $siz['t'] ?>
+
+		<option value="A" <?= ($pos == "A")?" selected":"" ?>><?= $avalbl ?> <?= $siz['m'] ?>
+
+		<option value="c" <?= ($pos == "c")?" selected":"" ?>>CPU <?= $lodlbl ?>
+
+		<option value="h" <?= ($pos == "h")?" selected":"" ?>><?= $tmplbl ?>
+
+	</select><br>
+	<img src="img/16/home.png" title="<?= $place['b'] ?> <?= $cfglbl ?>">
+	<input type="number" min="1" max="50" <?= $oi ?> name="fco" <?= ($mde == "f" or $fmt == "json" or $lev < 4 and $dyn)?"disabled":"" ?> value="<?= $fco ?>" class="xs" title="<?= $collbl ?>">
+	<input type="number" min="6" max="1000" <?= $oi ?> name="fsz" <?= ($mde == "f" or $fmt == "json" or $lev < 4 and $dyn)?"disabled":"" ?> value="<?= $fsz ?>" class="xs" title="<?= $place['f'] ?> <?= $sizlbl ?>">
 </td>
-<td valign="top" nowrap><h3><?= $sholbl ?></h3>
-
-<img src="img/16/port.png" title="IF <?= $inflbl ?>"> 
-<input type="checkbox" title="IF <?= $namlbl ?>" <?= $oc ?> name="ifi" <?= $ifi ?>> <input type="checkbox" title="IF Alias" <?= $oc ?> name="ifa" <?= $ifa ?>><br>
-<img src="img/16/glob.png" title="IP <?= $adrlbl ?>"> 
-<input type="checkbox" title="Device IP" <?= $oc ?> name="ipd" <?= $ipd ?>> <input type="checkbox" title="IF IP" <?= $oc ?> name="ipi" <?= $ipi ?>><br>
-<img src="img/16/fort.png" title="<?= $loclbl ?>"> <input type="checkbox" <?= $oc ?> name="loo" title="<?= $place['o'] ?>" <?= $loo ?>> <input type="checkbox" <?= $oc ?> name="loa" title="<?= $place['a'] ?>" <?= $loa ?>><br>
-<img src="img/16/find.png" title="<?= $inflbl ?>"> <input type="checkbox" <?= $oc ?> name="dco" title="<?= $conlbl ?>" <?= $dco ?>> <input type="checkbox" <?= $oc ?> name="dmo" title="<?= $modlbl ?>" <?= $dmo ?>>
-
+<td class="top">
+	<h3><?= $sholbl ?></h3>
+	<img src="img/16/port.png" title="IF <?= $inflbl ?>">
+	<input type="checkbox" title="IF <?= $namlbl ?>" <?= $oc ?> name="ifi" <?= $ifi ?>> <input type="checkbox" title="IF Alias" <?= $oc ?> name="ifa" <?= $ifa ?>><br>
+	<img src="img/16/glob.png" title="IP <?= $adrlbl ?>">
+	<input type="checkbox" title="Device IP" <?= $oc ?> name="ipd" <?= $ipd ?>> <input type="checkbox" title="IF IP" <?= $oc ?> name="ipi" <?= $ipi ?>><br>
+	<img src="img/16/fort.png" title="<?= $loclbl ?>"> <input type="checkbox" <?= $oc ?> name="loo" title="<?= $place['o'] ?>" <?= $loo ?>> <input type="checkbox" <?= $oc ?> name="loa" title="<?= $place['a'] ?>" <?= $loa ?>><br>
+	<img src="img/16/find.png" title="<?= $inflbl ?>"> <input type="checkbox" <?= $oc ?> name="dco" title="<?= $conlbl ?>" <?= $dco ?>> <input type="checkbox" <?= $oc ?> name="dmo" title="<?= $modlbl ?>" <?= $dmo ?>>
 </td>
-<th width="80" valign="top">
-
-<h3>
-<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
-<span id="counter"><?= $refresh ?></span>
-</h3>
-<br>
-<img src="img/16/walk.png" title="Dynamic-<?= $edilbl ?>"> <input type="checkbox" onchange="this.form.submit();" name="dyn" <?= $dyn ?>><br>
-
+<td class="top ctr s">
+	<h3>
+		<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
+		<span id="counter"><?= $refresh ?></span>
+	</h3>
+	<img src="img/16/walk.png" title="Dynamic-<?= $edilbl ?>"> <input type="checkbox" onchange="this.form.submit();" name="dyn" <?= $dyn ?>><br>
+	<input type="submit" class="button" value="<?= $sholbl ?>"><br>
+<?php if( $isadmin ){
+?>
+	<input type="submit" class="button" name="mon" value="<?= $monlbl ?>">
+<?php } ?>
+</td>
+</tr>
+</table>
+</form>
 <p>
-<input type="submit" class="button" value="<?= $cmdlbl ?>">
-
-</th></tr>
-</table></form><p>
 <?php
 }
 
@@ -298,7 +337,8 @@ if($fmt == 'json'){
 }
 </style>
 
-<script src="inc/d3.v3.lic-min.js"></script> 
+<script src="inc/d3.v3.lic-min.js"></script>
+
 <script>
 var	width = <?= $xm ?>,
 	height = <?= $ym ?>;
@@ -367,7 +407,7 @@ d3.json("map/map_<?= $_SESSION['user'] ?>.json", function(error, graph){
 	.attr("width", function(d) { return d.width; })
 	.attr("height", function(d) { return d.height; });
 
-<?php if($pos == "d"){?>
+<?php if($pos == "d" or $pos == "a"){?>
 
 		node.append("title")
 			.text(function(d) { return d.name; });
@@ -390,13 +430,13 @@ d3.json("map/map_<?= $_SESSION['user'] ?>.json", function(error, graph){
 });
 
 </script>
-<?php	
+<?php
 }elseif($fmt == 'svg'){
 	if( !isset($_GET['print']) ){echo "<h2>SVG Map</h2>";}
 	Map();
 	WriteSVG( Condition($in,$op,$st,$co,1) );
 ?>
-	<embed width="<?= $xm ?>" height="<?= $ym ?>" src="map/map_<?= $_SESSION[user] ?>.svg" name="SVG Map" type="image/svg+xml" class="genpad"  style="display:block;margin-left:auto;margin-right:auto">
+	<embed width="<?= $xm ?>" height="<?= $ym ?>" src="map/map_<?= $_SESSION[user] ?>.svg" name="SVG Map" type="image/svg+xml" class="genpad bctr">
 <?php
 }else{
 	if($fmt){
@@ -410,7 +450,7 @@ d3.json("map/map_<?= $_SESSION['user'] ?>.json", function(error, graph){
 	}
 	if (file_exists("map/map_$_SESSION[user].php")) {
 ?>
-<img class="genpad" style="display:block;margin-left:auto;margin-right:auto" usemap="#net" src="map/map_<?= $_SESSION['user'] ?>.php">
+<img class="genpad bctr" usemap="#net" src="map/map_<?= $_SESSION['user'] ?>.php">
 <map name="net">
 <?= $imgmap ?>
 </map>

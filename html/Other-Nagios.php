@@ -9,14 +9,14 @@
 
 	include("inc/header.php");
 	$link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
-	
+
 	if ($_POST['mkconf']):
 		if (!( $_POST['device'] == 0 && $_POST['location'] == 0 && $_POST['exttype'] == "a" || $_POST['exptype'] == "r" && $_POST['expression'] == "")):
 			switch ($_POST['exptype']):
-				case "d": 
+				case "d":
 					$WHERE1 = "device = '".$_POST['device']."'";
 					break;
-				case "l": 
+				case "l":
 					$WHERE1 = "location REGEXP BINARY '^".$_POST['location']."'";
 					break;
 				case "r":
@@ -26,7 +26,7 @@
 			switch ($_POST['limit']):
 				case "time":
 					switch ($_POST['period']):
-						case "h": 
+						case "h":
 							$time = 3600 * $_POST['time'];
 							break;
 						case "d":
@@ -96,89 +96,98 @@
 		endif;
 	endif;
 ?>
+
 <h1>Export Nagios configuration scripts</h1>
-<br>
+
 <form action="<?= $self ?>.php" method="post">
 <table>
-	<tr class="<?= $modgroup[$self] ?>1">
-		<th rowspan="2"><img src="img/32/nag.png"></td>
-		<th>Export configuration script for:</th>
-		<th>Export options:</th>
-		<th rowspan="2"><input type="submit" class="button" name="mkconf" value="Export"></th>
+	<tr class="bgmain">
+		<th rowspan="2">
+			<img src="img/32/nag.png">
+		</th>
+		<th>
+			Export configuration script for:
+		</th>
+		<th>
+			Export options:
+		</th>
+		<th rowspan="2">
+			<input type="submit" class="button" name="mkconf" value="Export">
+		</th>
 	</tr>
-	<tr class="<?= $modgroup[$self] ?>1">
+	<tr class="bgmain">
 		<td>
-<input type="radio" checked name="exptype" value="d"> Device: <select name="device">
-	<option value="0" selected>Select a device:</option>
+			<input type="radio" checked name="exptype" value="d"> Device:
+			<select name="device">
+				<option value="0" selected>Select a device:</option>
 <?php
 	$result = DbQuery("SELECT device FROM devices ORDER BY UPPER(device)", $link);
 	while ($row = DbFetchArray($result)): ?>
-	<option<?= $row['device'] == $_POST['device'] ? " selected" : NULL ?>><?= $row['device'] ?></option>
+				<option<?= $row['device'] == $_POST['device'] ? " selected" : NULL ?>><?= $row['device'] ?></option>
 <?php
 	endwhile;
 ?>
-</select><br>
-<br>
-
-<input type="radio" name="exptype" value="l"<?= $_POST['exptype'] == "l" ? " checked" : NULL ?>> All devices of location: <select name="location">
-	<option value="0" selected>Select a location:</option>
+			</select><br>
+			<input type="radio" name="exptype" value="l"<?= $_POST['exptype'] == "l" ? " checked" : NULL ?>> All devices of location:
+			<select name="location">
+				<option value="0" selected>Select a location:</option>
 <?php
 	$result = DbQuery("SELECT DISTINCT SUBSTRING_INDEX(location, ';', 1) AS region FROM devices WHERE location REGEXP BINARY '[A-Z]{2,3};[A-Za-z]+;[A-Za-z0-9]+;.*' ORDER BY location", $link);
 	while ($row = DbFetchArray($result)):
 #		$locations[] = $row['region'];
 ?>
-	<option><?= $row['region'] == $_POST['location'] ? " selected" : NULL ?><?= $row['region'] ?></option>
+				<option><?= $row['region'] == $_POST['location'] ? " selected" : NULL ?><?= $row['region'] ?></option>
 <?php
 		$region_result = DbQuery("SELECT DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(location, ';', 2), ';', -1) AS city FROM devices WHERE SUBSTRING_INDEX(location, ';', 1) = '".$row['region']."' ORDER BY location", $link);
 		while ($region_row = DbFetchArray($region_result)):
 #			$locations[$row['region']][] = $region_row['city'];
 ?>
-	<option value="<?= $row['region'] ?>;<?= $region_row['city'] ?>"<?= $row['region'].";".$region_row['city'] == $_POST['location'] ? " selected" : NULL ?>> - <?= $region_row['city'] ?> (<?= $row['region'] ?>)</option>
+				<option value="<?= $row['region'] ?>;<?= $region_row['city'] ?>"<?= $row['region'].";".$region_row['city'] == $_POST['location'] ? " selected" : NULL ?>> - <?= $region_row['city'] ?> (<?= $row['region'] ?>)</option>
 <?php
 			$city_result = DbQuery("SELECT DISTINCT SUBSTRING_INDEX(SUBSTRING_INDEX(location, ';', 3), ';', -1) AS building FROM devices WHERE SUBSTRING_INDEX(location, ';', 2) = '".$row['region'].";".$region_row['city']."' ORDER BY location", $link);
 			while ($city_row = DbFetchArray($city_result)):
 #				$locations[$row['region']][$region_row['city']][] = $city_row['building'];
 ?>
-	<option value="<?= $row['region'] ?>;<?= $region_row['city'] ?>;<?= $city_row['building'] ?>"<?= $row['region'].";".$region_row['city'].";".$city_row['building'] == $_POST['location'] ? " selected" : NULL ?>> -- <?= $city_row['building'] ?> (<?= $region_row['city'] ?>, <?= $row['region'] ?>)</option>
+				<option value="<?= $row['region'] ?>;<?= $region_row['city'] ?>;<?= $city_row['building'] ?>"<?= $row['region'].";".$region_row['city'].";".$city_row['building'] == $_POST['location'] ? " selected" : NULL ?>> -- <?= $city_row['building'] ?> (<?= $region_row['city'] ?>, <?= $row['region'] ?>)</option>
 <?php
 			endwhile;
 		endwhile;
 	endwhile;
 ?>
-</select><br>
-<br>
-<input type="radio" name="exptype" value="r"<?= $_POST['exptype'] == "r" ? " checked" : NULL ?>> All devices matching following regular expression:
-	<input type="text" name="expression" value="<?= $_POST['expression'] ?>"> <input type="submit" class="button" name="~" value="Show devices">
-<br>
-<br>
-<input type="radio" name="exptype" value="a"> All devices
+			</select><br>
+			<input type="radio" name="exptype" value="r"<?= $_POST['exptype'] == "r" ? " checked" : NULL ?>> All devices matching following regular expression:
+			<input type="text" name="expression" value="<?= $_POST['expression'] ?>">
+			<input type="submit" class="button" name="~" value="Show devices">
+			<br>
+			<input type="radio" name="exptype" value="a"> All devices
 		</td>
 		<td>
-<input type="checkbox" name="tofile" value="print"<?= !$_POST['mkconf'] || $_POST['tofile'] ? " checked" : NULL ?>> Write configuration file to Nagios configuration file directory<br>
-<br>
-<input type="checkbox" name="toscreen" value="print"<?= !$_POST['mkconf'] || $_POST['toscreen'] ? " checked" : NULL ?>> Show configuration script here<br>
-<br>
-<input type="checkbox" name="limit" value="time"<?= $_POST['limit'] ? " checked" : NULL ?>> Don't select devices not seen for <input type="text" name="time" size="3" value="<?= $_POST['time'] ?>"> <select name="period">
-	<option value="h"<?= $_POST['period'] == "h" ? " selected" : NULL ?>>Hours</option>
-	<option value="d"<?= $_POST['period'] == "d" ? " selected" : NULL ?>>Days</option>
-	<option value="w"<?= $_POST['period'] == "w" ? " selected" : NULL ?>>Weeks</option>
-</select><br>
-<br>
-<input type="checkbox" name="en" value="enable"<?= $_POST['en'] ? " checked" : NULL ?>> Enable notifications for selected host(s)<br>
+			<input type="checkbox" name="tofile" value="print"<?= !$_POST['mkconf'] || $_POST['tofile'] ? " checked" : NULL ?>> Write configuration file to Nagios configuration file directory<br>
+			<br>
+			<input type="checkbox" name="toscreen" value="print"<?= !$_POST['mkconf'] || $_POST['toscreen'] ? " checked" : NULL ?>> Show configuration script here<br>
+			<br>
+			<input type="checkbox" name="limit" value="time"<?= $_POST['limit'] ? " checked" : NULL ?>> Don't select devices not seen for <input type="text" name="time" size="3" value="<?= $_POST['time'] ?>">
+			<select name="period">
+				<option value="h"<?= $_POST['period'] == "h" ? " selected" : NULL ?>>Hours</option>
+				<option value="d"<?= $_POST['period'] == "d" ? " selected" : NULL ?>>Days</option>
+				<option value="w"<?= $_POST['period'] == "w" ? " selected" : NULL ?>>Weeks</option>
+			</select><br>
+			<input type="checkbox" name="en" value="enable"<?= $_POST['en'] ? " checked" : NULL ?>> Enable notifications for selected host(s)<br>
 		</td>
 	</tr>
 </table>
 </form>
+
 <?php
 	if ($ERR): ?>
-<div class="textpad warn"><center><b><?= $ERR ?></b></center></div>
+<h5><?= $ERR ?></h5>
 <?php
 	endif;
 
 	if ($_POST['~']):
 		$result = DbQuery("SELECT device, devip FROM devices WHERE device REGEXP BINARY '".$_POST['expression']."'", $link);
 ?>
-<div class="textpad devConf">
+<div class="textpad code pre">
 <?php
 		if (DbNumRows($result)): ?>
 <b>Hosts matching regular expression '<?= $_POST['expression'] ?>':</b><br>
@@ -195,18 +204,18 @@ Regular expression '<?= $_POST['expression'] ?>': No hosts found!
 </div>
 <?php
 	endif;
-	
+
 	if ($_POST['tofile'] && $bytes_written): ?>
-<div class="textpad good"><center><b>Configuration scripts written to Nagios configuration file directory.<br>
-Changes to Nagios will apply when Nagios server is restarted.</b></center></div>
+<div class="textpad good b">
+	Configuration scripts written to Nagios configuration file directory.<br>
+	Changes to Nagios will apply when Nagios server is restarted.
+</div>
 <?php
 	endif;
 
 	if ($_POST['toscreen'] && $configScreenOut): ?>
-<div class="textpad devConf">
-<pre>
+<div class="textpad code pre">
 <?= $configScreenOut ?>
-</pre>
 </div>
 <?php
 	endif;

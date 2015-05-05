@@ -49,63 +49,62 @@ $cols = array(	"device"=>"Device",
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" name="report" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td valign="top">
-
-<?php Filters(1); ?>
-
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
-<th>
+<td class="top">
+<?php Filters(1); ?>
+</td>
+<td class="ctr">
+	<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
+	<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
+	<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
+	<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
+</td>
+<td class="ctr">
+	<select multiple name="rep[]" size="4">
+		<option value="mav" <?= (in_array("mav",$rep))?" selected":"" ?>><?= $avalbl ?> <?= $dislbl ?>
+		<option value="lat" <?= (in_array("lat",$rep))?" selected":"" ?>><?= $latlbl ?> <?= $stslbl ?>
+		<option value="upt" <?= (in_array("upt",$rep))?" selected":"" ?>><?= $tgtlbl ?> <?= $uptlbl ?>
+		<option value="evt" <?= (in_array("evt",$rep))?" selected":"" ?>><?= $msglbl ?> <?= $dislbl ?>
+		<option value="igr" <?php if(in_array("igr",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $grplbl ?>
+		<option value="idi" <?php if(in_array("idi",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $dislbl ?>
+		<option value="ack" <?php if(in_array("ack",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $acklbl ?>
+		<option value="his" <?php if(in_array("his",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $hislbl ?>
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
+	<select size="1" name="lir">
+	<?php selectbox("limit",$lim) ?>
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>">
+	<input type="checkbox" name="map" <?= $map ?>><br>
+	<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>">
+	<input type="checkbox" name="ord" <?= $ord ?>><br>
+	<img src="img/16/hat2.png" title="<?= $optlbl ?>">
+	<input type="checkbox" name="opt" <?= $opt ?>>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" name="do" value="<?= $sholbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 
-<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
-<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
-<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
-<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
-
-</th>
-<th>
-
-<select multiple name="rep[]" size="4">
-<option value="mav" <?= (in_array("mav",$rep))?" selected":"" ?>><?= $avalbl ?> <?= $dislbl ?>
-<option value="lat" <?= (in_array("lat",$rep))?" selected":"" ?>><?= $latlbl ?> <?= $stslbl ?>
-<option value="upt" <?= (in_array("upt",$rep))?" selected":"" ?>>Devices <?= $uptlbl ?>
-<option value="evt" <?= (in_array("evt",$rep))?" selected":"" ?>><?= $msglbl ?> <?= $stslbl ?>
-<option value="igr" <?php if(in_array("igr",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $grplbl ?>
-<option value="idi" <?php if(in_array("idi",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $dislbl ?>
-<option value="ack" <?php if(in_array("ack",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $acklbl ?>
-<option value="his" <?php if(in_array("his",$rep)){echo "selected";} ?> ><?= $inclbl ?> <?= $hislbl ?> 
-</select>
-
-</th>
-<th>
-
-<img src="img/16/form.png" title="<?= $limlbl ?>">  
-<select size="1" name="lir">
-<?php selectbox("limit",$lim) ?>
-</select>
-</th>
-<th align="left">
-
-<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>"> 
-<input type="checkbox" name="map" <?= $map ?>><br>
-<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>"> 
-<input type="checkbox" name="ord" <?= $ord ?>><br>
-<img src="img/16/hat2.png" title="<?= $optlbl ?>"> 
-<input type="checkbox" name="opt" <?= $opt ?>>
-
-</th>
-<th width="80">
-
-<input type="submit" class="button" name="do" value="<?= $sholbl ?>">
-
-</th></tr></table></form><p>
 <?php
 }
-if ($map and !isset($_GET['xls']) and file_exists("map/map_$_SESSION[user].php")) {
-	echo "<center><h2>$netlbl Map</h2>\n";
-	echo "<img src=\"map/map_$_SESSION[user].php\" style=\"border:1px solid black\"></center><p>\n";
+echo "<div class=\"ctr\">\n";
+if ($map and file_exists("map/map_$_SESSION[user].php")) {
+		echo "<h2>$netlbl Map</h2>\n";
+		echo "<img src=\"map/map_$_SESSION[user].php\" class=\"genpad\">\n";
 }
+echo "</div>\n<p>\n\n";
 
 if($rep){
 	Condition($in,$op,$st,$co);

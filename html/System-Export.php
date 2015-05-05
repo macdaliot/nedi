@@ -21,6 +21,9 @@ $type   = isset($_GET['type']) ? $_GET['type'] : "htm";
 $timest = isset($_GET['timest']) ? "checked" : "";
 $conv   = isset($_GET['conv']) ? "checked" : "";
 
+$ipmatch = "/^(orig|dev|if|nod|mon)ip$/";
+$timatch = "/^(first|last|start|end)|(time|update)$/";
+
 // A connection to the database has to be made
 $dblink = DbConnect($dbhost, $dbuser, $dbpass, $dbname);
 ?>
@@ -30,143 +33,132 @@ $dblink = DbConnect($dbhost, $dbuser, $dbpass, $dbname);
 <h1>Export</h1>
 
 <?php  if( !isset($_GET['print']) ) { ?>
-
 <form method="get" name="export" action="<?= $self ?>.php">
-
 <table class="content" >
-	<tr class="<?= $modgroup[$self] ?>1">
-		<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-
-		<!-- This <th> contains the export part of the form -->
-		<td valign="top" align="center">
-
-			<!-- If the module is loaded without any GET variables the selected action is "Export" -->
-			<h3><input type="radio" name="act" value="c" <?= $act=="c"?"checked":"" ?>><?= $cmdlbl ?></input></h3>
-			<table><tr><td><?= $sellbl ?>:</td>
-			<!-- There are 3 different types of things that can be selected in this box: -->
-			<!-- If a database table is selected, a "SELECT * FROM..." query is automatically written to the text box -->
-			<!-- If the "Device Config Files" entry is selected, the separator and quotes fields are disabled and a specific -->
-			<!-- query is written to the text box -->
-			<!-- If one of the meaningless entiries is selected nothing's changed in the text box -->
-			<td><select size="1" name="exptbl"  size="1" onchange="
-				if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='none') {
-					document.forms['export'].sep.disabled=false;
-					document.forms['export'].quotes.disabled=false;
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='cfgfiles') {
-					document.forms['export'].query.value='SELECT device, config, time FROM configs';
-					document.forms['export'].sep.disabled=true;
-					document.forms['export'].quotes.disabled=true;
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='eventret') {
-					document.forms['export'].query.value='DELETE FROM events where time < <?= (time() - $retire * 86400) ?>';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='iftrkret') {
-					document.forms['export'].query.value='DELETE FROM iftrack where ifupdate < <?= (time() - $retire * 86400) ?>';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='iptrkret') {
-					document.forms['export'].query.value='DELETE FROM iptrack where ipupdate < <?= (time() - $retire * 86400) ?>';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='lnkret') {
-					document.forms['export'].query.value='DELETE FROM links where lastdis < <?= (time() - $retire * 86400) ?>';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='uprcom') {
-					document.forms['export'].query.value='UPDATE devices set readcomm=<new> where readcomm=<old>';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='ipupres') {
-					document.forms['export'].query.value='UPDATE nodes set ipupdate=0';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='flush') {
-					document.forms['export'].query.value='FLUSH LOGS';
-				}
-				else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='reset') {
-					document.forms['export'].query.value='RESET MASTER';
-				}
-				else {
-					document.forms['export'].query.value='SELECT * FROM '+document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value;
-					document.forms['export'].sep.disabled=false;
-					document.forms['export'].quotes.disabled=false;
-				}
-			">
-				<option value="none" class="warn">--- DB <?= $lstlbl ?> ---</option>
-			<?php  // Some PHP code
-				// All the names of the database tables are collected and put into the select box
-				$res = DbQuery(GenQuery("", "h"), $dblink);
-				while($n = DbFetchRow($res)){
-					echo "<option value=\"".$n[0]."\"".($n[0]==$exptbl?" selected":"").">$sholbl ".$n[0]."</option>\n";
-				}
-				echo "<option value=\"none\" class=\"warn\">--- ".(($verb1)?"$cmdlbl $igrp[31]":"$igrp[31] $cmdlbl")." ---</option>";
-				echo "<option value=\"cfgfiles\"".($exptbl=="cfgfiles"?" selected":"").">$cfglbl $buplbl</option>\n";
-				echo "<option value=\"eventret\"".($exptbl=="eventret"?" selected":"").">$dellbl $msglbl $agelbl > $retire $tim[d]</option>\n";
-				echo "<option value=\"iftrkret\"".($exptbl=="iftrkret"?" selected":"").">$dellbl IFtrack $agelbl > $retire $tim[d]</option>\n";
-				echo "<option value=\"iptrkret\"".($exptbl=="iptrkret"?" selected":"").">$dellbl IPtrack $agelbl > $retire $tim[d]</option>\n";
-				echo "<option value=\"lnkret\"".($exptbl=="lnkret"?" selected":"").">$dellbl Links $laslbl $updlbl > $retire $tim[d]</option>\n";
-				echo "<option value=\"uprcom\"".($exptbl=="uprcom"?" selected":"").">$updlbl SNMP $realbl Community</option>\n";
-				echo "<option value=\"ipupres\"".($exptbl=="ipupres"?" selected":"").">$reslbl IP $updlbl</option>\n";
-				echo "<option value=\"flush\"".($exptbl=="flush"?" selected":"").">$dellbl bin-logs</option>\n";
-				echo "<option value=\"reset\"".($exptbl=="reset"?" selected":"").">$reslbl DB</option>\n";
-			?>
-			</select>
-			Separator:
-			<select size="1" name="sep">
-			<?php  // Some PHP code
-				$separators = array(";", ";;", ":", "::", ",", "/");
-				foreach($separators as $s){
-					echo "<option value=\"$s\"".($s==$sep?" selected":"").">".$s."</option>\n";
-					#echo "<option value=\"".$sep."\"".($s==$sep?" selected":"").">".$s."</option>\n";		<-- Pascals Kaese ;-)
-				}
-			?>
-			</select>
-			&nbsp;Quotes <input type="checkbox" name="quotes" <?= $quotes ?>>
-			Header <input type="checkbox" name="colhdr" <?= $colhdr ?>></td></tr>
-			<tr><td>Query:</td>
-			<td>
-			<textarea rows="3" name="query" cols="80"><?= $query ?></textarea>
-			</table>
-		</td>
-	
-		<!-- This <th> contains the SQL dump part of the form -->
-		<td valign="top" align="center">
-			<h3><input type="radio" name="act" value="e" <?= $act=="e"?"checked":"" ?>><?= $explbl ?></input></h3>
-			<p>
-				<select multiple size="6" name="sqltbl[]">
-				<?php  // Some PHP code
-					$res = DbQuery(GenQuery("", "h"), $dblink);
-					while($n = DbFetchRow($res)){
-						echo "<option value=\"".$n[0]."\"".(in_array($n[0], $sqltbl)?" selected":"").">".$n[0]."</option>\n";
-					}
-				?>
-				</select>
-			</p>
-		</td>
-
-		<!-- This <th> contains the archive settings -->
-		<th width="80" valign="top" align="center">
-			<h3><?= $dstlbl ?></h3>
-			<p>
-			<select size="1" name="type">
-				<option value="htm" <?= ($type=="htm")?" selected":"" ?>>html</option>
-				<option value="plain" <?= ($type=="plain")?" selected":"" ?>>plain</option>
-				<option value="gz" <?= ($type=="gz")?" selected":"" ?>>Gzip</option>
-				<option value="bz2" <?= ($type=="bz2")?" selected":"" ?>>Bzip2</option>
-			</select>
-			<p>
-			<img src="img/16/abc.png" title="<?= (($verb1)?"$addlbl $timlbl":"$timlbl $addlbl") ?>/<?= $frmlbl ?> IP">
-			<input type="checkbox" name="timest" <?= $timest ?>>
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td class="ctr top">
+	<!-- If the module is loaded without any GET variables the selected action is "Export" -->
+	<h3><input type="radio" name="act" value="c" <?= $act=="c"?"checked":"" ?>><?= $cmdlbl ?></h3>
+	<!-- There are 3 different types of things that can be selected in this box: -->
+	<!-- If a database table is selected, a "SELECT * FROM..." query is automatically written to the text box -->
+	<!-- If the "Device Config Files" entry is selected, the separator and quotes fields are disabled and a specific -->
+	<!-- query is written to the text box -->
+	<!-- If one of the meaningless entiries is selected nothing's changed in the text box -->
+	<select size="1" name="exptbl" onchange="
+		if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='none') {
+			document.forms['export'].sep.disabled=false;
+			document.forms['export'].quotes.disabled=false;
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='cfgfiles') {
+			document.forms['export'].query.value='SELECT device, config, time FROM configs';
+			document.forms['export'].sep.disabled=true;
+			document.forms['export'].quotes.disabled=true;
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='eventret') {
+			document.forms['export'].query.value='DELETE FROM events where time < <?= (time() - $retire * 86400) ?>';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='iftrkret') {
+			document.forms['export'].query.value='DELETE FROM iftrack where ifupdate < <?= (time() - $retire * 86400) ?>';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='iptrkret') {
+			document.forms['export'].query.value='DELETE FROM iptrack where ipupdate < <?= (time() - $retire * 86400) ?>';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='lnkret') {
+			document.forms['export'].query.value='DELETE FROM links where lastdis < <?= (time() - $retire * 86400) ?>';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='uprcom') {
+			document.forms['export'].query.value='UPDATE devices set readcomm=<new> where readcomm=<old>';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='dupdns') {
+			document.forms['export'].query.value='SELECT aname,count(*) FROM dns group by aname having( count(*) > 1);';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='ipupres') {
+			document.forms['export'].query.value='UPDATE nodes set ipupdate=0';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='flush') {
+			document.forms['export'].query.value='FLUSH LOGS';
+		}
+		else if(document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value=='reset') {
+			document.forms['export'].query.value='RESET MASTER';
+		}
+		else {
+			document.forms['export'].query.value='SELECT * FROM '+document.forms['export'].exptbl.options[document.forms['export'].exptbl.selectedIndex].value;
+			document.forms['export'].sep.disabled=false;
+			document.forms['export'].quotes.disabled=false;
+		}
+	">
+		<option value="none" class="warn">--- DB <?= $lstlbl ?> ---</option>
+<?php	// Some PHP code
+// All the names of the database tables are collected and put into the select box
+			$res = DbQuery(GenQuery("", "h"), $dblink);
+			while($n = DbFetchRow($res)){
+				echo "		<option value=\"".$n[0]."\"".($n[0]==$exptbl?" selected":"").">$sholbl ".$n[0]."</option>\n";
+			}
+			echo "		<option value=\"none\" class=\"warn\">--- ".(($verb1)?"$cmdlbl $igrp[31]":"$igrp[31] $cmdlbl")." ---</option>";
+			echo "		<option value=\"cfgfiles\"".($exptbl=="cfgfiles"?" selected":"").">$cfglbl $buplbl</option>\n";
+			echo "		<option value=\"eventret\"".($exptbl=="eventret"?" selected":"").">$dellbl $msglbl $agelbl > $retire $tim[d]</option>\n";
+			echo "		<option value=\"iftrkret\"".($exptbl=="iftrkret"?" selected":"").">$dellbl IFtrack $agelbl > $retire $tim[d]</option>\n";
+			echo "		<option value=\"iptrkret\"".($exptbl=="iptrkret"?" selected":"").">$dellbl IPtrack $agelbl > $retire $tim[d]</option>\n";
+			echo "		<option value=\"lnkret\"".($exptbl=="lnkret"?" selected":"").">$dellbl Links $laslbl $updlbl > $retire $tim[d]</option>\n";
+			echo "		<option value=\"uprcom\"".($exptbl=="uprcom"?" selected":"").">$updlbl SNMP $realbl Community</option>\n";
+			echo "		<option value=\"dupdns\"".($exptbl=="dupdns"?" selected":"").">$duplbl DNS $vallbl</option>\n";
+			echo "		<option value=\"ipupres\"".($exptbl=="ipupres"?" selected":"").">$reslbl IP $updlbl</option>\n";
+			echo "		<option value=\"flush\"".($exptbl=="flush"?" selected":"").">$dellbl bin-logs</option>\n";
+			echo "		<option value=\"reset\"".($exptbl=="reset"?" selected":"").">$reslbl DB</option>\n";
+		?>
+	</select>
+	Separator:
+	<select size="1" name="sep">
+<?php  // Some PHP code
+		$separators = array(";", ";;", ":", "::", ",", "/");
+		foreach($separators as $s){
+			echo "			<option value=\"$s\"".($s==$sep?" selected":"").">".$s."</option>\n";
+		}
+	?>
+	</select>
+	&nbsp;Quotes <input type="checkbox" name="quotes" <?= $quotes ?>>
+	&nbsp;Header <input type="checkbox" name="colhdr" <?= $colhdr ?>>
+	<p>
+	<textarea rows="3" name="query" cols="80"><?= $query ?></textarea>
+</td>
+<td class="ctr top">
+	<h3><input type="radio" name="act" value="e" <?= $act=="e"?"checked":"" ?>><?= $explbl ?></h3>
+	<select multiple size="6" name="sqltbl[]">
+	<?php  // Some PHP code
+		$res = DbQuery(GenQuery("", "h"), $dblink);
+		while($n = DbFetchRow($res)){
+			echo "			<option value=\"".$n[0]."\"".(in_array($n[0], $sqltbl)?" selected":"").">".$n[0]."</option>\n";
+		}
+	?>
+	</select>
+</td>
+<td class="ctr s">
+	<h3><?= $dstlbl ?></h3>
+	<select size="1" name="type">
+		<option value="htm" <?= ($type=="htm")?" selected":"" ?>>html</option>
+		<option value="plain" <?= ($type=="plain")?" selected":"" ?>>plain</option>
+		<option value="gz" <?= ($type=="gz")?" selected":"" ?>>Gzip</option>
+		<option value="bz2" <?= ($type=="bz2")?" selected":"" ?>>Bzip2</option>
+	</select>
+	<p>
+	<img src="img/16/abc.png" title="<?= (($verb1)?"$addlbl $timlbl":"$timlbl $addlbl") ?>/<?= $frmlbl ?> IP">
+	<input type="checkbox" name="timest" <?= $timest ?>>
 <?php
 if( 0 and $backend == 'mysql'){// doesn't work properly and ipv6-bin need converting...
 ?>
-			<br><img src="img/16/db.png" title="<?= $frmlbl ?>: Postgres">
-			<input type="checkbox" name="conv" <?= $conv ?>>
+	<br><img src="img/16/db.png" title="<?= $frmlbl ?>: Postgres">
+	<input type="checkbox" name="conv" <?= $conv ?>>
 <?php
 }
 ?>
-			<p>
-			<input type="submit" class="button" value="<?= $cmdlbl ?>">
-		</th>
-	</tr>
+	<p>
+	<input type="submit" class="button" value="<?= $cmdlbl ?>">
+</td>
+</tr>
 </table>
-
 </form>
 
 <?php
@@ -225,17 +217,17 @@ if($isadmin and $act == "c") {
 			unlink("log/$cfg");
 			echo "$dellbl log/$cfg<br>\n";
 		}
-		echo "<b>$buplbl $fillbl <a href=\"$dbf\">$dbf</a> <a href=\"System-Files.php?del=".urlencode($dbf)."\"><img src=\"img/16/bcnl.png\" title=\"$dellbl\"></a></b>\n";		
+		echo "<b>$buplbl $fillbl <a href=\"$dbf\">$dbf</a> <a href=\"System-Files.php?del=".urlencode($dbf)."\"><img src=\"img/16/bcnl.png\" title=\"$dellbl\"></a></b>\n";
 	}
 	// HTML Override
 	elseif($type == "htm") {
 		echo "<h2>$query</h2>";
-		echo "<table class=\"content\"><tr class=\"$modgroup[$self]2\">";
+		echo "<table class=\"content\">\n\t<tr class=\"bgsub\">\n";
 		for ($i = 0; $i < DbNumFields($res); ++$i) {
 			$field = DbFieldName($res, $i);
-			echo  "<th>$i $field</th>\n";
+			echo  "\t\t<th>$i $field</th>\n";
 		}
-		echo "</tr>\n";
+		echo "\t</tr>\n";
 		$row = 0;
 		while($l = DbFetchArray($res)) {
 			if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
@@ -243,21 +235,24 @@ if($isadmin and $act == "c") {
 			TblRow($bg);
 			foreach($l as $id => $field) {
 				if( $field and preg_match("/^(if|nod|mon)ip6$/",$id) ){
-					echo "<td>".(( $backend == 'Pg')?$field:inet_ntop($field))."</td>";
-				}elseif($field and $timest and  preg_match("/^(orig|dev|if|nod|mon)ip$/",$id) ){
-					echo "<td>".long2ip($field)."</td>";
-				}elseif($timest and preg_match("/^(first|last|time|(if|ip|os)?update)/",$id) ){
-					echo "<td>".date($_SESSION['timf'],$field)."</td>";
+					echo "\t\t<td>\n\t\t\t".(( $backend == 'Pg')?$field:inet_ntop($field))."\n\t\t</td>\n";
+				}elseif($field and $timest and  preg_match($ipmatch,$id) ){
+					echo "\t\t<td>\n\t\t\t".long2ip($field)."\n\t\t</td>\n";
+				}elseif($timest and preg_match($timatch,$id) ){
+					echo "\t\t<td>\n\t\t\t".date($_SESSION['timf'],$field)."\n\t\t</td>\n";
 				}else{
-					echo "<td>$field</td>";
+					echo "\t\t<td>\n\t\t\t$field\n\t\t</td>\n";
 				}
 			}
-			echo  "</tr>\n";
+			echo  "\t</tr>\n";
 		}
 ?>
-</table>
-<table class="content" >
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?>, <?= round( microtime(1) - $start,2 ) ?> <?= $tim['s'] ?></td></tr>
+	<tr class="bgsub">
+		<td colspan="<?= $i ?>">
+			<?= $row ?> <?= $vallbl ?>, <?= round( microtime(1) - $start,2 ) ?> <?= $tim['s'] ?>
+
+		</td>
+	</tr>
 </table>
 		<?php
 	}else {
@@ -290,7 +285,7 @@ if($isadmin and $act == "c") {
 		$tbl = join(' ',$sqltbl);
 		$cnv = ($conv)?"--compatible=postgresql":"";
 		$dbf = "log/$dbname-$_SESSION[user]".(($timest)?'_'.date("Ymd_Hi"):'').".msq";
-		$dok = system("mysqldump $cnv -u$dbuser -p$dbpass $dbname $tbl > $dbf");
+		$dok = system("mysqldump $cnv -h $dbhost -u$dbuser -p$dbpass $dbname $tbl > $dbf");
 	}elseif( $backend == 'Pg'){
 		$tbl = '-t'.join(' -t',$sqltbl);
 		$dbf = "log/$dbname-$_SESSION[user]".(($timest)?'_'.date("Ymd_Hi"):'').".psq";
@@ -328,72 +323,75 @@ if($isadmin and $act == "c") {
 
 	$res = DbQuery(GenQuery("", "v"), $dblink);
 	while($l = DbFetchRow($res)) {
-		echo "<h3>$l[0]</h3>";
+		echo "<h3>$l[0]</h3>\n";
 	}
 	DbFreeResult($res);
 
 	$res = DbQuery(GenQuery("", "x"), $dblink);
-	echo "<table class=\"content\"><tr class=\"$modgroup[$self]2\">";
+	echo "<table class=\"content\">\n\t<tr class=\"bgsub\">\n";
 	for ($i = 0; $i < DbNumFields($res); ++$i) {
 		$field = DbFieldName($res, $i);
-		echo  "<th>$field</th>\n";
+		echo  "\t\t<th>\n\t\t\t$field\n\t\t</th>\n";
 	}
-	echo "</tr>\n";
+	echo "\t</tr>\n";
 	$row = 0;
 	while($l = DbFetchArray($res)) {
 		if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
 		$row++;
 		TblRow($bg);
 		foreach($l as $id => $field) {
-			echo "<td>$field</td>";
+			echo "\t\t<td>\n\t\t\t$field\n\t\t</td>\n";
 		}
-		echo  "</tr>\n";
+		echo  "\t</tr>\n";
 	}
-	echo  "</table><p>\n";
+	echo  "</table>\n<p>\n";
 	DbFreeResult($res);
 
 	$res = DbQuery(GenQuery("", "h"), $dblink);
 	$col = 0;
-	echo "<table class=\"full fixed\"><tr>\n";
+	echo "<table class=\"full fixed\">\n<tr>\n";
 	while($tab = DbFetchRow($res)){
-		if($col == intval($_SESSION['col']/2)){echo "</tr><tr>";$col=0;}
-		echo "<td class=\"helper\">\n\n<table class=\"content\" ><tr class=\"$modgroup[$self]2\">\n";
-		echo "<th colspan=\"3\">$tab[0]</th><th>NULL</th><th>KEY</th><th>DEF</th></tr>\n";
+		if($col == intval($_SESSION['col']/2) or (!$_SESSION['col'] and $col == 4) ){echo "</tr><tr>";$col=0;}
+		echo "<td class=\"helper\">\n\n<table class=\"content\" >\n\t<tr class=\"bgsub\">\n";
+		echo "\t\t<th colspan=\"3\">\n\t\t\t$tab[0]\n\t\t</th>\n\t\t<th>\n\t\t\tNULL\n\t\t</th>\n\t\t<th>\n\t\t\tKEY\n\t\t</th>\n\t\t<th>\n\t\t\tDEF\n\t\t</th>\n\t</tr>\n";
 		$cres = DbQuery(GenQuery($tab[0], "c"), $dblink);
 		$row = 0;
 		while($c = DbFetchRow($cres)){
 			if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
-			echo "<tr class=\"$bg\"><th class=\"$bi\">\n";
-			echo "$row</th><td class=\"drd\">$c[0]</td><td>$c[1]</td><td class=\"prp\">$c[2]</td><td class=\"blu\">$c[3]</td><td class=\"grn\">$c[4]</td></tr>\n";
+			echo "\t<tr class=\"$bg\">\n\t\t<td class=\"ctr b $bi\">\n\t\t\t$row\n\t\t</td>\n";
+			echo "\t\t<td class=\"drd\">\n\t\t\t$c[0]\n\t\t</td>\n\t\t<td>\n\t\t\t$c[1]\n\t\t</td>\n";
+			echo "\t\t<td class=\"prp\">\n\t\t\t$c[2]\n\t\t</td>\n\t\t<td class=\"blu\">\n\t\t\t$c[3]\n\t\t</td>\n\t\t<td class=\"grn\">\n\t\t\t$c[4]\n\t\t</td>\n\t</tr>\n";
 			$row++;
 		}
 		$recs = DbFetchRow(DbQuery(GenQuery($tab[0], 's','count(*)'), $dblink));
 		DbFreeResult($cres);
 	?>
-</table>
-<table class="content" >
-<tr class="<?= $modgroup[$self] ?>2"><td>
-<div style="float:right">
-
+	<tr class="bgsub">
+		<td colspan="6">
+			<div style="float:right">
 <?php  if($recs[0]) { ?>
-<a href="?act=c&exptbl=links&sep=%3B&query=SELECT+*+FROM+<?= $tab[0] ?> limit <?= $listlim ?>"><img src="img/16/eyes.png" title="<?= $sholbl ?>"></a>
-<?php } 
+				<a href="?act=c&exptbl=links&sep=%3B&query=SELECT+*+FROM+<?= $tab[0] ?> limit <?= ($listlim)?$listlim:250 ?>&timest=on"><img src="img/16/eyes.png" title="<?= $sholbl ?>"></a>
+<?php }
 if($isadmin) { ?>
-<a href="?act=opt&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/hat2.png" title="<?= $optlbl ?>"></a>
-<a href="?act=rep&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/dril.png" title="<?= $replbl ?>"></a>
-<a href="?act=trunc&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/bcnl.png" onclick="return confirm('<?= (($verb1)?"$dellbl $vallbl":"$vallbl $dellbl") ?>, <?= $cfmmsg ?>')" title="<?= (($verb1)?"$dellbl $vallbl":"$vallbl $dellbl") ?>"></a>
+				<a href="?act=opt&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/hat2.png" title="<?= $optlbl ?>"></a>
+				<a href="?act=rep&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/dril.png" title="<?= $replbl ?>"></a>
+				<a href="?act=trunc&sqltbl[]=<?= $tab[0] ?>"><img src="img/16/bcnl.png" onclick="return confirm('<?= (($verb1)?"$dellbl $vallbl":"$vallbl $dellbl") ?>, <?= $cfmmsg ?>')" title="<?= (($verb1)?"$dellbl $vallbl":"$vallbl $dellbl") ?>"></a>
 <?php } ?>
-</div>
+			</div>
+			<?= $recs[0] ?> <?= $vallbl ?>
 
-<?= $recs[0] ?> <?= $vallbl ?></td></tr>
+		</td>
+	</tr>
 </table>
 
-</td><?php
+</td>
+<?php
 		$col++;
 	}
 	DbFreeResult($res);
 ?>
-</tr></table>
+</tr>
+</table>
 <?php
 }
 // Now the database connection can be closed
@@ -405,7 +403,7 @@ include_once("inc/footer.php");
 
 //================================================================================
 // Name: DbCsv()
-// 
+//
 // Description: Creates a CSV file of a given SQL query result.
 //              When calling the function you can choose if you want
 //              to have quotes around the elements of the CSV file.
@@ -453,8 +451,8 @@ function DbCsv($res, $sep, $quotes, $outfile, $head) {
 		$csv = "";
 		// Each element is added to the string individually
 		foreach($row as $id => $field) {
-			if(preg_match("/^(origip|ip)$/",$id) ){$field = long2ip($field);}
-			if(preg_match("/^(firstseen|lastseen|time|i[fp]update)$/",$id) ){$field = date($_SESSION['timf'],$field);}
+			if(preg_match($ipmatch,$id) ){$field = long2ip($field);}
+			if(preg_match($timatch,$id) ){$field = date($_SESSION['timf'],$field);}
 			// If quotes are wished, they are put around the element
 			if($quotes == "on") $csv .= "\"";
 			$csv .= $field;

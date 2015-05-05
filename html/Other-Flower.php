@@ -45,87 +45,112 @@ $link  = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 <h1>Flower Openflows</h1>
 
 <form method="get" name="ofrm" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
-
-</th>
-<td valign="top" align="center"><h3>Flow <?= $sumlbl ?></h3>
-<table>
-<tr><td>
-<?= $namlbl ?>
-</td><td>
-<input type="text" name="nam" value="<?= $nam ?>" size="15">
-</td></tr>
-<tr><td>
-<?= $prilbl ?>
-</td><td>
-<input type="number" name="pri" value="<?= $pri ?>" size="5">
-</td></tr>
-</table>
-
+<table class="content">
+	<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
-<td valign="top" align="center"><h3><?= $fltlbl ?></h3>
+<td class="ctr top">
+	<h3>Flow <?= $sumlbl ?></h3>
+	<table>
+		<tr>
+			<td>
+				<?= $namlbl ?>
 
-<table>
-<tr><td>
-<img src="img/16/port.png" title="<?= $inblbl ?>">
-</td><td>
-<input type="number" name="fvl" value="<?= $fvl ?>" size="4" title="Vlan">
-<input type="text" name="fif" value="<?= $fif ?>" size="8" title="IF #">
-<input type="text" name="fet" value="<?= $fet ?>" size="8" title="Ether <?= $typlbl ?>">
-<input type="text" name="fpr" value="<?= $fpr ?>" size="2" title="<?= $prolbl ?>">
-</td></tr>
-<tr><td>
-<img src="img/16/node.png" title="MAC">
-</td><td>
-<input type="text" name="fsm" value="<?= $fsm ?>" size="18" title="<?= $srclbl ?> <?= $adrlbl ?>">
-<input type="text" name="fdm" value="<?= $fdm ?>" size="18" title="<?= $dstlbl ?> <?= $adrlbl ?>">
-</td></tr>
-<tr><td>
-<img src="img/16/net.png" title="IP">
-</td><td>
-<input type="text" name="fsi" value="<?= $fsi ?>" size="14" title="<?= $srclbl ?> <?= $adrlbl ?>">
-<input type="text" name="fsp" value="<?= $fsp ?>" size="4" title="<?= $srclbl ?>  <?= $porlbl ?>">
-<input type="text" name="fdi" value="<?= $fdi ?>" size="14" title="<?= $dstlbl ?> <?= $adrlbl ?>">
-<input type="text" name="fdp" value="<?= $fdp ?>" size="4" title="<?= $dstlbl ?> <?= $porlbl ?>">
-</td></tr>
+			</td>
+			<td>
+				<input type="text" name="nam" value="<?= $nam ?>" size="15">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<?= $prilbl ?>
+			</td>
+			<td>
+				<input type="number" name="pri" value="<?= $pri ?>" size="5">
+			</td>
+		</tr>
+	</table>
+</td>
+<td class="ctr top">
+	<h3><?= $fltlbl ?></h3>
+	<table>
+		<tr>
+			<td>
+				<img src="img/16/port.png" title="<?= $inblbl ?>">
+			</td>
+			<td>
+				<input type="number" name="fvl" value="<?= $fvl ?>" size="4" title="Vlan">
+				<input type="text" name="fif" value="<?= $fif ?>" size="8" title="IF #">
+				<input type="text" name="fet" value="<?= $fet ?>" size="8" title="Ether <?= $typlbl ?>">
+				<input type="text" name="fpr" value="<?= $fpr ?>" size="2" title="<?= $prolbl ?>">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="img/16/node.png" title="MAC">
+			</td>
+			<td>
+				<input type="text" name="fsm" value="<?= $fsm ?>" size="18" title="<?= $srclbl ?> <?= $adrlbl ?>">
+				<input type="text" name="fdm" value="<?= $fdm ?>" size="18" title="<?= $dstlbl ?> <?= $adrlbl ?>">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="img/16/net.png" title="IP">
+			</td>
+			<td>
+				<input type="text" name="fsi" value="<?= $fsi ?>" size="14" title="<?= $srclbl ?> <?= $adrlbl ?>">
+				<input type="text" name="fsp" value="<?= $fsp ?>" size="4" title="<?= $srclbl ?>  <?= $porlbl ?>">
+				<input type="text" name="fdi" value="<?= $fdi ?>" size="14" title="<?= $dstlbl ?> <?= $adrlbl ?>">
+				<input type="text" name="fdp" value="<?= $fdp ?>" size="4" title="<?= $dstlbl ?> <?= $porlbl ?>">
+			</td>
+		</tr>
+	</table>
+</td>
+<td class="ctr top">
+	<h3><?= $actlbl ?></h3>
+	<table>
+		<tr>
+			<td>
+				<img src="img/16/port.png" title="<?= $oublbl ?>">
+			</td>
+			<td>
+				<input type="text" name="avl" value="<?= $avl ?>" size="5" title="Vlan (<?= (($verb1)?"$dellbl Tag":"Tag $dellbl") ?>: -)">
+				<input type="text" name="aif" value="<?= $aif ?>" size="15" title="IF #, all, controller, local, ingress-port, normal, flood">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="img/16/node.png" title="MAC">
+			</td>
+			<td>
+				<input type="text" name="asm" value="<?= $asm ?>" size="15" title="<?= $srclbl ?> <?= $adrlbl ?>">
+				<input type="text" name="adm" value="<?= $adm ?>" size="15" title="<?= $dstlbl ?> <?= $adrlbl ?>">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="img/16/net.png" title="IP">
+			</td>
+			<td>
+				<input type="text" name="asi" value="<?= $asi ?>" size="15" title="<?= $srclbl ?> <?= $adrlbl ?>">
+				<input type="text" name="asp" value="<?= $asp ?>" size="5" title="<?= $srclbl ?> <?= $porlbl ?>">
+				<input type="text" name="adi" value="<?= $adi ?>" size="15" title="<?= $dstlbl ?> <?= $adrlbl ?>">
+				<input type="text" name="adp" value="<?= $adp ?>" size="5" title="<?= $dstlbl ?> <?= $porlbl ?>">
+			</td>
+		</tr>
+	</table>
+</td>
+<td class="ctr s">
+<?= (Devcli($flc, 22, 2)) ?>
+
+	<p>
+	<input type="hidden" name="flc" value="<?= $flc ?>">
+	<input type="submit" class="button" value="<?= $addlbl ?>">
+</td>
+</tr>
 </table>
-
-</th>
-<td valign="top" align="center"><h3><?= $actlbl ?></h3>
-
-<table>
-<tr><td>
-<img src="img/16/port.png" title="<?= $oublbl ?>">
-</td><td>
-<input type="text" name="avl" value="<?= $avl ?>" size="5" title="Vlan (<?= (($verb1)?"$dellbl Tag":"Tag $dellbl") ?>: -)">
-<input type="text" name="aif" value="<?= $aif ?>" size="15" title="IF #, all, controller, local, ingress-port, normal, flood">
-</td></tr>
-<tr><td>
-<img src="img/16/node.png" title="MAC">
-</td><td>
-<input type="text" name="asm" value="<?= $asm ?>" size="15" title="<?= $srclbl ?> <?= $adrlbl ?>">
-<input type="text" name="adm" value="<?= $adm ?>" size="15" title="<?= $dstlbl ?> <?= $adrlbl ?>">
-</td></tr>
-<tr><td>
-<img src="img/16/net.png" title="IP">
-</td><td>
-<input type="text" name="asi" value="<?= $asi ?>" size="15" title="<?= $srclbl ?> <?= $adrlbl ?>">
-<input type="text" name="asp" value="<?= $asp ?>" size="5" title="<?= $srclbl ?> <?= $porlbl ?>">
-<input type="text" name="adi" value="<?= $adi ?>" size="15" title="<?= $dstlbl ?> <?= $adrlbl ?>">
-<input type="text" name="adp" value="<?= $adp ?>" size="5" title="<?= $dstlbl ?> <?= $porlbl ?>">
-</td></tr>
-</table>
-
-</th>
-<th width="80">
-
-<?= (Devcli($flc, 22, 2)) ?><p>
-<input type="hidden" name="flc" value="<?= $flc ?>">
-<input type="submit" class="button" value="<?= $addlbl ?>">
-
-</th>
-</tr></table>
 <p>
 
 <h2>Openflow Devices</h2>
@@ -142,7 +167,7 @@ if($del){
 		);
 
 	if($debug){
-		echo "<div class=\"textpad code noti\">$url<p>\n";
+		echo "<div class=\"textpad code pre noti\">$url<p>\n";
 		print_r($opt);
 		echo "</div>";
 	}
@@ -152,8 +177,8 @@ if($del){
 }elseif($clr){
 	$url = "http://$flc:8080/wm/staticflowentrypusher/clear/$clr/json";
 	if($debug){
-		echo "<div class=\"textpad code noti\">$url<p>\n";
-		echo "</div>";
+		echo "<div class=\"textpad code pre noti\">\n\t$url<p>\n";
+		echo "</div>\n";
 	}
 
 	$res = file_get_contents($clr,0);
@@ -199,19 +224,19 @@ if($del){
 				)
 			);
 		if($debug){
-			echo "<div class=\"textpad code noti\">$url<p>\n";
+			echo "<div class=\"textpad code pre noti\">\n\t$url<p>\n";
 			print_r($opt);
-			echo "</div>";
+			echo "</div>\n";
 		}
 		$res = file_get_contents($url, false, stream_context_create($opt) );
-		if( strstr($res,'Error') ){echo "<h4>$res</h4>";}else{echo "<h5>$wrtlbl Flow $nam-$cdv OK $res</h5>";}
+		if( strstr($res,'Error') ){echo "<h4>$res</h4>\n";}else{echo "<h5>$wrtlbl Flow $nam-$cdv OK $res</h5>\n";}
 
 	}
 }
 $url = "http://$flc:8080/wm/core/controller/switches/json";
 if($debug){
-	echo "<div class=\"textpad code noti\">$url<p>\n";
-	echo "</div>";
+	echo "<div class=\"textpad code pre noti\">\n\t$url<p>\n";
+	echo "</div>\n";
 }
 
 $ofd = array();
@@ -219,9 +244,9 @@ $jdv = file_get_contents($url,0);
 if($jdv){
 	$ofdarr = json_decode($jdv,1);
 	if($debug){
-		echo "<div class=\"textpad code good\">";
+		echo "<div class=\"textpad code pre good\">\n";
 		print_r($ofdarr);
-		echo "</div>";
+		echo "</div>\n";
 	}
 	foreach (array_keys($ofdarr) as $k) {
 		$ifmac = substr(str_replace(":","",$ofdarr[$k]['dpid']),4);
@@ -240,19 +265,30 @@ if($jdv){
 			$ofd[$d[0]]['ico'] = $d[18];
 			$ofd[$d[0]]['stk'] = Digit($dev[29]);
 		}else{
-			echo "<h4>$dsclbl ".$ofdarr[$k]['inetAddress']."!</h4>";
+			echo "<h4>$dsclbl ".$ofdarr[$k]['inetAddress']."!</h4>\n";
 		}
 		DbFreeResult($res);
 	}
 }
 ?>
 
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th>Device</th>
-<th><?= $inflbl ?></th>
-<th width="60%">Flows</th>
-<th><?= $cmdlbl ?></th>
-</tr>
+<table class="content">
+	<tr class="bgsub">
+		<th>
+			Device
+		</th>
+		<th>
+			<?= $inflbl ?>
+
+		</th>
+		<th class="half">
+			Flows
+		</th>
+		<th>
+			<?= $cmdlbl ?>
+
+		</th>
+	</tr>
 <?php
 	$row   = 0;
 	foreach (array_keys($ofd) as $k) {
@@ -261,28 +297,28 @@ if($jdv){
 		$ud  = urlencode($k);
 		TblCell($k,'',"$bi ctr m","<a href=\"Devices-Status.php?dev=$ud\"><img src=\"img/dev/".$ofd[$k]['ico'].".png\" title=\"".$ofd[$k]['typ']."\"></a>".$ofd[$k]['stk']."<br>");
 		TblCell( $ofd[$k]['id']." ".$ofd[$k]['ma']." ".$ofd[$k]['hw']." ".Devcli($ofd[$k]['ip'],$ofd[$k]['po']) );
-		echo "<td>\n";
+		echo "\t\t<td>\n";
 
 		$url = "http://$flc:8080/wm/staticflowentrypusher/list/".$ofd[$k]['id']."/json";
 		if($debug){
-			echo "<div class=\"textpad code noti\">$url<p>\n";
-			echo "</div>";
+			echo "\t\t\t<div class=\"textpad code pre noti\">\t\t\t\t$url<p>\n";
+			echo "</div>\n";
 		}
 
 		$jfl = file_get_contents($url);
 		if($jfl){
 			$flows = json_decode($jfl,1);
 			if($debug){
-				echo "<div class=\"textpad code good\">";
+				echo "<div class=\"textpad code pre good\">\n";
 				print_r($flows);
-				echo "</div>";
+				echo "</div>\n";
 			}
 
 			echo "<table class=\"full\">\n";
 			$flo = 0;
 			foreach (array_keys($flows[$ofd[$k]['id']]) as $f) {
 				if ($flo % 2){$fb = "txta"; $fi = "imga";}else{$fg = "txtb"; $fi = "imgb";}
-				echo "<tr class=\"$fi\"><td class=\"blu\" title=\"Flow $namlbl\">$f</td>\n";
+				echo "\t<tr class=\"$fi\">\n\t\t<td class=\"blu\" title=\"Flow $namlbl\">\n\t\t\t$f\n\t\t</td>\n";
 				$nam  = urlencode($f);
 				$ffsm = ($flows[$ofd[$k]['id']][$f]['match']['dataLayerSource'] != "00:00:00:00:00:00")?$flows[$ofd[$k]['id']][$f]['match']['dataLayerSource']:"";
 				$ffdm = ($flows[$ofd[$k]['id']][$f]['match']['dataLayerDestination'] != "00:00:00:00:00:00")?$flows[$ofd[$k]['id']][$f]['match']['dataLayerDestination']:"";
@@ -295,9 +331,9 @@ if($jdv){
 				$ffvl = ($flows[$ofd[$k]['id']][$f]['match']['dataLayerVirtualLan'] != -1)?$flows[$ofd[$k]['id']][$f]['match']['dataLayerVirtualLan']:"";
 				$ffif = ($flows[$ofd[$k]['id']][$f]['match']['inputPort'] != 0)?$flows[$ofd[$k]['id']][$f]['match']['inputPort']:"";
 
-				echo "<td title=\"$inblbl $fltlbl\">".(($ffvl)?"Vlan:$ffvl":"")." ".(($ffif)?"IF:$ffif":"")." ".(($ffet)?"Type:$ffet":"")." ".(($ffpr)?"Proto:$ffpr":"")."</td>";
-				echo "<td title=\"$srclbl $fltlbl\">$ffsm $ffsi $ffsp</td>";
-				echo "<td title=\"$dstlbl $fltlbl\">$ffdm $ffdi $ffdp</td>\n";
+				echo "\n\t\t<td title=\"$inblbl $fltlbl\">\n\t\t\t".(($ffvl)?"Vlan:$ffvl":"")." ".(($ffif)?"IF:$ffif":"")." ".(($ffet)?"Type:$ffet":"")." ".(($ffpr)?"Proto:$ffpr":"")."\n\t\t</td>\n";
+				echo "\n\t\t<td title=\"$srclbl $fltlbl\">\n\t\t\t$ffsm $ffsi $ffsp\n\t\t</td>\n";
+				echo "\n\t\t<td title=\"$dstlbl $fltlbl\">\n\t\t\t$ffdm $ffdi $ffdp\n\t\t</td>\n";
 
 				if( count($flows[$ofd[$k]['id']][$f]['actions']) ){
 					$favl = $faif = $fadp = $fasm = $fadm = $fasi = $fasp = $fadi = $fadp = '';
@@ -322,25 +358,26 @@ if($jdv){
 							$fadp = $a['transportPort'];
 						}
 					}
-					echo "<td title=\"$actlbl $srclbl\">$fasm $fasi $fasp</td><td title=\"$actlbl $dstlbl\">$fadm $fadi $fadp</td>\n";
-					echo "<td title=\"$actlbl $oublbl\">".(($favl)?"Vlan:$favl":"")." ".(($faif)?"IF:$faif":"")."</td>\n";
+					echo "\n\t\t<td title=\"$actlbl $srclbl\">\n\t\t\t$fasm $fasi $fasp</td><td title=\"$actlbl $dstlbl\">$fadm $fadi $fadp</td>\n";
+					echo "\n\t\t<td title=\"$actlbl $oublbl\">\n\t\t\t".(($favl)?"Vlan:$favl":"")." ".(($faif)?"IF:$faif":"")."\n\t\t</td>\n";
 				}else{
-					echo "<td colspan=\"3\"><img src=\"img/16/bdis.png\" title=\"$dellbl\"></td>";
+					echo "\n\t\t<td colspan=\"3\">\n\t\t\t<img src=\"img/16/bdis.png\" title=\"$dellbl\">\n\t\t</td>\n";
 				}
-				echo "</td><th width=\"80\"><a href=\"?flc=$flc&nam=$nam&fsm=$ffsm&fdm=$ffdm&fsi=$ffsi&fdi=$ffdi&fvl=$ffvl&fif=$ffif&fet=$ffet&fpr=$ffpr&avl=$favl&aif=$faif&adp=$fadp&asm=$fasm&adm=$fadm&asi=$fasi&asp=$fasp&adi=$fadi&adp=$fadp\">\n";
+				echo "\n\t\t</td>\n\t\t<th width=\"80\"><a href=\"?flc=$flc&nam=$nam&fsm=$ffsm&fdm=$ffdm&fsi=$ffsi&fdi=$ffdi&fvl=$ffvl&fif=$ffif&fet=$ffet&fpr=$ffpr&avl=$favl&aif=$faif&adp=$fadp&asm=$fasm&adm=$fadm&asi=$fasi&asp=$fasp&adi=$fadi&adp=$fadp\">\n";
 				echo "<img src=\"img/16/note.png\" title=\"$edilbl\"></a>\n";
 				echo "<a href=\"?flc=$flc&del=$nam\"><img src=\"img/16/bcnl.png\" title=\"$dellbl\"></a>\n";
 				echo "</th></tr>\n";
 				$flo++;
 			}
-			echo "</table></td><th>\n";
+			echo "</table>\n\t\t</td>\n\t\t<th>\n";
 			echo "<input type=\"checkbox\" name=\"dv[]\" value=\"".$ofd[$k]['id']."\"><a href=\"?flc=$flc&clr=".$ofd[$k]['id']."\"><p><img src=\"img/16/bcls.png\" title=\"$reslbl\"></a></th>\n";
 		}
 	}
 ?>
-</table></form>
+</table>
+</form>
 <table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> Devices</td></tr>
+<tr class="bgsub"><td><?= $row ?> Devices</td></tr>
 </table>
 <?php
 

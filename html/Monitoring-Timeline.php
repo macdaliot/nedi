@@ -56,98 +56,115 @@ $cols = array(	"info"=>"Info",
 <?php  if( !isset($_GET['print']) ){ ?>
 
 <form method="get" name="dynfrm" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td valign="top">
-
-<?php Filters(1); ?>
-
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td>
-
-<img src="img/16/ugrp.png" title="<?= $grplbl ?>">
-<select size="1" name="det">
-<option value=""><?= $nonlbl ?>
-<option value="level" <?= ($det == "level")?" selected":"" ?>><?= $levlbl ?>
-<option value="source" <?= ($det == "source")?" selected":"" ?>><?= $srclbl ?>
-<option value="class" <?= ($det == "class")?" selected":"" ?>><?= $clalbl ?>
-</select>
-<br>
-<img src="img/16/clock.png" title="<?= $timlbl ?> <?= $sizlbl ?>">
-<select size="1" name="gra">
-<option value="3600"><?= $tim['h'] ?>
-<option value="86400" <?= ($gra == "86400")?" selected":"" ?>><?= $tim['d'] ?>
-<option value="604800" <?= ($gra == "604800")?" selected":"" ?>><?= $tim['w'] ?>
-<option value="2592000" <?= ($gra == "2592000")?" selected":"" ?>><?= $tim['m'] ?>
-</select>
-<br>
-<img src="img/16/form.png" title="<?= $frmlbl ?>">
-<select size="1" name="fmt">
-<option value="si"><?= (($verb1)?"$siz[s] $imglbl":"$imglbl $siz[s]") ?>
-<option value="mi" <?= ($fmt == "mi")?" selected":"" ?>><?= (($verb1)?"$siz[m] $imglbl":"$imglbl $siz[m]") ?>
-<option value="li" <?= ($fmt == "li")?" selected":"" ?>><?= (($verb1)?"$siz[l] $imglbl":"$imglbl $siz[l]") ?>
-<option value="ms" <?= ($fmt == "ms")?" selected":"" ?>><?= (($verb1)?"$siz[m] $shplbl":"$shplbl $siz[m]") ?>
-<option value="ls" <?= ($fmt == "ls")?" selected":"" ?>><?= (($verb1)?"$siz[l] $shplbl":"$shplbl $siz[l]") ?>
-<option value="cg" <?= ($fmt == "cg")?" selected":"" ?>><?= $collbl ?> <?= $gralbl ?>
-<option value="ag" <?= ($fmt == "ag")?" selected":"" ?>><?= $arclbl ?> <?= $gralbl ?>
-</select>
-
+<?php Filters(1); ?>
 </td>
-<td align="center">
+<td>
+	<img src="img/16/abc.png" title="<?= $grplbl ?>">
+	<select size="1" name="det">
+		<option value=""><?= $nonlbl ?>
+		<option value="level" <?= ($det == "level")?" selected":"" ?>><?= $levlbl ?>
+		<option value="source" <?= ($det == "source")?" selected":"" ?>><?= $srclbl ?>
+		<option value="class" <?= ($det == "class")?" selected":"" ?>><?= $clalbl ?>
+	</select>
+	<br>
+	<img src="img/16/clock.png" title="<?= $timlbl ?> <?= $sizlbl ?>">
+	<select size="1" name="gra">
+		<option value="3600"><?= $tim['h'] ?>
+		<option value="86400" <?= ($gra == "86400")?" selected":"" ?>><?= $tim['d'] ?>
+		<option value="604800" <?= ($gra == "604800")?" selected":"" ?>><?= $tim['w'] ?>
+		<option value="2592000" <?= ($gra == "2592000")?" selected":"" ?>><?= $tim['m'] ?>
+	</select>
+	<br>
+	<img src="img/16/form.png" title="<?= $frmlbl ?>">
+	<select size="1" name="fmt">
+		<option value="si"><?= (($verb1)?"$siz[s] $imglbl":"$imglbl $siz[s]") ?>
+		<option value="mi" <?= ($fmt == "mi")?" selected":"" ?>><?= (($verb1)?"$siz[m] $imglbl":"$imglbl $siz[m]") ?>
+		<option value="li" <?= ($fmt == "li")?" selected":"" ?>><?= (($verb1)?"$siz[l] $imglbl":"$imglbl $siz[l]") ?>
+		<option value="ms" <?= ($fmt == "ms")?" selected":"" ?>><?= (($verb1)?"$siz[m] $shplbl":"$shplbl $siz[m]") ?>
+		<option value="ls" <?= ($fmt == "ls")?" selected":"" ?>><?= (($verb1)?"$siz[l] $shplbl":"$shplbl $siz[l]") ?>
+		<option value="cg" <?= ($fmt == "cg")?" selected":"" ?>><?= $collbl ?> <?= $gralbl ?>
+		<option value="ag" <?= ($fmt == "ag")?" selected":"" ?>><?= $arclbl ?> <?= $gralbl ?>
+	</select>
+</td>
+<td class="ctr">
 
-<table style="border-spacing: 0px">
-<tr class="<?= $modgroup[$self] ?>2"><td>
-<a href="?<?=SkewTime($qstr,"sta", -7) ?>"><img src="img/16/bbl2.png" title="<?= $sttlbl ?> -<?= $tim['w'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"sta", -1) ?>"><img src="img/16/bblf.png" title="<?= $sttlbl ?> -<?= $tim['d'] ?>"></a>
-</td><td>
-<input  name="sta" id="start" type="text" value="<?= $strsta ?>" onfocus="select();" size="15" title="<?= $sttlbl ?>">
-</td><td>
-<a href="?<?=SkewTime($qstr,"sta", 1) ?>"><img src="img/16/bbrt.png" title="<?= $sttlbl ?> +<?= $tim['d'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"sta", 7) ?>"><img src="img/16/bbr2.png" title="<?= $sttlbl ?> +<?= $tim['w'] ?>"></a>
-</td></tr>
-<tr class="<?= $modgroup[$self] ?>2"><td>
-<a href="?<?=SkewTime($qstr,"all", -7) ?>"><img src="img/16/bbl2.png" title="<?= $gralbl ?> -<?= $tim['w'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"all", -1) ?>"><img src="img/16/bblf.png" title="<?= $gralbl ?> -<?= $tim['d'] ?>"></a>
-</td><th>
-<img src="img/16/date.png" title="<?= $sttlbl ?> & <?= $endlbl ?>">
-</th><td>
-<a href="?<?=SkewTime($qstr,"all", 1) ?>"><img src="img/16/bbrt.png" title="<?= $gralbl ?> +<?= $tim['d'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"all", 7) ?>"><img src="img/16/bbr2.png" title="<?= $gralbl ?> +<?= $tim['w'] ?>"></a>
-</td></tr>
-<tr class="<?= $modgroup[$self] ?>2"><td>
-<a href="?<?=SkewTime($qstr,"end", -7) ?>"><img src="img/16/bbl2.png" title="<?= $endlbl ?> -<?= $tim['w'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"end", -1) ?>"><img src="img/16/bblf.png" title="<?= $endlbl ?> -<?= $tim['d'] ?>"></a>
-</td><td>
-<input  name="end" id="end" type="text" value="<?= $strend ?>" onfocus="select();" size="15" title="<?= $endlbl ?>">
-</td><td>
-<a href="?<?=SkewTime($qstr,"end", 1) ?>"><img src="img/16/bbrt.png" title="<?= $endlbl ?> +<?= $tim['d'] ?>"></a>
-</td><td>
-<a href="?<?=SkewTime($qstr,"end", 7) ?>"><img src="img/16/bbr2.png" title="<?= $endlbl ?> +<?= $tim['w'] ?>"></a>
-</table>
+	<table style="border-spacing: 0px">
+		<tr class="bgsub">
+			<td>
+				<a href="?<?=SkewTime($qstr,"sta", -7) ?>"><img src="img/16/bbl2.png" title="<?= $sttlbl ?> -<?= $tim['w'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"sta", -1) ?>"><img src="img/16/bblf.png" title="<?= $sttlbl ?> -<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<input  name="sta" id="start" type="text" value="<?= $strsta ?>" onfocus="select();" size="15" title="<?= $sttlbl ?>">
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"sta", 1) ?>"><img src="img/16/bbrt.png" title="<?= $sttlbl ?> +<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"sta", 7) ?>"><img src="img/16/bbr2.png" title="<?= $sttlbl ?> +<?= $tim['w'] ?>"></a>
+			</td>
+		</tr>
+		<tr class="bgsub">
+			<td>
+				<a href="?<?=SkewTime($qstr,"all", -7) ?>"><img src="img/16/bbl2.png" title="<?= $gralbl ?> -<?= $tim['w'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"all", -1) ?>"><img src="img/16/bblf.png" title="<?= $gralbl ?> -<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<img src="img/16/date.png" title="<?= $sttlbl ?> & <?= $endlbl ?>">
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"all", 1) ?>"><img src="img/16/bbrt.png" title="<?= $gralbl ?> +<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"all", 7) ?>"><img src="img/16/bbr2.png" title="<?= $gralbl ?> +<?= $tim['w'] ?>"></a>
+			</td>
+		</tr>
+		<tr class="bgsub">
+			<td>
+				<a href="?<?=SkewTime($qstr,"end", -7) ?>"><img src="img/16/bbl2.png" title="<?= $endlbl ?> -<?= $tim['w'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"end", -1) ?>"><img src="img/16/bblf.png" title="<?= $endlbl ?> -<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<input  name="end" id="end" type="text" value="<?= $strend ?>" onfocus="select();" size="15" title="<?= $endlbl ?>">
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"end", 1) ?>"><img src="img/16/bbrt.png" title="<?= $endlbl ?> +<?= $tim['d'] ?>"></a>
+			</td>
+			<td>
+				<a href="?<?=SkewTime($qstr,"end", 7) ?>"><img src="img/16/bbr2.png" title="<?= $endlbl ?> +<?= $tim['w'] ?>"></a>
+			</td>
+		</tr>
+	</table>
 
 <script type="text/javascript" src="inc/datepickr.js"></script>
 <link rel="stylesheet" type="text/css" href="inc/datepickr.css" />
 <script>
-
-new datepickr('start', {'dateFormat': 'm/d/y'});
-new datepickr('end', {'dateFormat': 'm/d/y'});
+	new datepickr('start', {'dateFormat': 'm/d/y'});
+	new datepickr('end', {'dateFormat': 'm/d/y'});
 </script>
 
 </td>
-<th width="80">
-<span id="counter"><?= $refresh ?></span>
-<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
-<p>
-
-<input type="submit" class="button" name="sho" value="<?= $sholbl ?>">
-</th>
+<td class="ctr s">
+	<span id="counter"><?= $refresh ?></span>
+	<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
+	<p>
+	<input type="submit" class="button" name="sho" value="<?= $sholbl ?>">
+</td>
 </tr>
-</table></form>
+</table>
+</form>
 <p>
 <?php
 }
@@ -155,10 +172,15 @@ Condition($in,$op,$st,$co);
 
 if( !strpos($fmt,'g') ){
 ?>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th width="80"><img src="img/16/clock.png"><br><?= $timlbl ?></th>
-<th><img src="img/16/bell.png"><br><?= $msglbl ?></th>
-</tr>
+<table class="content">
+	<tr class="bgsub">
+		<th class="s">
+			<img src="img/16/clock.png"><br><?= $timlbl ?>
+		</th>
+		<th>
+			<img src="img/16/bell.png"><br><?= $msglbl ?>
+		</th>
+	</tr>
 <?php
 }
 $istart	= $sta;
@@ -187,8 +209,9 @@ while($istart < $end){
 	}
 	if( !strpos($fmt,'g') ){
 		TblRow($bg);
-		echo "<th class=\"$bi\" nowrap>\n";
-		echo "<a href=\"${monev}in[]=time&op[]=%3E=&st[]=$fs&co[]=AND&in[]=time&op[]=%3C&st[]=$fe&elm=$listlim\">".date("j.M G:i",$istart)."</a></th><td>\n";
+		echo "\t\t<td class=\"$bi ctr nw\">\n";
+		echo "\t\t\t<a href=\"${monev}in[]=time&op[]=%3E=&st[]=$fs&co[]=AND&in[]=time&op[]=%3C&st[]=$fe&elm=$listlim\">".date("j.M G:i",$istart)."</a>\n\t\t</td>\n";
+		echo "\t\t<td>\n";
 	}
 	if($det){
 		# Postgres dictates that all columns must appear in the GROUP BY clause or be used in an aggregate function, so we "happily" givem that...%&/(ç(*"*&
@@ -204,27 +227,27 @@ while($istart < $end){
 					}elseif($m['icon']){
 						$gico = "<img src=\"img/dev/$m[icon].png\" width=\"$wid\" title=\"$srclbl $m[source]\">";
 					}else{
-						$gico = "<img src=\"img/16/say.png\" width=\"$wid\" title=\"$srclbl $m[source]\">";
+						$gico = "<img src=\"img/16/say.png\" width=\"$wid\" title=\"$srclbl $m[source]\">\n";
 					}
 				}elseif($det == 'level'){
 					$gico = "<img src=\"img/16/" . $mico[$m['level']] . ".png\" title=\"" . $mlvl[$m['level']] . "\">";
 				}else{
 					list($ei,$et) = EvClass($m['class']);
-					$gico = "<img src=\"img/16/$ei.png\" title=\"$et\">";
+					$gico = "<img src=\"$ei\" title=\"$et ($m[class])\">";
 				}
 				if( !strpos($fmt,'g') ){
-					echo "<a href=\"${monev}in[]=time&op[]=%3E=&st[]=$fs&co[]=AND&in[]=time&op[]=%3C&st[]=$fe&in[]=$det&op[]==&st[]=".urlencode($m[$det])."&co[]=AND&elm=$listlim\">";
-					if( strpos($fmt,'i') ) echo $gico;
-					echo Bar($m['cnt'],($det == 'level')?"lvl$m[level]":0,$fmt,$m['cnt'])."</a>\n";
+					echo "\t\t\t<a href=\"${monev}in[]=time&op[]=%3E=&st[]=$fs&co[]=AND&in[]=time&op[]=%3C&st[]=$fe&in[]=$det&op[]==&st[]=".urlencode($m[$det])."&co[]=AND&elm=$listlim\">\n";
+					if( strpos($fmt,'i') ) echo "\t\t\t\t$gico\n";
+					echo "\t\t\t\t".Bar($m['cnt'],($det == 'level')?"lvl$m[level]":0,$fmt,$m['cnt'])."\n\t\t\t</a>\n";
 				}
 				$dsico[$m[$det]] = $gico;
 				$dsval[$m[$det]][$row] = $m['cnt'];
 				$nmsg += $m['cnt'];
 			}
-			if($nmsg){
-				if( !strpos($fmt,'g') ) echo "&nbsp;$nmsg $totlbl";
+			if( !strpos($fmt,'g') ){
+				if($nmsg) echo "\t\t\t &nbsp; $nmsg $totlbl\n";
+				echo "\t\t</td>\n\t</tr>\n";
 			}
-			if( !strpos($fmt,'g') ) echo "</td></tr>\n";
 			DbFreeResult($res);
 		}else{
 			print DbError($link);
@@ -235,10 +258,10 @@ while($istart < $end){
 		if($res){
 			$m = DbFetchRow($res);
 			if($m[0]){
-				if( !strpos($fmt,'g') ) echo Bar($m[0],0,$fmt)." $m[0]";
+				if( !strpos($fmt,'g') ) echo "\t\t\t".Bar($m[0],0,$fmt)." $m[0]\n";
 			}
 			$dsval[$alllbl][$row] = $m[0];
-			if( !strpos($fmt,'g') ) echo " </td></tr>\n";
+			if( !strpos($fmt,'g') ) echo "\t\t</td>\n\t</tr>\n";
 			$tmsg += $m[0];
 			DbFreeResult($res);
 		}else{
@@ -250,10 +273,12 @@ while($istart < $end){
 	flush();
 }
 if( strpos($fmt,'g') ){
-	$ncol = count($chd['labels']);
+	$row = 0;
 	ksort($dsval);
-	echo "<div style=\"display: block;margin: 0 auto;width:800px;background-color:#ccc;padding:4px;border:1px solid black\">\n";
+	$ncol = count($chd['labels']);
+	echo "<div class=\"genpad txta bctr tqrt\">\n";
 	foreach ( array_keys($dsval) as $dsgrp ){
+		$row++;
 		$cds = array();
 		if($dsgrp == '50'){
 			$rgba = '140,240,140';
@@ -268,19 +293,21 @@ if( strpos($fmt,'g') ){
 		}elseif($dsgrp == '10'){
 			$rgba = '200,200,200';
 		}else{
-			$rgba = (ord($dsgrp)*2-20).','.(ord( substr($dsgrp,1) )*2-20).','.(ord( substr($dsgrp,-1) )*2-20);
+			$rgba = GetCol('dsc',$row,1,1);
 		}
 		for($d=0;$d < $ncol;$d++){
 			if( !array_key_exists($d,$dsval[$dsgrp]) ){
-				$dsval[$dsgrp][$d] = 0;			
+				$dsval[$dsgrp][$d] = 0;
 			}
 		}
-		echo "<span style=\"background-color:rgb($rgba);padding:5px\">\n";
+		echo "<span style=\"background-color:rgb($rgba);padding:3px;margin:2px\">\n";
 		echo "<a href=\"${monev}in[]=time&op[]=%3E=&st[]=$strsta&co[]=AND&in[]=time&op[]=%3C&st[]=$strend&in[]=$det&op[]==&st[]=".urlencode($dsgrp)."&co[]=AND&elm=$listlim\">";
 		echo "$dsico[$dsgrp]</a></span>\n";
 		ksort( $dsval[$dsgrp] );
-		$cds['fillColor'] = "rgba($rgba,0.5)";
-		$cds['strokeColor'] = "rgba($rgba,1)";
+		$cds['fillColor']     = "rgba($rgba,0.5)";
+		$cds['strokeColor']   = "rgba($rgba,1)";
+		$cds['highlightFill'] = "rgba($rgba,1)";
+		$cds['pointColor']    = "rgba($rgba,1)";
 		$cds['data'] = array_values( $dsval[$dsgrp] );
 		$chd['datasets'][] = $cds;
 	}
@@ -288,27 +315,22 @@ if( strpos($fmt,'g') ){
 </div>
 <p>
 <script src="inc/Chart.min.js"></script>
-<canvas id="evchart" style="display: block;margin: 0 auto;padding: 10px;border:1px solid black;background-color:#fff" width="960" height="400"></canvas>
+<canvas id="evchart" class="genpad bctr" width="960" height="400"></canvas>
 <script language="javascript">
 var data = <?= json_encode($chd,JSON_NUMERIC_CHECK) ?>
 
 var ctx = document.getElementById("evchart").getContext("2d");
-var myNewChart = new Chart(ctx).<?= ($fmt == 'cg')?'Bar':'Line' ?>(data);
+var myNewChart = new Chart(ctx).<?= ($fmt == 'cg')?'Bar':'Line' ?>(data,{scaleGridLineWidth : 1<?= $anim ?>});
 </script>
 
 <?php
 	if($debug){
-		echo "<div class=\"textpad code txta\">\n";
+		echo "<div class=\"textpad code pre txta\">\n";
 		print_r($chd);
 		echo "</div>\n";
 	}
 }else{
-?>
-</table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?>, <?= $tmsg ?> <?= $msglbl ?></td></tr>
-</table>
-<?php
+	TblFoot("bgsub", 2, "$row $vallbl, $tmsg $msglbl".(($ord)?", $srtlbl: $ord":"").(($lim)?", $limlbl: $lim":"") );
 }
 
 include_once ("inc/footer.php");

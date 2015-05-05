@@ -1,8 +1,8 @@
-<?php 
+<?php
 //===============================
 // Browse Device Icon
 //===============================
-session_start(); 
+session_start();
 require_once ('libmisc.php');
 require_once ("../languages/$_SESSION[lang]/gui.php");
 
@@ -11,18 +11,18 @@ if( !preg_match("/net/",$_SESSION['group']) ){
 	die;
 }
 $_GET = sanitize($_GET);
-if($_GET['t'] == 'p'){
+if( isset($_GET['t']) and $_GET['t'] == 'p'){
 	$dir = '../img/panel';
 	$flt = 'gen-';
 	$suf = '.jpg';
-	$txt = 'typ';
+	$ref = 'ty';
 	$sst = 4;
 	$sse = 3;
 }else{
 	$dir = '../img/dev';
 	$flt = '.png';
 	$suf = '.png';
-	$txt = 'ico';
+	$ref = 'ico';
 	$sst = 0;
 	$sse = 2;
 }
@@ -34,14 +34,15 @@ if($_GET['t'] == 'p'){
 	<link href="../themes/<?= $_SESSION['theme'] ?>.css" type="text/css" rel="stylesheet">
 	<script language="JavaScript">
 	function update(img){
-		opener.document.bld.<?= $txt ?>.value=img;
+		opener.document.bld.<?= $ref ?>.value=img;
 		self.close();
 	}
 	</script>
 </head>
 
 <body>
-	<a href="http://www.nedi.ch/expand" target="Window"><?= $imglbl ?> <?= $sumlbl ?></a>
+	<div class="genpad">
+	<?= $imglbl ?><a href="http://www.nedi.ch/expand" target="Window"> <?= $inflbl ?></a>
 <?php
 
 if ( $handle = opendir($dir) ){
@@ -57,15 +58,15 @@ if ( $handle = opendir($dir) ){
 			$n = str_replace($suf,"",$i);
 			$t = substr($i, $sst, $sse);
 			if ($t != $p){
-				echo "	<div class=\"code imga\">$t</div>";
+				echo "\t\t<p><div class=\"txta b\">$t</div>";
 			}
 			$p = $t;
-			echo "	<img src=$dir/$i title=\"$n\" hspace=\"4\" vspace=\"4\" onClick=\"update('$n');\">\n";
+			echo "\t\t<img src=$dir/$i title=\"$n\" onClick=\"update('$n');\">\n";
 
 	}
 }
 ?>
-
+	</div>
 </body>
 
 </html>

@@ -26,7 +26,7 @@ if( isset($_GET['col']) ){
 }elseif( isset($_SESSION['lnkcol']) ){
 	$col = $_SESSION['lnkcol'];
 }else{
-	$col = array('device','ifname','neighbor','nbrifname','linktype','linkdesc');
+	$col = array('device','ifname','neighbor','nbrifname','linktype','linkdesc','time');
 }
 
 $cols = array(	"id"=>"ID",
@@ -55,57 +55,51 @@ $link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);							# Above print-header!
 <?php  if( !isset($_GET['print']) and !isset($_GET['xls']) ) { ?>
 
 <form method="get" name="list" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
+<table class="content"><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
 
 <td>
 <?php Filters(); ?>
-
 </td>
-<th valign="top">
-
-<h3><?= $fltlbl ?></h3>
-<a href="?in[]=device&op[]=~&st[]=&co[]=%3D&in[]=neighbor"><img src="img/16/brld.png" title="Loops"></a>
-<a href="?in[]=time&op[]=<&st[]=<?= time()-2*$rrdstep ?>&ord=time+desc"><img src="img/16/date.png" title="<?= $stco['160'] ?> <?= $cnclbl ?>"></a>
-
-</th>
-<th>
-
-<select multiple name="col[]" size="6">
+<td class="ctr s">
+	<a href="?in[]=device&op[]=~&st[]=&co[]=%3D&in[]=neighbor"><img src="img/16/brld.png" title="Loops"></a>
+	<a href="?in[]=time&op[]=<&st[]=<?= strtotime("-1 day") ?>&ord=time+desc"><img src="img/16/date.png" title="<?= $stco['160'] ?> <?= $cnclbl ?>"></a>
+</td>
+<td class="ctr">
+	<select multiple name="col[]" size="6">
 <?php
 foreach ($cols as $k => $v){
-       echo "<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
+	echo "\t\t<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
 }
 ?>
-</select>
-
-</th>
-<th valign="top">
-
-<?= $optlbl ?><p>
-<div align="left">
-<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>"> 
-<input type="checkbox" name="map" <?= $map ?>><br>
-<img src="img/16/form.png" title="<?= $limlbl ?>"> 
-<select size="1" name="lim">
+	</select>
+</td>
+<td>
+	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>">
+	<input type="checkbox" name="map" <?= $map ?>><br>
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
+	<select size="1" name="lim">
 <?php selectbox("limit",$lim) ?>
-</div>
-
-</th>
-<th width="80">
-
-<input type="submit" class="button" value="<?= $sholbl ?>">
-</th>
-</tr></table></form><p>
+	</select>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $sholbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 <?php
 }
 if( count($in) ){
 	if ($map and !isset($_GET['xls']) and file_exists("map/map_$_SESSION[user].php")) {
-		echo "<center><h2>$netlbl Map</h2>\n";
-		echo "<img src=\"map/map_$_SESSION[user].php\" style=\"border:1px solid black\"></center><p>\n";
+		echo "<div class=\"ctr\">\n\t<h2>$netlbl Map</h2>\n";
+		echo "\t<img src=\"map/map_$_SESSION[user].php\" class=\"genpad\">\n</div>\n<p>\n\n";
 	}
 	Condition($in,$op,$st,$co);
-	TblHead("$modgroup[$self]2",1);
+	TblHead("bgsub",1);
 	$query	= GenQuery('links','s','links.*,type,firstdis,lastdis,location,contact,devgroup',$ord,$lim,$in,$op,$st,$co,'LEFT JOIN devices USING (device)');
 	$res	= DbQuery($query,$link);
 	if($res){
@@ -135,19 +129,14 @@ if( count($in) ){
 			if(in_array("linkdesc",$col))	TblCell($l[7]);
 			if(in_array("nbrduplex",$col))	TblCell($l[8],'','ctr');
 			if(in_array("nbrvlanid",$col))	TblCell($l[9],'','rgt');
-			if(in_array("time",$col))	TblCell( date($_SESSION['timf'],$l[10]),"?in[]=time&op[]==&st[]=$l[10]",'','',"background-color:#$tc" );
+			if(in_array("time",$col))	TblCell( date($_SESSION['timf'],$l[10]),"?in[]=time&op[]==&st[]=$l[10]",'nw','',"background-color:#$tc" );
 			echo "	</tr>\n";
 		}
 		DbFreeResult($res);
 	}else{
 		print DbError($link);
 	}
-	?>
-</table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> Links<?= ($ord)?", $srtlbl: $ord":"" ?><?= ($lim)?", $limlbl: $lim":"" ?></td></tr>
-</table>
-	<?php
+	TblFoot("bgsub", count($col), "$row Links".(($ord)?", $srtlbl: $ord":"").(($lim)?", $limlbl: $lim":"") );
 }
 include_once ("inc/footer.php");
 ?>

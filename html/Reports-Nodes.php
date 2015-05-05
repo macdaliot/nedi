@@ -1,6 +1,6 @@
 <?php
 # Program: Reports-Nodes.php
-# Programmer: Remo Rickli (and contributors) 
+# Programmer: Remo Rickli (and contributors)
 
 $printable = 1;
 
@@ -60,61 +60,60 @@ $cols = array(	"device"=>"Device $namlbl",
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" name="report" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td valign="top">
-
-<?php Filters(1); ?>
-
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
-<th>
-
-<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
-<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
-<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
-<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
-
-</th>
-<th>
-
-<select multiple name="rep[]" size="4">
-<option value="sum" <?php if(in_array("sum",$rep)){echo "selected";} ?> ><?= $sumlbl ?>
-<option value="dis" <?php if(in_array("dis",$rep)){echo "selected";} ?> >Node <?= $dislbl ?>
-<option value="dup" <?php if(in_array("dup",$rep)){echo "selected";} ?> ><?= $duplbl ?> Nodes
-<option value="nos" <?php if(in_array("nos",$rep)){echo "selected";} ?> >OS <?= $stslbl ?>
-<option value="nom" <?php if(in_array("nom",$rep)){echo "selected";} ?> ><?= $nomlbl ?>
-<option value="vem" <?php if(in_array("vem",$rep)){echo "selected";} ?> ><?= (($verb1)?"$emplbl Vlans":"Vlans $emplbl") ?>
-<option value="nhs" <?php if(in_array("nhs",$rep)){echo "selected";} ?> ><?= $dsclbl ?> <?= $hislbl ?>
-</select>
-
-</th>
-<th>
-
-<img src="img/16/form.png" title="<?= $limlbl ?>"> 
-<select size="1" name="lir">
+<td class="top">
+<?php Filters(1); ?>
+</td>
+<td class="ctr">
+	<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
+	<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
+	<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
+	<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
+</td>
+<td class="ctr">
+	<select multiple name="rep[]" size="4">
+		<option value="sum" <?php if(in_array("sum",$rep)){echo "selected";} ?> ><?= $sumlbl ?>
+		<option value="dis" <?php if(in_array("dis",$rep)){echo "selected";} ?> >Node <?= $dislbl ?>
+		<option value="dup" <?php if(in_array("dup",$rep)){echo "selected";} ?> ><?= $duplbl ?> Nodes
+		<option value="nad" <?php if(in_array("nad",$rep)){echo "selected";} ?> >Nodes <?= $adrlbl ?>
+		<option value="nos" <?php if(in_array("nos",$rep)){echo "selected";} ?> >OS <?= $stslbl ?>
+		<option value="nom" <?php if(in_array("nom",$rep)){echo "selected";} ?> ><?= $nomlbl ?>
+		<option value="vem" <?php if(in_array("vem",$rep)){echo "selected";} ?> ><?= (($verb1)?"$emplbl Vlans":"Vlans $emplbl") ?>
+		<option value="nhs" <?php if(in_array("nhs",$rep)){echo "selected";} ?> ><?= $dsclbl ?> <?= $hislbl ?>
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
+	<select size="1" name="lir">
 <?php selectbox("limit",$lim) ?>
-</select>
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>">
+	<input type="checkbox" name="map" <?= $map ?>><br>
+	<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>">
+	<input type="checkbox" name="ord" <?= $ord ?>><br>
+</td>
+<td class="ctr">
+	<input type="submit" class="button" name="gen" value="<?= $sholbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 
-</th>
-<th align="left">
-
-<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>"> 
-<input type="checkbox" name="map" <?= $map ?>><br>
-<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>"> 
-<input type="checkbox" name="ord" <?= $ord ?>><br>
-
-</th>
-<th width="80">
-	
-<input type="submit" class="button" name="gen" value="<?= $sholbl ?>"></th>
-
-</tr></table></form><p>
 <?php
 }
-if ($map and !isset($_GET['xls']) and file_exists("map/map_$_SESSION[user].php")) {
-	echo "<center><h2>$netlbl Map</h2>\n";
-	echo "<img src=\"map/map_$_SESSION[user].php\" style=\"border:1px solid black\"></center><p>\n";
+echo "<div class=\"ctr\">\n";
+if ($map and file_exists("map/map_$_SESSION[user].php")) {
+		echo "<h2>$netlbl Map</h2>\n";
+		echo "<img src=\"map/map_$_SESSION[user].php\" class=\"genpad\">\n";
 }
+echo "</div>\n<p>\n\n";
 
 if($rep){
 	Condition($in,$op,$st,$co);
@@ -125,6 +124,9 @@ if($rep){
 	}
 	if ( in_array("dup",$rep) ){
 		NodDup($in[0],$op[0],$st[0],$lim,$ord);
+	}
+	if ( in_array("nad",$rep) ){
+		NodIP($in[0],$op[0],$st[0],$lim,$ord);
 	}
 	if ( in_array("dis",$rep) ){
 		NodDist($in[0],$op[0],$st[0],$lim,$ord);

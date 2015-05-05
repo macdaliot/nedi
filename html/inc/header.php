@@ -3,9 +3,7 @@
 // NeDi Header
 //===============================
 
-$listlim = 200;
-
-error_reporting(E_ALL ^ E_NOTICE);
+$listlim = 250;
 
 ini_set("memory_limit","128M");										# Enterprise network support TODO move to modules an adapt?
 
@@ -24,8 +22,11 @@ if( isset($_SESSION['group']) ){
 	$nipl    = $_SESSION['nip'];									# Disables telnet:// and ssh:// links to allow browser add-ons
 	$now     = date($_SESSION['timf']);
 	$isadmin = (preg_match("/adm/",$_SESSION['group']) )?1:0;
+	$ismgr   = (preg_match("/mgr/",$_SESSION['group']) )?1:0;
 	$debug   = (isset($_GET['debug']) and $isadmin)?microtime(1):0;
 	$mobile  = ( preg_match('/Android|Mobile|Touch/',$_SERVER['HTTP_USER_AGENT']) )?1:0;
+	$anim    = ',animation: false';									# Turn off chart animations by default
+
 }else{
 	echo "<script>document.location.href='index.php?goto=".urlencode(preg_replace('/^.*\/(\w+-\w+\.php.*)/','$1',$_SERVER["REQUEST_URI"]))."';</script>\n";
 	exit;
@@ -54,12 +55,11 @@ if( isset($_GET['xls']) ){
 	.imga{background-color: #f0f0f0}
 	.imgb{background-color: #e6e6e6}
 
-	.adm1, .net1, .dsk1, .mon1, .mgr1, .oth1, .usr1{
-		background-color: #eee;
+	.bgmain{
+		background-color: #eeeeee;
 	}
-
-	.adm2, .net2, .dsk2, .mon2, .mgr2, .oth2, .usr2{
-		background-color: #ddd;
+	.bgsub{
+		background-color: #dddddd;
 	}
 	</style>
 </head>
@@ -70,6 +70,7 @@ if( isset($_GET['xls']) ){
 }elseif( isset($_GET['print']) ){
 	$nipl = 1;											# ...and on printouts
 	unset($refresh);
+	$anim = ',animation: false';									# Turn off chart animations
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
@@ -80,7 +81,7 @@ if( isset($_GET['xls']) ){
 </head>
 
 <body>
-<div id="header" class="<?= $modgroup[$self] ?>1">
+<div id="header">
 	<div style="float:right">
 		<img src="<?= (( file_exists("themes/custom.png") )?"themes/custom":"img/nedi") ?>.png" height="32">
 	</div>
@@ -137,7 +138,7 @@ if( isset($refresh) ){
 <?php } ?>
 </script>
 
-<table id="header"><tr class="<?= $modgroup[$self] ?>1">
+<table id="header"><tr class="bgtop">
 <?php 													# Tried with div instead table, but got too many inconcistencies with browsers and mobile mode
 if( isset($_SESSION['snap']) ){
 	echo "<td class=\"warn ctr s\">\n	<a href=\"System-Snapshot.php\"><img src=\"img/32/foto.png\" title=\"Snapshot $stco[100]: $_SESSION[snap]\"></a>\n</td>\n";
@@ -148,13 +149,13 @@ if( isset($_SESSION['snap']) ){
 if($mobile){
 	echo "<td>\n";
 	echo "<table class=\"full\">\n";
-	echo "	<tr>";
+	echo "	<tr>\n";
 	foreach( array_keys($mod) as $m){
 		if($mos[0] == $m){
-			echo "		<td class=\"$modgroup[$self]1 ctr\">$m</th>";
+			echo "		<td class=\"bgmain ctr\">$m</th>";
 		}else{
 			$s = current( array_keys($mod[$m]) );
-			echo "		<td class=\"$modgroup[$self]2 ctr\"><a href=\"$m-$s.php\">$m</a></td>";
+			echo "		<td class=\"bgsub ctr\"><a href=\"$m-$s.php\">$m</a></td>";
 		}
 	}
 	$col = 0;
@@ -165,15 +166,16 @@ if($mobile){
 	foreach($mod[$mos[0]] as $s => $i){
 		$col++;
 		if($mos[1] == $s){
-			echo "		<td class=\"$modgroup[$self]1 ctr\"><img src=\"img/16/$i.png\"></td>";
+			echo "		<td class=\"bgmain ctr\"><img src=\"img/16/$i.png\"></td>";
 		}else{
-			echo "		<td class=\"$modgroup[$self]2 ctr\"><a href=\"$mos[0]-$s.php\"><img src=\"img/16/$i.png\"></a></td>";
+			echo "		<td class=\"bgsub ctr\"><a href=\"$mos[0]-$s.php\"><img src=\"img/16/$i.png\"></a></td>";
 		}
 	}
 	echo "	</tr>\n";
-	echo "</table>";
+	echo "</table>\n";
 	echo "</td>\n";
 }else{
+	$anim = '';
 ?>
 <td id="nav">
 	<ul>
@@ -188,7 +190,7 @@ if($mobile){
 ?>
 	</ul>
 </td>
-<?PHP 
+<?PHP
 }
 
 if($_SESSION['opt']){
@@ -204,7 +206,7 @@ if($_SESSION['opt']){
 	foreach ($_SESSION['bread'] as $prv) {
 		$bc++;
 		if($bc == $_SESSION['lim']){
-			$bim = "";
+			$bim = '';
 		}else{
 			$boc = intval(10 * $bc / $_SESSION['lim']);
 			$bim = "style=\"opacity:0.$boc;filter:alpha(opacity=${boc}0);}\"";
@@ -223,7 +225,7 @@ if($_SESSION['opt']){
 	while(count($_SESSION['bread']) > $_SESSION['lim']){						# While to catch changed GUI settings
 		array_shift($_SESSION['bread']);
 	}
-	
+
 	if( strpos($_SESSION['group'],'oth') !== false){ ?>
 </td>
 <td class="ctr">
@@ -236,20 +238,20 @@ if($_SESSION['opt']){
 
 }
 ?>
-<td class="ctr">
+<td class="ctr m">
 	<img src="img/16/ring.png" title="Help" onclick="window.open('<?="languages/$_SESSION[lang]/$self.html" ?>','Help','width=640,height=480,scrollbars');">
-<?php  
+<?php
 if($printable) { ?>
 	<img src="img/dev/pgan.png" width="16" title="Print" onclick="window.open('?<?= $_SERVER['QUERY_STRING'] ?>&print=1','Print','width=1000,height=800,scrollbars');">
 <?php }
 if($exportxls) { ?>
-	<img src="img/16/list.png" title="<?= $explbl ?> XLS" onclick="document.location.href='?<?= $_SERVER['QUERY_STRING'] ?>&xls=1';">
+	<img src="img/16/sprd.png" title="<?= $explbl ?> XLS" onclick="document.location.href='?<?= $_SERVER['QUERY_STRING'] ?>&xls=1';">
 <?php }
 if($isadmin) { ?>
 	<a href="User-Profile.php?eam=<?= urlencode($_SERVER['REQUEST_URI']) ?>"><img src="img/16/note.png" title="Admin <?= $mlvl[100] ?> <?= $addlbl ?>"></a>
 <?php } ?>
 </td>
-<td class="ctr">
+<td class="ctr s">
 <?php
 if($isadmin and $_SESSION['user'] == 'admin'){
 	echo "	<img src=\"img/16/bug.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&debug=1';\"  title=\"Debug\">";
@@ -259,7 +261,8 @@ if($isadmin and $_SESSION['user'] == 'admin'){
 <?= $_SESSION['user'] ?>
 
 </td>
-</tr></table>
+</tr>
+</table>
 
 <?php
 
@@ -268,8 +271,12 @@ if($isadmin and $_SESSION['user'] == 'admin'){
 		die;
 	}
 
+	error_reporting(E_ALL ^ E_NOTICE);
 	if($debug){
-		echo "<div class=\"textpad code good\">Self:	$self\n";
+		ini_set('display_errors', 'On');
+		error_reporting(E_ALL & ~E_NOTICE);							# Getting rid of all notices just blows up and slows down too much!
+
+		echo "<div class=\"textpad code pre good half\">Self:	$self\n";
 		echo "Version:	$_SESSION[ver]\n";
 		echo "NeDipath:	$nedipath\n";
 		echo "DB:	$dbhost,$dbuser,$dbname\n";
@@ -277,7 +284,7 @@ if($isadmin and $_SESSION['user'] == 'admin'){
 		echo "Now:	$now (Format:$_SESSION[timf]-$_SESSION[datf] TZ:$_SESSION[tz])\n";
 		echo "</div>\n";
 
-		echo "<div class=\"textpad code alrm\">\n";
+		echo "<div class=\"textpad code pre alrm tqrt\">\n";
 		echo "SERVER: ";
 		print_r($_SERVER);
 		echo "\nSESSION: ";

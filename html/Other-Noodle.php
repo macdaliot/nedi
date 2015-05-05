@@ -12,24 +12,27 @@ $_GET = sanitize($_GET);
 $str = isset($_GET['str']) ? $_GET['str'] : "";
 $lim = isset($_GET['lim']) ? preg_replace('/\D+/','',$_GET['lim']) : $listlim;
 
+$nodip6 = ( $backend == 'mysql' )?'HEX(nodip6)':'nodip6';
 
-$tabs = array(	'devices'	=> array ('device','inet_ntoa(devip)','serial','type','description','devos','bootimage','location','contact','devgroup'),
-			'configs'	=> array ('device','config','changes'),
-			'interfaces'	=> array ('device','ifname','ifmac','ifdesc','comment'),
+$tabs = array(		'devices'	=> array ('device','inet_ntoa(devip)','serial','type','description','devos','bootimage','location','contact','devgroup'),
+			'configs'	=> array ('configs.device','config','changes'),
+			'interfaces'	=> array ('interfaces.device','ifname','ifmac','alias','ifdesc','comment'),
 			'incidents'	=> array ('name','comment'),
-			'links'		=> array ('device','ifname','neighbor','nbrifname','linktype'),
+			'links'		=> array ('links.device','ifname','neighbor','nbrifname','linktype'),
 			'locations'	=> array ('region','city','building','locdesc'),
-			'modules'	=> array ('device','model','moddesc','modules.serial','hw','fw','sw'),
-			'monitoring'	=> array ('name','depend','depend2','test','eventfwd','eventdel'),
+			'modules'	=> array ('modules.device','model','moddesc','modules.serial','hw','fw','sw'),
+			'monitoring'	=> array ('name','test','eventfwd','eventdel','depend1','depend2','monitoring.device'),
 			'networks'	=> array ('device','ifname','inet_ntoa(ifip)','vrfname'),
-			'stock'		=> array ('serial','type','user','location','comment','source'),
+			'inventory'	=> array ('serial','type','asset','location','source','ponumber','partner','comment','user'),
 			'stolen'	=> array ('name','mac','device','ifname','user'),
 			'vlans'		=> array ('device','vlanname'),
-			'nodes'		=> array ('name','mac','oui','inet_ntoa(nodip)','device','ifname','nodos'),
-			'nodetrack'	=> array ('device','ifname','value','user'),
-			'iftrack'	=> array ('mac','device','ifname'),
-			'iptrack'	=> array ('mac','inet_ntoa(nodip)','name','device'),
-			'stolen'	=> array ('name','mac','device','ifname','user'),
+			'nodes'		=> array ('mac','oui','nodes.device','ifname','noduser','nodesc'),
+			'nodarp'	=> array ('mac','inet_ntoa(nodip)','srvtype','srvos','arpdevice','arpifname'),
+			'nodnd'		=> array ('mac',$nodip6,'srv6type','srv6os','nddevice','ndifname'),
+			'dns'		=> array ('inet_ntoa(nodip)','aname'),
+			'nodetrack'	=> array ('nodetrack.device','ifname','value','user'),
+			'iftrack'	=> array ('mac','iftrack.device','ifname'),
+			'iptrack'	=> array ('mac','inet_ntoa(nodip)','name','iptrack.device'),
 			'events'	=> array ('source','info'),
 			'users'		=> array ('usrname','email','comment'),
 			'chat'		=> array ('user','message')
@@ -47,39 +50,46 @@ $ico = array(	'devices'	=> 'dev',
 		'monitoring'	=> 'bino',
 		'incidents'	=> 'bomb',
 		'nodes'		=> 'nods',
+		'nodarp'	=> 'card',
+		'nodnd'		=> 'ipv6',
+		'dns'		=> 'abc',
 		'nodetrack'	=> 'note',
-		'iftrack'	=> 'cinf',
-		'iptrack'	=> 'cinf',
+		'iftrack'	=> 'walk',
+		'iptrack'	=> 'glob',
 		'stolen'	=> 'hat',
 		'users'		=> 'ugrp',
 		'chat'		=> 'say',
 		'events'	=> 'bell',
 	);
 
-$jdv = array(	'devices'	=> 0,
-		'modules'	=> 1,
-		'interfaces'	=> 1,
-		'vlans'		=> 1,
-		'configs'	=> 1,
-		'networks'	=> 1,
-		'links'		=> 1,
-		'locations'	=> 0,
-		'stock'		=> 0,
-		'monitoring'	=> 1,
-		'incidents'	=> 1,
-		'nodes'		=> 1,
-		'nodetrack'	=> 1,
-		'iftrack'	=> 1,
-		'iptrack'	=> 1,
-		'stolen'	=> 1,
-		'users'		=> 0,
-		'chat'		=> 0,
-		'events'	=> 1,
+$jdv = array(	'devices'	=> '',
+		'modules'	=> 'device',
+		'interfaces'	=> 'device',
+		'vlans'		=> 'device',
+		'configs'	=> 'device',
+		'networks'	=> 'device',
+		'links'		=> 'device',
+		'locations'	=> '',
+		'stock'		=> '',
+		'monitoring'	=> 'device',
+		'incidents'	=> 'device',
+		'nodes'		=> 'device',
+		'nodarp'	=> 'arpdevice',
+		'nodnd'		=> 'nddevice',
+		'ipnames'	=> '',
+		'nodetrack'	=> 'device',
+		'iftrack'	=> 'device',
+		'iptrack'	=> 'device',
+		'stolen'	=> 'device',
+		'users'		=> '',
+		'chat'		=> '',
+		'events'	=> 'device'
 	);
 
 $lnk = array(	'device'	=> 'Devices-Status.php?dev=',
 		'source'	=> 'Monitoring-Events.php?in[]=source&op[]==&st[]=',
-		'depend'	=> 'Devices-Status.php?dev=',
+		'depend1'	=> 'Devices-Status.php?dev=',
+		'depend2'	=> 'Devices-Status.php?dev=',
 		'ifname'	=> 'Devices-Interfaces.php?in[]=ifname&op[]==&st[]=',
 		'mac'		=> 'Nodes-Status.php?mac=',
 		'neighbor'	=> 'Devices-Status.php?dev=',
@@ -94,55 +104,59 @@ $lnk = array(	'device'	=> 'Devices-Status.php?dev=',
 
 <?php  if( !isset($_GET['print']) ) { ?>
 <form method="get" name="find" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 
-</th>
-<th valign="top"><?= $sholbl ?><p>
+</td>
+<td class="ctr b">
+	<input type="search" name="str" value="<?= $str ?>" class="l">
 
-<input type="search" name="str" value="<?= $str ?>" class="l">
+</td>
+<td class="ctr b">
+	<?= $limlbl ?>
 
-</th>
-<th valign="top"><?= $limlbl ?><p>
-
-<select size="1" name="lim">
+	<select size="1" name="lim">
 <?php selectbox("limit",$lim) ?>
-</select>
+	</select>
 
-</th>
-<th width="80">
-
-<input type="submit" class="button" value="Find IT">
-
-</th>
-</tr></table></form>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="Find IT">
+</td>
+</tr>
+</table>
+</form>
 <p>
+
 <?php
 }
 
 if ($str){
-	echo "<h3>$fltlbl \"$str\"</h3>";
+	echo "<h3>$fltlbl \"$str\"</h3>\n";
 	$link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 
 	foreach ($tabs as $table => $cols){
 		if($debug){
-			echo "<div class=\"textpad noti\">";
+			echo "<div class=\"textpad noti\">\n";
 			print_r($cols);
-			echo "</div>";
+			echo "</div>\n";
 		}
 		$incol  = "CONCAT(".implode(",", $cols).")";
 		$outcol = implode(",", $cols);
-		$join   = ($jdv[$table])?'LEFT JOIN devices USING (device)':'';
+		$join   = ($jdv[$table])?"LEFT JOIN devices ON ($table.$jdv[$table] = devices.device)":'';
 		$query	= GenQuery($table,'s',$outcol,'','',array($incol),array('~'),array($str),array(),$join);
 		$res	= DbQuery($query,$link);
 
-		if(DbNumRows($res)){
-			echo "<h2><img src=img/16/$ico[$table].png> $table</h2><table class=\"content\"><tr class=\"$modgroup[$self]2\">";
+		if($res and DbNumRows($res)){
+			echo "\n<h2><img src=img/16/$ico[$table].png> $table</h2>\n\n";
+			echo "<table class=\"content\">\n\t<tr class=\"bgsub\">\n";
 			for ($i = 0; $i < DbNumFields($res); ++$i) {
 				$id = DbFieldName($res, $i);
-				echo  "<th>$id</th>\n";
+				echo  "\t\t<th>\n\t\t\t$id\n\t\t</th>\n";
 			}
-			echo  "</tr>\n";
+			echo  "\t</tr>\n";
 			$row = 0;
 			while($l = DbFetchArray($res)) {
 				if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
@@ -150,24 +164,19 @@ if ($str){
 				TblRow($bg);
 				foreach($l as $id => $field) {
 					if( strlen($field) > 255 ){
-						echo "<td>".substr(implode("\n",preg_grep("/$str/i",explode("\n",$field) ) ),0,100 ) . "...</td>";
+						echo "\n\t\t<td>\n\t\t\t".substr(implode("\n",preg_grep("/$str/i",explode("\n",$field) ) ),0,100 ) . "...\n\t\t</td>\n";
 					}else{
 						if( array_key_exists($id,$lnk) ){
-							echo "<td><a href=\"$lnk[$id]".urlencode($field)."\">$field</a></td>";
+							echo "\n\t\t<td>\n\t\t\t<a href=\"$lnk[$id]".urlencode($field)."\">$field</a>\n\t\t</td>\n";
 						}else{
-							echo "<td>$field</td>";
+							echo "\n\t\t<td>\n\t\t\t$field\n\t\t</td>\n";
 						}
 					}
 				}
-				echo  "</tr>\n";
+				echo  "\t</tr>\n";
 				if($row == $lim){break;}
 			}
-?>
-</table>
-<table class="content" >
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?></td></tr>
-</table><br>
-<?php
+			TblFoot("bgsub", count($cols), "$row $vallbl".(($lim)?", $limlbl: $lim":"") );
 		}
 	}
 }

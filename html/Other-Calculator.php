@@ -15,20 +15,28 @@ $getsub = isset($_GET['smsk']) ? $_GET['smsk'] : "";
 if( !isset($_GET['xls']) ) {
 ?>
 <h1>IP Calculator</h1>
+
 <form method="get" action="<?= $self ?>.php" name="calc">
-<table class="content" ><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-IP <?= $adrlbl ?> <input type="text" name="ip" value="<?= $getip ?>" class="m">
-/ <input type="text" name="nmsk" value="<?= $getmsk ?>" class="m">
-</th><th>
-Sub/Supernet <?= $msklbl ?> <input type="text" name="smsk" value="<?= $getsub ?>" class="m">
-</th>
-<th width="80">
-<input type="submit" class="button" value="<?= $sholbl ?>" name="calc">
-</th>
+<table class="content" ><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+<td class="ctr b">
+	<?= $netlbl ?>
+	<input type="text" name="ip" value="<?= $getip ?>" class="m">
+	/ <input type="text" name="nmsk" value="<?= $getmsk ?>" class="xs">
+</td>
+<td class="ctr b">
+	<?= $msklbl ?>
+	<input type="text" name="smsk" value="<?= $getsub ?>" class="m">
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $sholbl ?>" name="calc">
+</td>
 </tr>
-</table></form>
+</table>
+</form>
+<p>
+
 <?php
 }
 
@@ -74,16 +82,140 @@ $nho	= $dbc - $dnet - 1;
 
 if( !isset($_GET['xls']) ) {
 ?>
-<h2>Base Info</h2>
+
+<h2><?= $manlbl ?> <?= $inflbl ?></h2>
+
 <table class="content" >
-<tr class="<?= $modgroup[$self] ?>1"><th width="80">&nbsp;</th><th width="30%">Dotted Decimal</th><th>Binary</th><th>Hexadecimal</th></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>2"><?= $adrlbl ?></th><td class="blu code"><?= $ip ?> (<?= sprintf("%u", ip2long($ip)) ?>)</td><td class="blu code"><?= $bip ?></td><td class="blu code"><?= $hip ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>2"><?= $msklbl ?></th><td class="grn code"><?= $mask ?> = <?= $pfix ?> (<?= $dmsk ?>)</td><td class="grn code"><?= $bmsk ?></td><td class="grn code"><?= $hmsk ?></td></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>2">Wildcard</th><td class="grn code"><?= $wmsk ?></td><td class="grn code"><?= $bwmsk ?></td><td class="grn code"><?= $hwmsk ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>2"><?= $netlbl ?></th><td class="prp code"><?= $net ?></td><td class="prp code"><?= $bnet ?></td><td class="prp code"><?= $hnet ?></td></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>2">Broadcast</th><td class="prp code"><?= $bc ?></td><td class="prp code"><?= $bbc ?></td><td class="prp code"><?= $hbc ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>2">1. Host</th><td class="drd code"><?= $fho ?></td><td class="drd code"><?= $bfho ?></td><td class="drd code"><?= $hfho ?></td></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>2">n. Host</th><td class="drd code"><?= $lho ?> (<?= $nho ?> total)</td><td class="drd code"><?= $blho ?></td><td class="drd code"><?= $hlho ?></td></tr>
+	<tr class="bgmain">
+		<th class="s">
+			&nbsp;
+		</th>
+		<th>
+			Dotted Decimal
+		</th>
+		<th>
+			Binary
+		</th>
+		<th>
+			Hexadecimal
+		</th>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			<?= $adrlbl ?>
+
+		</td>
+		<td class="blu code">
+			<?= $ip ?> (<?= sprintf("%u", ip2long($ip)) ?>)
+		</td>
+		<td class="blu code">
+			<?= $bip ?>
+
+		</td>
+		<td class="blu code">
+			<?= $hip ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			<?= $msklbl ?>
+
+		</td>
+		<td class="grn code">
+			<?= $mask ?> = <?= $pfix ?> (<?= $dmsk ?>)
+		</td>
+		<td class="grn code">
+			<?= $bmsk ?>
+		</td>
+		<td class="grn code">
+			<?= $hmsk ?>
+		</td>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			Wildcard
+		</td>
+		<td class="grn code">
+			<?= $wmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $bwmsk ?>
+
+		</td><td class="grn code">
+			<?= $hwmsk ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			<?= $netlbl ?>
+
+		</td>
+		<td class="prp code">
+			<?= $net ?>
+
+		</td>
+		<td class="prp code">
+			<?= $bnet ?>
+
+		</td><td class="prp code">
+			<?= $hnet ?>
+
+		</td>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			Broadcast
+		</td>
+		<td class="prp code">
+			<?= $bc ?>
+
+		</td>
+		<td class="prp code">
+			<?= $bbc ?>
+
+		</td><td class="prp code">
+			<?= $hbc ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			<?= (($verb1)?"$fislbl $nodlbl":"$nodlbl $fislbl") ?>
+
+		</td>
+		<td class="drd code">
+			<?= $fho ?>
+
+		</td>
+		<td class="drd code">
+			<?= $bfho ?>
+
+		</td>
+		<td class="drd code">
+			<?= $hfho ?>
+
+		</td>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			<?= (($verb1)?"$laslbl $nodlbl":"$nodlbl $laslbl") ?>
+
+		</td>
+		<td class="drd code">
+			<?= $lho ?> (<?= $nho ?> total)
+		</td>
+		<td class="drd code">
+			<?= $blho ?>
+
+		</td>
+		<td class="drd code">
+			<?= $hlho ?>
+
+		</td>
+	</tr>
 </table>
 <?php
 }
@@ -103,13 +235,61 @@ if ($getsub){
 		if( !isset($_GET['xls']) ) {
 ?>
 <h2>Subnet <?= $sumlbl ?></h2>
+
 <table class="content">
-<tr class="<?= $modgroup[$self] ?>1"><th width="80">&nbsp;</th><th width="30%">Dotted Decimal</th><th>Binary</th><th>Hexadecimal</th></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>1">Mask</th><td class="grn code"><?= $smask ?> = <?= $spfix ?></td><td class="grn code"><?= $bsmsk ?></td><td class="grn code"><?= $hsmsk ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>1">Wildcard</th><td class="grn code"><?= $wsmsk ?></td><td class="grn code"><?= $bwsmsk ?></td><td class="grn code"><?= $hwsmsk ?></td></tr>
+	<tr class="bgmain">
+		<th class="s">
+			&nbsp;
+		</th>
+		<th>
+			Dotted Decimal
+		</th>
+		<th>
+			Binary
+		</th>
+		<th>
+			Hexadecimal
+		</th>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			 <?= $msklbl ?>
+
+		</td>
+		<td class="grn code">
+			<?= $smask ?> = <?= $spfix ?>
+
+		</td>
+		<td class="grn code">
+			<?= $bsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $hsmsk ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			Wildcard
+		</td>
+		<td class="grn code">
+			<?= $wsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $bwsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $hwsmsk ?>
+
+		</td>
+	</tr>
 </table>
 <p>
-<h2>Subnets</h2>
+
+<h2>Subnet <?= $inflbl ?></h2>
 
 <?php
 		}
@@ -121,7 +301,7 @@ if ($getsub){
 				"tot"=>"$totlbl Hosts"
 				);
 
-		TblHead("$modgroup[$self]2",3);
+		TblHead("bgsub",3);
 
 		$nsnets = pow(2, ($spfix-$pfix) );
 		$snoff  = pow(2, (32 - $spfix) );
@@ -138,13 +318,13 @@ if ($getsub){
 			$nsho	+= $snoff - 2;
 
 			TblRow($bg);
-			TblCell($s,'',"$bi s b","+<img src=\"img/$ntimg\" title=\"$ntit\">");
+			TblCell($s,'',"$bi xs b","+<img src=\"img/$ntimg\" title=\"$ntit\">");
 			TblCell("$snet/$spfix",'','prp code');
 			TblCell("$fsho",'','drd code');
 			TblCell("$lsho",'','drd code');
 			TblCell("$sbc",'','prp code');
 			TblCell("$nsho",'','blu code');
-			echo "	</tr>\n";
+			echo "\t</tr>\n";
 		}
 	}elseif($pfix > $spfix){
 		$snet	= long2ip($dip & $dsmsk);
@@ -159,16 +339,97 @@ if ($getsub){
 
 ?>
 <h2>Supernet</h2>
+
 <table class="content" >
-<tr class="<?= $modgroup[$self] ?>1"><th width="80">&nbsp;</th><th width="30%">Dotted Decimal</th><th>Binary</th><th>Hexadecimal</th></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>1">Mask</th><td class="grn code"><?= $smask ?> = <?= $spfix ?></td><td class="grn code"><?= $bsmsk ?></td><td class="grn code"><?= $hsmsk ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>1">Wildcard</th><td class="grn code"><?= $wsmsk ?></td><td class="grn code"><?= $bwsmsk ?></td><td class="grn code"><?= $hwsmsk ?></td></tr>
-<tr class="txta"><th class="<?= $modgroup[$self] ?>1">Network</th><td class="prp code"><?= $snet ?></td><td class="prp code"><?= $bsnet ?></td><td class="prp code"><?= $hsnet ?></td></tr>
-<tr class="txtb"><th class="<?= $modgroup[$self] ?>1">Broadcast</th><td class="prp code"><?= $sbc ?></td><td class="prp code"><?= $bsbc ?></td><td class="prp code"><?= $hsbc ?></td></tr>
+	<tr class="bgmain">
+		<th class="s">
+			&nbsp;
+		</th>
+		<th>
+			Dotted Decimal
+		</th>
+		<th>
+			Binary
+		</th>
+		<th>
+			Hexadecimal
+		</th>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			<?= $msklbl ?>
+
+		</td>
+		<td class="grn code">
+			<?= $smask ?> = <?= $spfix ?>
+
+		</td>
+		<td class="grn code">
+			<?= $bsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $hsmsk ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			Wildcard
+		</td>
+		<td class="grn code">
+			<?= $wsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $bwsmsk ?>
+
+		</td>
+		<td class="grn code">
+			<?= $hwsmsk ?>
+
+		</td>
+	</tr>
+	<tr class="txta">
+		<td class="imga b">
+			<?= $netlbl ?>
+
+		</td>
+		<td class="prp code">
+			<?= $snet ?>
+
+		</td>
+		<td class="prp code">
+			<?= $bsnet ?>
+
+		</td>
+		<td class="prp code">
+			<?= $hsnet ?>
+
+		</td>
+	</tr>
+	<tr class="txtb">
+		<td class="imgb b">
+			Broadcast
+		</td>
+		<td class="prp code">
+			<?= $sbc ?>
+
+		</td>
+		<td class="prp code">
+			<?= $bsbc ?>
+
+		</td>
+		<td class="prp code">
+			<?= $hsbc ?>
+
+		</td>
+	</tr>
 </table>
 <?php
 	}
 	echo "</table>\n";
 }
+
 include_once ("inc/footer.php");
 ?>

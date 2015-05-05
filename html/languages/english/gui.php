@@ -16,6 +16,7 @@ $alrlbl		= "Already";
 $agelbl		= "Age";
 $altlbl		= "Alternative";
 $arclbl		= "Arc";
+$asnlbl		= "Assetnumber";
 $avalbl		= "Availability";
 $avglbl		= "Average";
 $buplbl		= "Backup";
@@ -32,8 +33,10 @@ $cndlbl		= "Condition";
 $collbl		= "Columns";
 $conlbl		= "Contact";
 $coplbl		= "Copy";
+$corlbl		= "Core";
 $coslbl		= "Cost";
 $cuslbl		= "Custom";
+$datlbl		= "Date";
 $dcalbl		= "Discard";
 $dellbl		= "Delete";
 $deplbl		= "Dependencies";
@@ -63,13 +66,14 @@ $grdlbl		= "Degrees";
 $grplbl		= "Group";
 $hislbl		= "History";
 $icelbl		= "Invoice";
+$idxlbl		= "Index";
 $imglbl		= "Image";
 $implbl		= "Import";
 $inblbl		= "Inbound";
 $inclbl		= "Incident";
-$invlbl		= "Inventory";
-$idxlbl		= "Index";
 $inflbl		= "Information";
+$intlbl		= "Interface";
+$invlbl		= "Inventory";
 $isolbl		= "Isolated";
 $laslbl		= "Last";
 $latlbl		= "Latency";
@@ -100,12 +104,13 @@ $newlbl		= "New";
 $nodlbl		= "Node";
 $notlbl		= "Not";
 $nomlbl		= "Nomads";
-$nonlbl		= "None";
+$nonlbl		= "No";
 $numlbl		= "Number";
 $opolbl		= "Options";
 $optlbl		= "Optimize";
 $orilbl		= "Original";
 $oublbl		= "Outbound";
+$outlbl		= "Outdated";
 $paslbl		= "Password";
 $pktlbl		= "Packet";
 $poplbl		= "Population";
@@ -165,11 +170,16 @@ $wrtlbl		= "Write";
 $wtylbl		= "Warranty";
 
 // Statements
-$cfmmsg         = "are you sure?";
-$delmsg		= "will be deleted";
+$cfmmsg		= "are you sure?";
+$delmsg		= "will be replaced";
 $lopmsg		= "already exists in path (Could be a routing loop)!\n";
 $nokmsg		= "<h4>You're not authorized for this!</h4>\n";
 $toumsg		= "<h4>Timeout exceeded or no result!</h4>\n";
+
+// Maintenance States
+$mast['0']  	= "-";
+$mast['10']	= "Renew";
+$mast['20']	= "No renew";
 
 // Time
 $tim['b']	= "Before";
@@ -207,13 +217,16 @@ $mlvl['150']	= "Warning";
 $mlvl['200']	= "Alert";
 $mlvl['250']	= "Emergency";
 
-// Stock Condition Levels
-$stco['10']  	= "New";
-$stco['100'] 	= "Active";
-$stco['150'] 	= "Used";
-$stco['160'] 	= "Obsolete";
-$stco['200'] 	= "Broken";
-$stco['250'] 	= "Unknown";
+// Condition Levels
+$stco['0']	= "-";
+$stco['10']	= "New";
+$stco['100']	= "Active";
+$stco['150']	= "Used";
+$stco['160']	= "Replaced";
+$stco['170']	= "Disposed";
+$stco['180']	= "Traded-in";
+$stco['200']	= "Broken";
+$stco['250']	= "Unknown";
 
 // Incident Groups
 $igrp['1']	= "New";
