@@ -84,17 +84,17 @@ if($start and $isadmin){
 	$query	= GenQuery('system','u',"name = 'nodlock'",'','',array('value'),array(),array('0') );
 	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$reslbl nodlock OK</h5>";}
 
-	if( $pid = GetPID('nedi.pl') ){
+	if( $pid = GetPID("$nedipath/nedi.pl") ){
 		posix_kill ($pid, 9);
 		$err = posix_get_last_error();
 		if( $err ){
-			echo "<h4>$dellbl NeDi: ".posix_strerror($err)."</h4>";
+			echo "<h4>$dellbl NeDi: ".posix_strerror($err)."</h4>\n";
 		}else{
-			echo "<h5>NeDi $dellbl OK</h5>";
+			echo "<h5>NeDi $dellbl OK</h5>\n";
 		}
 		$procs = shell_exec($pscmd);					# Refresh PIDs after kill
 	}else{
-		echo "<h4>NeDi not running</h4>";
+		echo "<h4>NeDi not running</h4>\n";
 	}
 }
 
@@ -109,39 +109,46 @@ ob_end_flush();
 ?>
 <form name="form" action="<?= $self ?>.php" method="post">
 <table class="content">
-<tr class="<?= $modgroup[$self] ?>1">
-<th width="50" class="<?= $modgroup[$self] ?>1"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
 <?php  foreach (array_keys($mysrv) as $p ) { ?>
-<th><img src="img/32/<?= $mysrv[$p]['ico'] ?>.png" title="<?= $p ?>"><p>
-<a href="<?= ( GetPID($mysrv[$p]['cmd']) )?"?stop=$p\"><img src=\"img/32/walk.png\" title=\"$endlbl\">":"?start=$p\"><img src=\"img/32/bcls.png\" title=\"$cmdlbl\">" ?></a>
-</th>
+<td class="ctr">
+	<img src="img/32/<?= $mysrv[$p]['ico'] ?>.png" title="<?= $p ?>">
+	<p>
+	<a href="<?= ( GetPID($mysrv[$p]['cmd']) )?"?stop=$p\"><img src=\"img/32/walk.png\" title=\"$endlbl\">":"?start=$p\"><img src=\"img/32/bcls.png\" title=\"$cmdlbl\">" ?></a>
+</td>
 <?php } ?>
-
-<th><img src="img/32/radr.png" title="NeDi"><p>
-<?= $sys['threads']?"<img src=\"img/32/walk.png\" ":"<img src=\"img/32/bcls.png\" " ?> title="<?= $sys['threads'] ?> threads, 1st:<?= (date($_SESSION['timf'],$sys['first'])) ?>">
+<td>
+	<img src="img/32/radr.png" title="NeDi">
+	<p>
+<?= $sys['threads']?"\t<img src=\"img/32/walk.png\" ":"\t<img src=\"img/32/bcls.png\" " ?> title="<?= $sys['threads'] ?> threads, 1st:<?= (date($_SESSION['timf'],$sys['first'])) ?>">
 <?php
 if ($sys['nodlock']){
-	echo "<img src=\"img/32/lokc.png\" title=\"Nodes locked by PID $sys[nodlock]\">";
+	echo "\t<img src=\"img/32/lokc.png\" title=\"Nodes locked by PID $sys[nodlock]\">";
 }else{
-	echo "<img src=\"img/32/loko.png\" title=\"Nodes unlocked\">";
+	echo "\t<img src=\"img/32/loko.png\" title=\"Nodes unlocked\">";
 }
 if ($sys['threads'] and $isadmin){
 ?>
-<a href="?clear=1"><img src="img/16/bcnl.png" align="right" onclick="return confirm('<?= $reslbl ?>, <?= $cfmmsg ?>?')" title="<?= $reslbl ?>!"></a>
+	<a href="?clear=1"><img src="img/16/bcnl.png" align="right" onclick="return confirm('<?= $reslbl ?>, <?= $cfmmsg ?>?')" title="<?= $reslbl ?>!"></a>
 <?php } ?>
-</th>
+</td>
 </tr>
-</table></td></tr></table>
+</table>
+<p>
 
 <h2>Processes</h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?= $procs ?>
-</div>
-<br><p>
+</div><br>
+<p>
 
 <h2><?= $lodlbl ?></h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?php
 	if(PHP_OS == "OpenBSD"){
 		system("/usr/bin/top -n -1");
@@ -151,11 +158,12 @@ if ($sys['threads'] and $isadmin){
 		system("tasklist");
 	}
 ?>
-</div>
-<br><p>
+</div><br>
+<p>
 
 <h2>Disks</h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?php
 	if(preg_match("/OpenBSD|Linux/",PHP_OS) ){
 		system("df -h");
@@ -163,11 +171,12 @@ if ($sys['threads'] and $isadmin){
 		system("dir|find \"bytes free\"");
 	}
 ?>
-</div>
-<br><p>
+</div><br>
+<p>
 
 <h2><?= $netlbl ?></h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?php
 	if(PHP_OS == "OpenBSD"){
 		system("/usr/bin/systat -b netstat");
@@ -177,11 +186,12 @@ if ($sys['threads'] and $isadmin){
 		system("netstat -an");
 	}
 ?>
-</div>
-<br><p>
+</div><br>
+<p>
 
 <h2>Sensors</h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?php
 	if(PHP_OS == "OpenBSD"){
 		system("/usr/bin/systat -b sensors");
@@ -189,14 +199,17 @@ if ($sys['threads'] and $isadmin){
 		system("/usr/bin/sensors");
 	}
 ?>
-</div>
-<br><p>
+</div><br>
+<p>
 
 <h2>SMS <?= $oublbl ?></h2>
-<div class="textpad code txta">
+
+<div class="textpad code pre txta tqrt">
 <?php
-	if(PHP_OS == "OpenBSD"){
-		system("cat /var/spool/sms/outgoing/*");
+	if( file_exists( '/var/spool/sms/outgoing/') ){
+		if(PHP_OS == "OpenBSD"){
+			system("cat /var/spool/sms/outgoing/*");
+		}
 	}
 ?>
 </div>

@@ -27,7 +27,7 @@ tr{
 
 /* Headings */
 h1   {
-	color: #fbf1d2; 
+	color: #fbf1d2;
 	font-size: 15px;
 	font-weight: bold;
 	text-align: center;
@@ -99,6 +99,7 @@ input.button{
 	font-weight: bold;
 	padding: 7px;
 	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
+	margin : 4px;
 }
 input.button:hover {
 	border: 1px solid #642;
@@ -144,13 +145,12 @@ img.panel{
 :link:hover, :visited:hover {color: #C3883D;}
 :link:active, :visited:active {color: #CF9348}
 
-/* Header table & Footer div*/
+/* Header table */
 #header{
 	padding: 2px;
 	width: 100%;
 	border-spacing: 0px;
 	border: 2px solid #AE8D65;
-	border: 2px solid #76521F;
 	background: linear-gradient(#dcc794, #ae8b39);
 	border-radius: 1em;
 	-webkit-border-radius: 1em;
@@ -158,7 +158,7 @@ img.panel{
 
 /* Topmenu inspired by line25.com */
 #nav {
-	width: 540px;
+	min-width: 50em;
 	font-style:italic
 }
 
@@ -201,24 +201,24 @@ img.panel{
 #nav ul li a {
 	display: block; padding: 5px 10px;
 	color: #200;
-}		
-		
+}
+
 #nav ul ul {
 	background: #B09455; padding: 0;
 	position: absolute; top: 100%;
 }
 #nav ul ul li {
-	float: none; 
+	float: none;
 	white-space: nowrap;
 }
 #nav ul ul li a {
 	padding: 5px 10px;
 	color: #fff;
-}	
+}
 #nav ul ul li a:hover {
 	background: #deca9a;
 }
-	
+
 #nav ul ul ul {
 	position: absolute; left: 100%; top:0;
 }
@@ -247,12 +247,6 @@ table.content{
 	-webkit-border-radius: 8px;
 }
 
-td.content{
-	text-align: left;
-	border-radius: 8px;
-	-webkit-border-radius: 8px;
-}
-
 td.helper{
 	padding: 10px 10px;
 	vertical-align: top;
@@ -266,12 +260,28 @@ table.fixed{
 	table-layout:fixed;
 }
 
+.qrt{
+	width: 25%;
+}
+
+.half{
+	width: 50%;
+}
+
+.tqrt{
+	width: 75%;
+}
+
 .full{
 	width: 100%;
 }
 
-.s{
+.xs{
 	width: 60px;
+}
+
+.s{
+	width: 100px;
 }
 
 .m{
@@ -284,6 +294,10 @@ table.fixed{
 
 .xl{
 	width: 500px;
+}
+
+.xxl{
+	width: 700px;
 }
 
 .lft{
@@ -314,6 +328,18 @@ table.fixed{
 	white-space: nowrap;
 }
 
+.bctr{
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+.flft{
+	float: left;
+}
+.frgt{
+	float: right;
+}
+
 .genpad{
 	background-color: #fff;
 	border:1px solid #AE8D65;
@@ -323,7 +349,6 @@ table.fixed{
 
 .textpad{
 	margin: 10px auto;
-	width: 70%;
 	padding: 9px;
 	border-spacing: 4px;
 	border: 3px dotted #D99550;
@@ -333,13 +358,16 @@ table.fixed{
 	-webkit-box-shadow: 10px 10px 10px rgba(0,0,0,0.1);
 }
 
-/* Font Properties */
+/* Preformatted */
 .code{
 	overflow: auto;
 	text-align: left;
 	padding: 12px;
 	font-family: monospace;
 	font: 11px Courier New, monospace;
+}
+
+.pre{
 	white-space: pre;
 }
 
@@ -371,8 +399,8 @@ table.fixed{
 .txtb{background-color: #d0c8c8}
 
 /* Image Fields */
-.imga{background-color: #fff0f0}
-.imgb{background-color: #eee6e6}
+.imga{background-color: #faf8f8}
+.imgb{background-color: #eae8e8}
 .imgw{background-color: #fff}
 
 /* Status Fields */
@@ -398,14 +426,13 @@ table.fixed{
 }
 .part{background-image:url('../img/dia.png')}
 
-/* Default Group Based Module Colors */
-
-.adm1, .net1, .dsk1, .mon1, .mgr1, .oth1, .usr1{
+/* Content Colors */
+.bgtop, .bgmain{
 	background: -webkit-linear-gradient(#dcc794, #ae8b39);
 	background: linear-gradient(#dcc794, #ae8b39);
 	background-color: #ae8b39
 }
-.adm2, .net2, .dsk2, .mon2, .mgr2, .oth2, .usr2{
+.bgsub{
 	background: -webkit-linear-gradient(#deca9a, #cdae67);
 	background: linear-gradient(#deca9a, #cdae67);
 	background-color: #cdae67

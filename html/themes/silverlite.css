@@ -8,19 +8,17 @@ body {
 td{
 	padding: 4px;
 	color: #444444;
-	border-radius: 4px;
 }
 
 th{
 	padding: 4px;
 	font-weight: bold;
 	color: #444444;
-	border-radius: 4px;
 }
 
 /* Headings */
 h1   {
-	color: #cccccc; 
+	color: #cccccc;
 	font-size: 18px;
 	font-weight: bold;
 	text-align: center;
@@ -82,6 +80,12 @@ h5   {
 /* Input Fields */
 input, select, textarea {
 	color: #000022;
+	box-shadow: inset 0px 3px 3px #dddddd;
+	border-radius: 7px;
+}
+input.button{
+	padding: 4px;
+	margin : 2px;
 	border-radius: 5px;
 }
 
@@ -131,14 +135,12 @@ img.panel{
 	width: 100%;
 	border-spacing: 0px;
 	border: 1px solid #888888;
-	background: -webkit-linear-gradient(#cccccc 25%, #a0a0a0 75%);
-	background: linear-gradient( #cccccc 25%, #a0a0a0 75%);
 	text-shadow: 0 1px 1px rgba(255, 255, 255, .9);
 }
 
 /* Topmenu inspired by line25.com */
 #nav {
-	width: 520px;
+	min-width: 40em;
 }
 
 #nav ul ul {
@@ -173,8 +175,8 @@ img.panel{
 #nav ul li a {
 	display: block; padding: 5px 10px;
 	color: #444;
-}		
-		
+}
+
 #nav ul ul {
 	background: #bbb; padding: 0;
 	position: absolute; top: 100%;
@@ -189,11 +191,11 @@ img.panel{
 }
 #nav ul ul li a {
 	padding: 5px 10px;
-}	
+}
 #nav ul ul li a:hover {
 	background: #6183AD;
 }
-	
+
 #nav ul ul ul {
 	position: absolute; left: 100%; top:0;
 }
@@ -218,7 +220,6 @@ table.content{
 	width: 100%;
 	border-spacing: 1px;
 	background-color: #888888;
-	border-radius: 4px;
 }
 
 td.helper{
@@ -234,16 +235,32 @@ table.fixed{
 	table-layout:fixed;
 }
 
+.qrt{
+	width: 25%;
+}
+
+.half{
+	width: 50%;
+}
+
+.tqrt{
+	width: 75%;
+}
+
 .full{
 	width: 100%;
 }
 
-.s{
+.xs{
 	width: 40px;
 }
 
+.s{
+	width: 80px;
+}
+
 .m{
-	width: 100px;
+	width: 120px;
 }
 
 .l{
@@ -252,6 +269,10 @@ table.fixed{
 
 .xl{
 	width: 300px;
+}
+
+.xxl{
+	width: 600px;
 }
 
 .lft{
@@ -282,6 +303,18 @@ table.fixed{
 	white-space: nowrap;
 }
 
+.bctr{
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+.flft{
+	float: left;
+}
+.frgt{
+	float: right;
+}
+
 .genpad{
 	background-color: #fff;
 	border: 1px solid #333;
@@ -291,20 +324,22 @@ table.fixed{
 
 .textpad{
 	margin: 10px auto;
-	width: 75%;
 	padding: 10px;
 	border-spacing: 1px;
 	border: 2px solid #666666;
 	border-radius: 6px;
 }
 
-/* Fixed Width Font */
+/* Preformatted */
 .code{
 	overflow: auto;
 	text-align: left;
 	padding: 10px;
 	font-family: monospace;
 	font: 11px Courier New, monospace;
+}
+
+.pre{
 	white-space: pre;
 }
 
@@ -365,14 +400,18 @@ table.fixed{
 	background-image:url('../img/dia.png');
 }
 
-/* Module Colors */
-.adm1, .net1, .dsk1, .mon1, .mgr1, .oth1, .usr1{
+/* Content Colors */
+.bgtop{
+	background-color: #bbbbbb;
+	background: -webkit-linear-gradient(#cccccc 25%, #a0a0a0 75%);
+	background: linear-gradient( #cccccc 25%, #a0a0a0 75%);
+}
+.bgmain{
 	background-color: #aaaaaa;
 	background: -webkit-linear-gradient(#cccccc 25%, #a0a0a0 75%);
 	background: linear-gradient( #cccccc 25%, #a0a0a0 75%);
 }
-
-.adm2, .net2, .dsk2, .mon2, .mgr2, .oth2, .usr2{
+.bgsub{
 	background-color: #bbbbbb;
 	background: -webkit-linear-gradient(#dddddd 25%, #b0b0b0 75%);
 	background: linear-gradient( #dddddd 25%, #b0b0b0 75%);
@@ -390,5 +429,4 @@ table.fixed{
 	text-align: right;
 	font-style: italic;
 	text-shadow: 0 1px 1px rgba(255, 255, 255, .9);
-	border-radius: 6px;
 }

@@ -48,6 +48,7 @@ use vars qw(%opt $p $now $days $from);
 $days = 7;
 
 getopts('dvU:',\%opt) || &HELP_MESSAGE;
+if(!defined $opt{'d'}){$opt{'d'} = ''}									# Avoid warnings if unused
 
 $now = time;
 $from = $now - 86400 * $days;

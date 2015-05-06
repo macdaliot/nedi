@@ -51,66 +51,72 @@ $cols = array(	"device"=>"Device",
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" name="report" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td valign="top">
-
-<?php Filters(1); ?>
-
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
-<th>
+<td class="top">
+<?php Filters(1); ?>
+</td>
+<td class="ctr">
+	<a href="?in[]=iftype&op[]=~&st[]=^(6|7|117)$"><img src="img/p45.png" title=" Ethernet IF"></a>
+	<a href="?in[]=linktype&op[]==&st[]="><img src="img/16/nods.png" title=" <?= $acslbl ?> IF"></a>
+	<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
+	<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
+	<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
+	<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
+</td>
+<td class="ctr">
+	<select multiple name="rep[]" size="4">
+		<option value="use" <?php if(in_array("use",$rep)){echo "selected";} ?> >IF <?= $stco['100'] ?> <?= $tim['n'] ?>
 
-<a href="?in[]=iftype&op[]=~&st[]=^(6|7|117)$"><img src="img/p45.png" title=" Ethernet IF"></a>
-<a href="?in[]=linktype&op[]==&st[]="><img src="img/16/nods.png" title=" <?= $acslbl ?> IF"></a>
-<a href="?in[]=snmpversion&op[]=>&st[]=0"><img src="img/16/dev.png" title="SNMP Devices"></a>
-<a href="?in[]=devmode&op[]==&st[]=8"><img src="img/16/wlan.png" title="Controlled APs"></a>
-<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="<?= $undlbl ?> Devices"></a>
-<a href="?in[]=lastdis&op[]=>&st[]=<?= time()-86400 ?>&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/clock.png" title="<?= $dsclbl ?> <?= $tim['t'] ?>"></a>
+		<option value="dis" <?php if(in_array("dis",$rep)){echo "selected";} ?> >IF <?= $dsalbl ?>
 
-</th>
-<th>
+		<option value="poe" <?php if(in_array("poe",$rep)){echo "selected";} ?> >PoE <?= $stslbl ?>
 
-<select multiple name="rep[]" size="4">
-<option value="use" <?php if(in_array("use",$rep)){echo "selected";} ?> >IF <?= $stco['100'] ?> <?= $tim['n'] ?>
-<option value="dis" <?php if(in_array("dis",$rep)){echo "selected";} ?> >IF <?= $dsalbl ?>
-<option value="poe" <?php if(in_array("poe",$rep)){echo "selected";} ?> >PoE <?= $stslbl ?>
-<option value="trf" <?php if(in_array("trf",$rep)){echo "selected";} ?> ><?= $trflbl ?>
-<option value="err" <?php if(in_array("err",$rep)){echo "selected";} ?> ><?= $errlbl ?>
-<option value="dsc" <?php if(in_array("dsc",$rep)){echo "selected";} ?> >Discards
-<option value="brc" <?php if(in_array("brc",$rep)){echo "selected";} ?> >Broadcasts
-<option value="net" <?php if(in_array("net",$rep)){echo "selected";} ?> ><?= $netlbl ?> <?= $dislbl ?>
-<option value="pop" <?php if(in_array("pop",$rep)){echo "selected";} ?> ><?= $netlbl ?> <?= $poplbl ?>
-</select>
+		<option value="trf" <?php if(in_array("trf",$rep)){echo "selected";} ?> ><?= $trflbl ?>
 
-</th>
-<th>
+		<option value="err" <?php if(in_array("err",$rep)){echo "selected";} ?> ><?= $errlbl ?>
 
-<img src="img/16/form.png" title="<?= $limlbl ?>"> 
-<select size="1" name="lir">
+		<option value="dsc" <?php if(in_array("dsc",$rep)){echo "selected";} ?> >Discards
+		<option value="brc" <?php if(in_array("brc",$rep)){echo "selected";} ?> >Broadcasts
+		<option value="net" <?php if(in_array("net",$rep)){echo "selected";} ?> ><?= $netlbl ?> <?= $dislbl ?>
+
+		<option value="pop" <?php if(in_array("pop",$rep)){echo "selected";} ?> ><?= $netlbl ?> <?= $poplbl ?>
+
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
+	<select size="1" name="lir">
 <?php selectbox("limit",$lim) ?>
-</select>
+	</select>
+</td>
+<td class="ctr">
+	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>">
+	<input type="checkbox" name="map" <?= $map ?>><br>
+	<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>">
+	<input type="checkbox" name="ord" <?= $ord ?>><br>
+	<img src="img/16/hat2.png" title="<?= $optlbl ?>">
+	<input type="checkbox" name="opt" <?= $opt ?>>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" name="do" value="<?= $sholbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 
-</th>
-<th align="left">
-
-<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>"> 
-<input type="checkbox" name="map" <?= $map ?>><br>
-<img src="img/16/abc.png" title="<?= $altlbl ?> <?= $srtlbl ?>"> 
-<input type="checkbox" name="ord" <?= $ord ?>><br>
-<img src="img/16/hat2.png" title="<?= $optlbl ?>"> 
-<input type="checkbox" name="opt" <?= $opt ?>>
-
-</th>
-<th width="80">
-
-<input type="submit" class="button" name="do" value="<?= $sholbl ?>"></th>
-</tr></table></form><p>
 <?php
 }
-if ($map and !isset($_GET['xls']) and file_exists("map/map_$_SESSION[user].php")) {
-	echo "<center><h2>$netlbl Map</h2>\n";
-	echo "<img src=\"map/map_$_SESSION[user].php\" style=\"border:1px solid black\"></center><p>\n";
+echo "<div class=\"ctr\">\n";
+if ($map and file_exists("map/map_$_SESSION[user].php")) {
+		echo "<h2>$netlbl Map</h2>\n";
+		echo "<img src=\"map/map_$_SESSION[user].php\" class=\"genpad\">\n";
 }
+echo "</div>\n<p>\n\n";
 
 if($rep){
 	Condition($in,$op,$st,$co);

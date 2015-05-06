@@ -36,10 +36,10 @@ if( isset($_GET['col']) ){
 }elseif( isset($_SESSION['devcol']) ){
 	$col = $_SESSION['devcol'];
 }else{
-	$col = array('device','devip','serial','location','contact','lastdis');
+	$col = array('device','devip','serial','type','contact','firstdis','lastdis');
 }
 
-$cols = array(	"device"=>"Device $namlbl",
+$cols = array(	"device"=>"Device",
 		"imgNS"=>$imglbl,
 		"devip"=>"$manlbl IP",
 		"origip"=>"$orilbl IP",
@@ -89,23 +89,23 @@ $link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);							# Above print-header!
 
 <?php  if( !isset($_GET['print']) and !isset($_GET['xls']) ) { ?>
 <form method="get" name="list" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
+<table class="content">
+<tr class="bgmain">
 <td class="ctr s">
-	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td>
+	<br>
 <?php Filters(); ?>
 </td>
 <td class="ctr">
 	<a href="?in[]=snmpversion&op[]=>&st[]=0&lim=<?= $listlim ?>"><img src="img/16/dev.png" title="SNMP Devices"></a>
-	<a href="?in[]=cliport&op[]=%3D&st[]=1&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/kons.png" title="CLI <?= $errlbl ?>"></a>
-	<br>
+	<a href="?in[]=stack&op[]=>&st[]=1&lim=<?= $listlim ?>"><img src="img/16/db.png" title="Stacks"></a>
+	<a href="?in[]=cliport&op[]=%3D&st[]=1&co[]=&in[]=lastdis&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/kons.png" title="CLI <?= $errlbl ?>"></a><br>
 	<a href="?in[]=cfgstatus&op[]=~&st[]=[ECO]&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=lastdis&col[]=cfgstatus&col[]=time&ord=time"><img src="img/16/conf.png" title="<?= $cfglbl ?> <?= $errlbl ?>"></a>
 	<a href="?in[]=test&op[]==&st[]=NULL&co[]=&in[]=device&op[]=~&st[]=&col[]=device&col[]=devip&col[]=serial&col[]=location&col[]=contact&col[]=lastdis&col[]=test"><img src="img/16/bino.png" title="<?= $notlbl ?> Monitor"></a>
-	<br>
-	<a href="?in[]=firstdis&op[]=~&st[]=&co[]=%3D&in[]=lastdis&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/flas.png" title="<?= $faslbl ?> Devices"></a>
+	<a href="?in[]=firstdis&op[]=~&st[]=&co[]=%3D&in[]=lastdis&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/flas.png" title="<?= $faslbl ?> Devices"></a><br>
 	<a href="?in[]=lastdis&op[]=<&st[]=<?= time()-2*$rrdstep ?>&col[]=device&col[]=devip&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&ord=lastdis+desc"><img src="img/16/date.png" title="Devices <?= $undlbl ?>"></a>
-	<br>
 	<a href="?in[]=cpu&op[]=>&st[]=0&col[]=device&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&col[]=cpu&col[]=gfNS&lim=10&ord=cpu+desc"><img src="img/16/cpu.png" title="<?= $toplbl ?> 10 CPU <?= $lodlbl ?>"></a>
 	<a href="?in[]=temp&op[]=>&st[]=0&col[]=device&col[]=location&col[]=contact&col[]=firstdis&col[]=lastdis&col[]=temp&col[]=gfNS&lim=10&ord=temp+desc"><img src="img/16/temp.png" title="<?= $toplbl ?> 10 <?= $tmplbl ?>"></a>
 </td>
@@ -113,30 +113,28 @@ $link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);							# Above print-header!
 	<select multiple name="col[]" size="6" title="<?= $collbl ?>">
 <?php
 foreach ($cols as $k => $v){
-       echo "		<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
+	echo "\t\t<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
 }
 ?>
 	</select>
 </td>
 <td>
-	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>"> 
-	<input type="checkbox" name="map" <?= $map ?>>
-	<br>
-	<img src="img/16/form.png" title="<?= $limlbl ?>"> 
+	<img src="img/16/paint.png" title="<?= (($verb1)?"$sholbl $laslbl Map":"Map $laslbl $sholbl") ?>">
+	<input type="checkbox" name="map" <?= $map ?>><br>
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
 	<select size="1" name="lim">
 <?php selectbox("limit",$lim) ?>
 	</select>
 </td>
 <td class="ctr s">
-	<input type="submit" class="button" value="<?= $sholbl ?>">
+	<input type="submit" class="button" value="<?= $sholbl ?>"><br>
 <?php  if($isadmin) { ?>
-	<p>
-	<input type="submit" class="button" name="mon" value="<?= $monlbl ?>" onclick="return confirm('<?= $monlbl ?> <?= $addlbl ?>?')" >
-	<p>
+	<input type="submit" class="button" name="mon" value="<?= $monlbl ?>" onclick="return confirm('<?= $monlbl ?> <?= $addlbl ?>?')" ><br>
 	<input type="submit" class="button" name="del" value="<?= $dellbl ?>" onclick="return confirm('<?= $dellbl ?>, <?= $cfmmsg ?>')" >
 <?php } ?>
 </td>
-</tr></table>
+</tr>
+</table>
 </form>
 <p>
 
@@ -145,15 +143,15 @@ foreach ($cols as $k => $v){
 
 if( count($in) ){
 	if ($map and !isset($_GET['xls']) and file_exists("map/map_$_SESSION[user].php")) {
-		echo "<div class=\"ctr\">\n	<h2>$netlbl Map</h2>\n";
-		echo "	<img src=\"map/map_$_SESSION[user].php\" style=\"border:1px solid black\">\n</div>\n<p>\n";
+		echo "<div class=\"ctr\">\n\t<h2>$netlbl Map</h2>\n";
+		echo "\t<img src=\"map/map_$_SESSION[user].php\" class=\"genpad\">\n</div>\n<p>\n\n";
 	}
 
 	$mma = explode('/', $mema);
 	if( in_array('time',$in) or in_array('time',$col) ){
 		if(($key = array_search('test', $col)) !== false) {
 			unset($col[$key]);
-			echo "<h4>$cfglbl $buplbl ".(($verb1)?"$dcalbl Monitoring $collbl":"Monitoring $collbl $dcalbl")."!</h4>";
+			echo "<h4>$cfglbl $buplbl ".(($verb1)?"$dcalbl Monitoring $collbl":"Monitoring $collbl $dcalbl")."!</h4>\n";
 		}
 		$query	= GenQuery('devices','s','devices.*,length(config),length(changes),time',$ord,$lim,$in,$op,$st,$co,'LEFT JOIN configs USING (device)' );
 	}elseif(  in_array('test',$in) or in_array('test',$col) ){
@@ -167,17 +165,18 @@ if( count($in) ){
 	Condition($in,$op,$st,$co);
 	if( $del ){
 		if($isadmin){
-			echo "<table class=\"content\">\n	<tr\n		<td class=\"$modgroup[$self]2 ctr b\">\n		<img src=\"img/16/dev.png\"><br>Device\n		</td>\n";
-			echo "<td class=\"$modgroup[$self]2 ctr\">\n			<img src=\"img/16/bcnl.png\"><br>$dellbl $stalbl\n		</td>\n";
+			echo "<table class=\"content\">\n\t<tr>\n\t\t<td class=\"bgsub ctr b\">\n\t\t\t<img src=\"img/16/dev.png\"><br>\n\t\t\tDevice\n\t\t</td>\n";
+			echo "\t\t<td class=\"bgsub ctr\">\n\t\t\t<img src=\"img/16/bcnl.png\"><br>\n\t\t\t$dellbl $stalbl\n\t\t</td>\n";
 			$mon = 0;
 		}else{
 			echo $nokmsg;
 			$del = 0;
 		}
+	}else{
+		TblHead("bgsub",1);
 	}
-	if( !$del ) TblHead("$modgroup[$self]2",1);
 
-	$res	= DbQuery($query,$link);
+	$res = DbQuery($query,$link);
 	if($res){
 		$row   = 0;
 		$most = '';
@@ -187,16 +186,16 @@ if( count($in) ){
 			TblRow($bg);
 			$ip  = long2ip($dev[1]);
 			if( $del ){
-				echo "<th class=\"$bi\"><img src=\"img/dev/$dev[18].png\" title=\"$dev[3]\"><br>$dev[0]</th><td>";
+				echo "\t\t<td class=\"$bi ctr b\">\n\t\t\t<img src=\"img/dev/$dev[18].png\" title=\"$dev[3]\"><br>\n\t\t\t$dev[0]\n\t\t</td>\n\t\t<td>\n";
 				DevDelete($dev[0]," with IP $ip and SN $dev[2]");
-				echo "</td>";
+				echo "\t\t</td>\n\t</tr>\n";
 			}else{
 				if($isadmin and $mon and $dev[1]){
 					if($dev[14] & 3){
 						$myma = ($dev[21] > 100)?$mma[0]:$mma[1];
-						$most = AddRecord('monitoring',"name='".DbEscapeString($dev[0])."'","name,monip,test,device,memalert","'".DbEscapeString($dev[0])."','$dev[1]','uptime','".DbEscapeString($dev[0])."','$myma'");
+						$most = AddRecord('monitoring',"name='".DbEscapeString($dev[0])."'","name,monip,test,device,memalert,latwarn","'".DbEscapeString($dev[0])."','$dev[1]','uptime','".DbEscapeString($dev[0])."','$myma',$latw");
 					}else{
-						$most = AddRecord('monitoring',"name='".DbEscapeString($dev[0])."'","name,monip,test,device","'".DbEscapeString($dev[0])."','$dev[1]','ping','".DbEscapeString($dev[0])."'");
+						$most = AddRecord('monitoring',"name='".DbEscapeString($dev[0])."'","name,monip,test,device,latwarn","'".DbEscapeString($dev[0])."','$dev[1]','ping','".DbEscapeString($dev[0])."',$latw");
 					}
 				}
 
@@ -212,13 +211,13 @@ if( count($in) ){
 						$statbg = $bi;
 						$stat = '';
 					}
-					TblCell($dev[0],"Devices-Status.php?dev=$ud","$statbg ctr b m","+<img src=\"img/dev/$dev[18].png\" title=\"$dev[3] $stat\">".Digit($dev[29])." $most<br>");
+					TblCell($dev[0],'',"$statbg ctr b s","+<a href=\"Devices-Status.php?dev=$ud\"><img src=\"img/dev/$dev[18].png\" title=\"$dev[3] $stat\"></a>".Digit($dev[29])." $most<br>");
 				}
-				if( in_array("imgNS",$col) )	TblCell($dev[0],"Devices-Status.php?dev=$ud","imgw ctr b","+<img class=\"panel ".(preg_match('/^(ph|wa|ca)/',$dev[18])?'s':'m')."\" src=\"".DevPanel($dev[3],$dev[18],$dev[28])."\" title=\"$dev[3]\"><br>");
+				if( in_array("imgNS",$col) )	TblCell($dev[0],'',"imgw ctr b","+<a href=\"Devices-Status.php?dev=$ud\"><img class=\"panel\" width=\"".(($dev[28])?'100':'50')."\" src=\"".DevPanel($dev[3],$dev[18],$dev[28])."\" title=\"$dev[3]\"></a><br>");
 				if(in_array("devip",$col))	TblCell($dvip);
 				if(in_array("origip",$col))	TblCell( Devcli($oi,$dev[16]) );
 				if(in_array("serial",$col))	TblCell($dev[2]);
-				if(in_array("type",$col))	TblCell( $dev[3],"?in[]=type&op[]==&st[]=".urlencode($dev[3]),'',"<a href=\"http://www.google.com/search?q=".urlencode($dev[3])."&btnI=1\" target=\"window\"><img src=\"img/oui/$ic.png\" title=\"$vn\"></a> ");
+				if(in_array("type",$col))	TblCell( $dev[3],"?in[]=type&op[]==&st[]=".urlencode($dev[3]),'',"+<a href=\"http://www.google.com/search?q=".urlencode($dev[3])."&btnI=1\" target=\"window\"><img src=\"img/oui/$ic.png\" title=\"$vn\"></a> ");
 				if(in_array("services",$col))	TblCell( Syssrv($dev[6])." ($dev[6])","?in[]=services&op[]==&st[]=$dev[6]");
 				if(in_array("description",$col))TblCell($dev[7]);
 				if(in_array("devos",$col))	TblCell( $dev[8],"?in[]=devos&op[]==&st[]=".urlencode($dev[8]) );
@@ -322,7 +321,7 @@ if( count($in) ){
 						}
 					}
 					ksort($log);
-					echo "		<td class=\"rgt\">\n";
+					echo "\t\t<td class=\"rgt\">\n";
 					$pt = 0;
 					foreach ($log as $t => $v){
 						if($pt){
@@ -333,16 +332,16 @@ if( count($in) ){
 						}
 						$pt = $t;
 						$lb = explode(";", $v);
-						echo "			<img src=\"img/16/$lb[0].png\" title=\"$lb[1] ".date($_SESSION['timf'],$t)."\">\n";
+						echo "\t\t\t<img src=\"img/16/$lb[0].png\" title=\"$lb[1] ".date($_SESSION['timf'],$t)."\">\n";
 					}
-					echo "		</td>\n";
+					echo "\t\t</td>\n";
 				}
 				if( in_array("iiNS",$col) ){
 					$ii = IfFree($dev[0]);
 					TblCell($ii,"Devices-Interfaces.php?in[]=device&op[]==&st[]=$ud&co[]=AND&in[]=ifstat&op[]=<&st[]=3&co[]=AND&in[]=iftype&op[]=~&st[]=^(6|7|117)$&col[]=imBL&col[]=ifname&col[]=device&col[]=linktype&col[]=ifdesc&col[]=alias&col[]=lastchg&col[]=inoct&col[]=outoct&ord=lastchg",'',Bar($ii,-5,'si').' ','td-img');
 				}
 				if( in_array("stpNS",$col) and !isset($_GET['xls']) ){
-					if($dev[14] and $dev[5] > time() - $rrdstep*2){
+					if($dev[14] and $dev[5] > time() - $rrdstep * 2){
 						$stppri	= str_replace('"','', Get($ip, $dev[14] & 3, $dev[15], "1.3.6.1.2.1.17.2.2.0") );
 						if( preg_match("/^No Such|^$/",$stppri) ){
 							TblCell("?");
@@ -376,11 +375,11 @@ if( count($in) ){
 					}
 				}
 				if( in_array("gfNS",$col) and !isset($_GET['xls']) ){
-					echo "		<td>\n";
+					echo "\t\t<td>\n";
 					$gsiz = ($_SESSION['gsiz'] == 4)?2:1;
-					if( substr($dev[27],1,1) == "C" ) echo "<a href=\"Devices-Graph.php?dv=$ud&if[]=cpu\"><img src=\"inc/drawrrd.php?dv=$ud&t=cpu&s=$gsiz\" title=\"$dev[20]% CPU $lodlbl\">\n";
-					if($dev[21]) echo "<a href=\"Devices-Graph.php?dv=$ud&if[]=mem\"><img src=\"inc/drawrrd.php?dv=$ud&t=mem&s=$gsiz\" title=\"".(($dev[21] > 100)?DecFix($dev[21]).'B':$dev[21].'%')." $memlbl $frelbl\">\n";
-					if($dev[22]) echo "<a href=\"Devices-Graph.php?dv=$ud&if[]=tmp\"><img src=\"inc/drawrrd.php?dv=$ud&t=tmp&s=$gsiz\" title=\"$tmplbl ".(($_SESSION['far'])?($dev[22]*1.8+32)."F":"$dev[22]C")."\">\n";
+					if( substr($dev[27],1,1) == "C" ) echo "\t\t\t<a href=\"Devices-Graph.php?dv=$ud&if[]=cpu\"><img src=\"inc/drawrrd.php?dv=$ud&t=cpu&s=$gsiz\" title=\"$dev[20]% CPU $lodlbl\">\n";
+					if($dev[21]) echo "\t\t\t<a href=\"Devices-Graph.php?dv=$ud&if[]=mem\"><img src=\"inc/drawrrd.php?dv=$ud&t=mem&s=$gsiz\" title=\"".(($dev[21] > 100)?DecFix($dev[21]).'B':$dev[21].'%')." $memlbl $frelbl\">\n";
+					if($dev[22]) echo "\t\t\t<a href=\"Devices-Graph.php?dv=$ud&if[]=tmp\"><img src=\"inc/drawrrd.php?dv=$ud&t=tmp&s=$gsiz\" title=\"$tmplbl ".(($_SESSION['far'])?($dev[22]*1.8+32)."F":"$dev[22]C")."\">\n";
 					if($dev[23]){
 						if($dev[24] and $dev[24] != 'MemIO'){
 							list($ct,$cy,$cu) = explode(";", $dev[24]);
@@ -388,24 +387,18 @@ if( count($in) ){
 							$ct = "$memlbl IO";
 							$cu = "Bytes $frelbl";
 						}
-						echo "<a href=\"Devices-Graph.php?dv=$ud&if[]=cuv\"><img src=\"inc/drawrrd.php?dv=$ud&if[]=".urlencode($ct)."&if[]=".urlencode($cu)."&s=$gsiz&t=cuv\" title=\"$ct ".DecFix($dev[23])." $cu\">";
+						echo "\t\t\t<a href=\"Devices-Graph.php?dv=$ud&if[]=cuv\"><img src=\"inc/drawrrd.php?dv=$ud&if[]=".urlencode($ct)."&if[]=".urlencode($cu)."&s=$gsiz&t=cuv\" title=\"$ct ".DecFix($dev[23])." $cu\">";
 					}
-					echo "		</td>\n";
+					echo "\t\t</td>\n";
 				}
 			}
-			echo "	</tr>\n";
+			echo "\t</tr>\n";
 		}
 		DbFreeResult($res);
 	}else{
 		print DbError($link);
 	}
-	?>
-</table>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2"><td>
-<?= $row ?> Devices<?= ($ord)?", $srtlbl: $ord":"" ?><?= ($lim)?", $limlbl: $lim":"" ?>
-
-</td></tr></table>
-<?php
+	TblFoot("bgsub", count($col), "$row Devices".(($ord)?", $srtlbl: $ord":"").(($lim)?", $limlbl: $lim":"") );
 }
 include_once ("inc/footer.php");
 ?>

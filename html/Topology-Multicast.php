@@ -12,9 +12,10 @@ include_once ("inc/libsnmp.php");
 $_GET = sanitize($_GET);
 $mdv = isset($_GET['dev']) ? $_GET['dev'] : "";
 
-$link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
-$query	= GenQuery('devices','s','*','device','',array('services','snmpversion'),array('>','!='),array('3','0'),array('AND') );
-$res	= DbQuery($query,$link);
+$devtyp = array();
+$link   = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
+$query  = GenQuery('devices','s','*','device','',array('services','snmpversion'),array('>','!='),array('3','0'),array('AND') );
+$res    = DbQuery($query,$link);
 if($res){
 	while( ($d = DbFetchRow($res)) ){
 		$devtyp[$d[0]] = $d[3];
@@ -25,29 +26,34 @@ if($res){
 }
 
 ?>
-<h1><?= $mtitl[0] ?> <?= $mtitl[1] ?></h1>
+<h1><?= $rltlbl ?> Multicast</h1>
 
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" action="<?= $self ?>.php" name="mrout">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-
-<SELECT size="1" name="dev">
-<option value="">Device ->
+<table class="content"><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td>
+	<select size="1" name="dev" onchange="this.form.submit();">
+		<option value="">Device ->
 <?php
 foreach (array_keys($devtyp) as $r ){
-	echo "<OPTION VALUE=\"$r\" ";
+	echo "\t\t<option value=\"$r\" ";
 	if($mdv == $r){echo "selected";}
 	echo " >$r\n";
 }
-echo "</select>";
 ?>
-</th><th width="80">
-<input type="submit" class="button" value="<?= $sholbl ?>">
-</th>
-</tr></table></form>
+	</select>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $sholbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 <?php
 }
 if ($mdv) {
@@ -75,25 +81,102 @@ if ($mdv) {
 		DbFreeResult($res);
 
 ?>
+
 <h2><?= $sumlbl ?></h2>
+
+<table class="full fixed"><tr><td class="helper">
+
 <table class="content">
-<tr><th class="imga" width="80">
-<a href="Devices-Status.php?dev=<?= $ud ?>"><img src="img/dev/<?= $dev[18] ?>.png" title="<?= $stalbl ?>"></a>
-<br><?= $dev[0] ?></th><td class="txta"><?= (Devcli($ip,$dev[16])) ?></td></tr>
-<tr><th class="<?= $modgroup[$self] ?>2"><?= $srvlbl ?></th><td class="txtb"><?= ($sv)?$sv:"&nbsp;" ?></td></tr>
-<tr><th class="<?= $modgroup[$self] ?>2"><?= $loclbl ?></th><td class="txta"><?= $dev[10] ?></td></tr>
-<tr><th class="<?= $modgroup[$self] ?>2"><?= $conlbl ?></th><td class="txtb"><?= $dev[11] ?></td></tr>
-<tr><th class="<?= $modgroup[$self] ?>2">SNMP</th><td class="txta"><?= $dev[15] ?> (Version <?= $dev[14] & 7?>)</td></tr>
+	<tr>
+		<td class="imga ctr b s">
+			<a href="Devices-Status.php?dev=<?= $ud ?>"><img src="img/dev/<?= $dev[18] ?>.png" title="<?= $stalbl ?>"></a><br>
+			<?= $dev[0] ?>
+
+		</td>
+		<td class="bgsub">
+		</td>
+	</tr>
+	<tr>
+		<td class="imgb b">
+			IP <?= $adrlbl ?>
+
+		</td>
+		<td class="txtb">
+			<?= $ip ?>
+
+			<div style="float:right">
+				<a href="telnet://<?= $ip ?>"><img src="img/16/loko.png" title="Telnet"></a>
+				<a href="ssh://<?= $ip ?>"><img src="img/16/lokc.png" title="SSH"></a>
+				<a href="http://<?= $ip ?>" target="window"><img src="img/16/glob.png" title="HTTP"></a>
+				<a href="https://<?= $ip ?>" target="window"><img src="img/16/glok.png" title="HTTPS"></a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="imga b">
+			<?= $srvlbl ?>
+
+		</td>
+		<td class="txtb">
+			<?= ($sv)?$sv:"&nbsp;" ?>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="imgb b">
+			<?= $loclbl ?>
+
+		</td>
+		<td class="txta">
+			<?= $dev[10] ?>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="imga b">
+			<?= $conlbl ?>
+
+		</td>
+		<td class="txtb">
+			<?= $dev[11] ?>
+
+		</td>
+	</tr>
 </table>
+
+</td><td class="helper ctr">
+
+<h2><?= $neblbl ?> <?= $maplbl ?></h2>
+
+<a href="Topology-Map.php?tit=<?= $ud ?>+<?= $neblbl ?>+Map&in[]=device&op[]==&st[]=<?= $ud ?>&co[]=OR&in[]=neighbor&op[]==&st[]=<?= $ud ?>&fmt=png&mde=f&lev=4&ifi=on"><img class="genpad" src="inc/drawmap.php?dim=320x200&in[]=device&op[]==&st[]=<?= $ud ?>&co[]=OR&in[]=neighbor&op[]==&st[]=<?= $ud ?>&mde=f&lev=4&pos=s&ifi=on&lal=30"></a>
+
+</td></tr></table>
+
 <h2>IGMP  <?= $grplbl ?> <?= $lstlbl ?></h2>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
+
+<table class="content">
+	<tr class="bgsub">
 <?php
 		if ($dev[8] == "ProCurve"){
 ?>
-<th width="20%"><img src="img/16/home.png"><br><?= $dstlbl ?></th>
-<th><img src="img/16/note.png"><br># Reports</th>
-<th><img src="img/16/node.png"><br>Queries</th>
-<th><img src="img/16/vlan.png"><br>Vlan</th>
+		<th>
+			<img src="img/16/home.png"><br>
+			<?= $dstlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/note.png"><br>
+			# Reports
+		</th>
+		<th>
+			<img src="img/16/node.png"><br>
+			Queries
+		</th>
+		<th>
+			<img src="img/16/vlan.png"><br>
+			Vlan
+		</th>
+	</tr>
 <?php
 			error_reporting(1);
 			snmp_set_quick_print(1);
@@ -113,21 +196,39 @@ if ($mdv) {
 				if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
 				$row++;
 				list($ntimg,$ntit) = Nettype($grp);
-				echo "<tr class=\"$bg\">\n";
-				echo "<td><img src=\"img/$ntimg\" title=\"$ntit\"> $grp</td>\n";
-				echo "<td>$rep[$grp]</td><td>$qer[$grp]</td><td>$vl</td>\n";
-			}	
+				echo "\t<tr class=\"$bg\">\n";
+				echo "\t\t<td>\n\t\t\t<img src=\"img/$ntimg\" title=\"$ntit\"> $grp\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t$rep[$grp]\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t$qer[$grp]\n\t\t</td>\n\t\t<td>\n\t\t\t$vl\n\t\t</td>\n\t</tr>\n";
+			}
+			TblFoot("bgsub", 4, "$row $vallbl" );
+
 ?>
-</tr></table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?></td></tr>
-</table>
+
 <h2>IGMP Querier <?= $lstlbl ?></h2>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th colspan="2"><img src="img/16/port.png"><br>Interface</th>
-<th><img src="img/16/home.png"><br><?= $dstlbl ?></th>
-<th><img src="img/16/date.png"><br>Age <?= $timlbl ?></th>
-<th><img src="img/16/clock.png"><br>Leave <?= $timlbl ?></th>
+
+<table class="content">
+	<tr class="bgsub">
+		<th colspan="3">
+			<img src="img/16/port.png"><br>
+			Interface
+		</th>
+		<th>
+			<img src="img/16/home.png"><br>
+			<?= $dstlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/date.png"><br>
+			Age <?= $timlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/clock.png"><br>
+			Leave <?= $timlbl ?>
+
+		</th>
+	</tr>
 <?php
 			foreach (Walk($ip, $dev[14] & 3, $dev[15],'1.3.6.1.4.1.11.2.14.11.5.1.9.10.3.1.4') as $ix => $val){
 				$age[substr(strstr($ix,'14.11.5.1.9.10'),23)] = $val;					// cut string at beginning with strstr first, because it depends on snmpwalk & Co being installed!
@@ -143,23 +244,37 @@ if ($mdv) {
 				$ix = explode(".", $grp);
 				list($ifimg,$iftit) = Iftype($ift[$ix[4]]);
 				list($ntimg,$ntit)  = Nettype($grp);
-				echo "<tr class=\"$bg\"><th class=\"$bi\" width=\"40px\">\n";
-				echo "<img src=\"img/$ifimg\" title=\"$iftit\"></th><td><b>".$ifn[$ix[4]]."</b> ".$ifi[$ix[4]]."</th>\n";
-				echo "<td><img src=\"img/$ntimg\" title=\"$ntit\"> $ix[0].$ix[1].$ix[2].$ix[3]</td>\n";
-				echo "<td>$a</td><td>$lve[$grp]</td>\n";
-			}	
-?>
-</tr></table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?></td></tr>
-</table>
-<?php
+				echo "\t<tr class=\"$bg\">\n";
+				echo "\t\t<td class=\"$bi ctr xs\">\n\t\t\t<img src=\"img/$ifimg\" title=\"$iftit\">\n\t\t</td>\n";
+				echo "\t\t<td class=\"b\">\n\t\t\t".$ifn[$ix[4]]."\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t".$ifi[$ix[4]]."\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t<img src=\"img/$ntimg\" title=\"$ntit\"> $ix[0].$ix[1].$ix[2].$ix[3]\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t$a\n\t\t</td>\n\t\t<td>\n\t\t\t$lve[$grp]\n\t\t</td>\n\t</tr>\n";
+			}
+			TblFoot("bgsub", 6, "$row $vallbl" );
 		}else{
 ?>
-<th width="20%"><img src="img/16/cam.png"><br><?= $srclbl ?></th>
-<th width="20%"><img src="img/16/node.png"><br><?= $dstlbl ?></th>
-<th><img src="img/16/tap.png"><br><?= $bwdlbl ?></th>
-<th><img src="img/16/clock.png"><br><?= $laslbl ?></th>
+		<th>
+			<img src="img/16/cam.png"><br>
+			<?= $srclbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/node.png"><br>
+			<?= $dstlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/tap.png"><br>
+			<?= $bwdlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/clock.png"><br>
+			<?= $laslbl ?>
+
+		</th>
+	</tr>
 <?php
 			error_reporting(1);
 			snmp_set_quick_print(1);
@@ -188,20 +303,16 @@ if ($mdv) {
 				}
 				sscanf($last[$mr], "%d:%d:%0d:%0d.%d",$lud,$luh,$lum,$lus,$ticks);
 				$bpsbar = Bar( intval($bps[$mr]/1000),0);
-				echo "<tr class=\"$bg\">\n";
-				echo "<td><a href=Nodes-List.php?in[]=nodip&op[]==&st[]=$ip>$ip</a></td>\n";
-				echo "<td><img src=\"img/$ntimg\" title=\"$ntit\">$i[0].$i[1].$i[2].$i[3]</td>\n";
-				echo "<td>$bpsbar".$bps[$mr]."</td>\n";
-				printf("<td>%d D %d:%02d:%02d</td>",$lud,$luh,$lum,$lus);
+				echo "\t<tr class=\"$bg\">\n";
+				echo "\t\t<td>\n\t\t\t<a href=Nodes-List.php?in[]=nodip&op[]==&st[]=$ip>$ip</a>\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t<img src=\"img/$ntimg\" title=\"$ntit\">$i[0].$i[1].$i[2].$i[3]\n\t\t</td>\n";
+				echo "\t\t<td>\n\t\t\t$bpsbar".$bps[$mr]."\n\t\t</td>\n";
+				printf("\t\t<td>\n\t\t\t%d D %d:%02d:%02d\n\t\t</td>\n\t</tr>\n",$lud,$luh,$lum,$lus);
 			}
-?>
-</tr></table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?></td></tr>
-</table>
-<?php
+			TblFoot("bgsub", 4, "$row $vallbl" );
 		}
 	}
 }
+
 include_once ("inc/footer.php");
 ?>

@@ -25,26 +25,26 @@ $dbn = explode("_",$dbname);
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="post" action="<?= $self ?>.php">
-<table class="content" ><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td>
-
-<img src="img/16/abc.png" title=" <?= $namlbl ?>">
-<?= $dbn[0] ?>_<input type="text" name="add" class="m" value="<?= date("YmdHi") ?>">
-
+<table class="content" >
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td>
-
-<img src="img/16/ucfg.png" title="DB Admin"> <input type="text" name="usr" class="m"><p>
-<img src="img/16/loko.png" title="Password"> <input type="password" name="psw" class="m">
-
+	<img src="img/16/abc.png" title=" <?= $namlbl ?>">
+	<?= $dbn[0] ?>_<input type="text" name="add" class="m" value="<?= date("YmdHi") ?>">
 </td>
-<td width="80">
-
-<input type="submit" class="button" value="<?= $addlbl ?>"><p>
-
+<td>
+	<img src="img/16/ucfg.png" title="DB Admin"> <input type="text" name="usr" class="m"><p>
+	<img src="img/16/loko.png" title="Password"> <input type="password" name="psw" class="m">
 </td>
-</tr></table></form>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $addlbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 <?php } ?>
 
 <?php
@@ -53,7 +53,7 @@ if($isadmin and $del){
 	DbQuery(GenQuery($del,"p"), $link);
 	DbClose($link);
 }elseif($isadmin and $add){
-	echo "<div class=\"textpad code txta\">";
+	echo "<div class=\"textpad code pre txta\">";
 	echo "<h3>$coplbl DB $dbname -> $dbn[0]_$add</h3>";
 	ob_end_flush();
 
@@ -100,20 +100,36 @@ if($isadmin and $del){
 		DbFreeResult($res);
 		DbClose($link);
 	}
-	$dbname = $sel;	
+	$dbname = $sel;
 }
 ?>
-
 <h2>Snapshot <?= $lstlbl ?></h2>
 
-<table class="content" ><tr class="<?= $modgroup[$self] ?>2">
-<th colspan="2"><img src="img/16/db.png"><br>DB <?= $namlbl ?></th>
-<th><img src="img/16/dev.png"><br>Devices</th>
-<th><img src="img/16/conf.png"><br><?= $cfglbl ?></th>
-<th><img src="img/16/nods.png"><br>Nodes</th>
-<th><img src="img/16/radr.png"><br><?= $laslbl ?> <?= $dsclbl ?></th>
-<th width="80"><img src="img/16/cog.png"><br><?= $cmdlbl ?></th></tr>
-
+<table class="content" >
+	<tr class="bgsub">
+		<th colspan="2">
+			<img src="img/16/db.png"><br>
+			DB <?= $namlbl ?>
+		</th>
+		<th>
+			<img src="img/16/dev.png"><br>
+			Devices
+		</th>
+		<th>
+			<img src="img/16/conf.png"><br>
+			<?= $cfglbl ?></th>
+		<th>
+			<img src="img/16/nods.png"><br>
+			Nodes</th>
+		<th>
+			<img src="img/16/radr.png"><br>
+			<?= $laslbl ?> <?= $dsclbl ?>
+		</th>
+		<th class="s">
+			<img src="img/16/cog.png"><br>
+			<?= $cmdlbl ?>
+		</th>
+	</tr>
 <?php
 
 $row = 0;
@@ -135,44 +151,46 @@ while($ss = DbFetchRow($res)){
 	DbClose($slnk);
 
 	TblRow($bg);
-	echo "<th class=\"$bi\"> ";
+	echo "\t\t<td class=\"$bi ctr xs\">\n";
 	if($inactive){											# Only allow activate inactive DBs
 ?>
-<a href="?sel=<?= urlencode($ss[0]) ?>">
-<img src="img/16/bcls.png" title="DB <?= $sellbl ?>">
-</a>
-<?php 
+			<a href="?sel=<?= urlencode($ss[0]) ?>"><img src="img/16/bcls.png" title="DB <?= $sellbl ?>"></a>
+<?php
 	}else{
-		echo "<img src=\"img/16/walk.png\" title=\"DB $stco[100]\">";
+		echo "\t\t\t<img src=\"img/16/walk.png\" title=\"DB $stco[100]\">\n";
 	}
 ?>
-</th>
-<td><b><?= $ss[0] ?></b></td>
-<td><?= Bar($devs[0],'lvl100','mi') ?> <?= $devs[0] ?></td>
-<td><?= Bar($cfgs[0],'lvl150','mi') ?> <?= $cfgs[0] ?></td>
-<td><?= Bar($nods[0],'lvl50','mi') ?> <?= $nods[0] ?></td>
-<td><?= date($_SESSION['timf'],$fdis[0]) ?></td>
+		</td>
+		<td class="b">
+			<?= $ss[0] ?>
 
-<th width="80">
-<?php 
+		</td>
+		<td>
+			<?= Bar($devs[0],'lvl100','mi') ?> <?= $devs[0] ?>
+
+		</td>
+		<td>
+			<?= Bar($cfgs[0],'lvl150','mi') ?> <?= $cfgs[0] ?>
+
+		</td>
+		<td>
+			<?= Bar($nods[0],'lvl50','mi') ?> <?= $nods[0] ?>
+
+		</td>
+		<td>
+			<?= date($_SESSION['timf'],$fdis[0]) ?>
+
+		</td>
+		<td class="ctr s">
+<?php
 	if( $isadmin and $inactive and strpos($ss[0],"_") ){						# Only allow to delete inactive snapshots
 ?>
-<a href="?del=<?= urlencode($ss[0]) ?>">
-<img src="img/16/bcnl.png" onclick="return confirm('<?= $dellbl ?>, <?= $cfmmsg ?>')" title="<?= (($verb1)?"$dellbl Snapshot":"Snapshot $dellbl") ?>">
-</a>
-</td></tr>
-
-<?php 
+			<a href="?del=<?= urlencode($ss[0]) ?>"><img src="img/16/bcnl.png" onclick="return confirm('<?= $dellbl ?>, <?= $cfmmsg ?>')" title="<?= (($verb1)?"$dellbl Snapshot":"Snapshot $dellbl") ?>"></a>
+<?php
 	}
-	echo "</td></tr>\n";
+	echo "\t\t</td>\n\t</tr>\n";
 }
-?>
-</table>
+TblFoot("bgsub", 7, "$row DBs".(($ord)?", $srtlbl: $ord":"").(($lim)?", $limlbl: $lim":"") );
 
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> DBs</td></tr>
-</table>
-
-<?php 
 include_once ("inc/footer.php");
 ?>

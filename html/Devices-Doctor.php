@@ -40,9 +40,9 @@ $link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 
 <?php  if( !isset($_GET['print']) ) { ?>
 <form method="POST" action="<?= $self ?>.php" enctype="multipart/form-data">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
+<table class="content"><tr class="bgmain">
 <td class="ctr s">
-	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td class="ctr b">
 	Cfg #<br>
@@ -81,8 +81,11 @@ if($res){
 </td>
 <td class="ctr s">
 	<input type="submit" class="button" value="<?= $sholbl ?>">
-</td></tr></table>
+</td>
+</tr>
+</table>
 </form>
+<p>
 
 <?php
 }
@@ -96,9 +99,13 @@ if($dev){
 	}
 	$cfg = DbFetchRow($res);
 	DbFreeResult($res);
-	if($debug){	echo "<div class=\"textpad code warn\">$cfg[0]</div>\n";}
+	if($debug){	echo "<div class=\"textpad code pre warn\">$cfg[0]</div>\n";}
 ?>
-<h2><a href="Devices-Config.php?shc=<?= urlencode($dev) ?>"><img src="img/16/conf.png" title="<?= $cfglbl ?>"></a><?= $dev ?> <?= $cfglbl ?> <?= $sumlbl ?></h2>
+<h2>
+	<a href="Devices-Config.php?shc=<?= urlencode($dev) ?>">
+	<img src="img/16/conf.png" title="<?= $cfglbl ?>"></a><?= $dev ?> <?= $cfglbl ?> <?= $sumlbl ?>
+
+</h2>
 <?php
 	foreach ( explode("\n",$cfg[0]) as $l ){
 		if( preg_match("/^interface /",$l) or $cfg[1] == "ProCurve" and preg_match("/^vlan /",$l) ){
@@ -118,7 +125,7 @@ if($dev){
 			$l = preg_replace("/.*(vrf forwarding|vpn-instance)\s*(.*)$/",'$2',$l);
 			$ifvpn[$i] = "<a href=\"Topology-Networks.php?in[]=vrfname&op[]==&st[]=".urlencode($l)."\">$l</a>";
 		}
-		
+
 		if( preg_match("/^logging|info-center loghost/",$l) ){
 			$log[] = $l;
 		}elseif( preg_match("/^\s?snmp-(agent|server)/",$l) ){
@@ -130,52 +137,56 @@ if($dev){
 		}elseif( preg_match("/^(no )?spanning-tree|^ stp/",$l) ){
 			$stp[] = $l;
 		}
-	}#TODO pretty html print...
-	echo "<h3>Interfaces</h3>\n";
-	echo "<table class=\"content\"><tr class=\"$modgroup[$self]2\"><td>$namlbl</td><td>IP $adrlbl</td><td>Alias</td><td>$typlbl</td><td>IP Helper</td><td>VRF</td></tr>";
+	}
+	echo "<h2>Interfaces</h2>\n";
+	echo "<table class=\"content\">\n\t<tr class=\"bgsub\">\n";
+	echo "\t\t<th>\n\t\t\t$namlbl\n\t\t</th>\n\t\t<th>\n\t\t\tIP $adrlbl\n\t\t</th>\n";
+	echo "\t\t<th>\n\t\t\tAlias\n\t\t</th>\n\t\t<th>\n\t\t\t$typlbl\n\t\t</th>\n";
+	echo "\t\t<th>IP Helper</th>\n\t\t<th>\n\t\t\tVRF</th>\n\t</tr>\n";
 	foreach($if as $i){
 		if ($row % 2){$bg = "txta"; $bi = "imga";}else{$bg = "txtb"; $bi = "imgb";}
 		$row++;
 		TblRow($bg);
-		echo "<td>$i</td><td class=\"blu\">$ipadd[$i]</td><td class=\"gry\">$ifdsc[$i]</td>";
-		echo "<td class=\"grn\">$ifmod[$i]</td><td class=\"gry\">$ifhlp[$i]</td><td>$ifvpn[$i]</td></tr>";
+		echo "\t\t<td>\n\t\t\t$i\n\t\t</td>\n\t\t<td class=\"blu\">\n\t\t\t$ipadd[$i]\n\t\t</td>\n";
+		echo "\t\t<td class=\"gry\">\n\t\t\t$ifdsc[$i]\n\t\t</td>\n\t\t<td class=\"grn\">\n\t\t\t$ifmod[$i]\n\t\t</td>\n";
+		echo "\t\t<td class=\"gry\">\n\t\t\t$ifhlp[$i]\n\t\t</td>\n\t\t<td>\n\t\t\t$ifvpn[$i]\n\t\t</td>\n\t</tr>\n";
 	}
-	echo "</table>";
+	echo "</table>\n\n";
 
-	echo "<h3>Spanning-Tree</h3>";
-	echo "<div class=\"textpad code txta\">\n";
+	echo "<h2>Spanning-Tree</h2>\n";
+	echo "<div class=\"textpad code pre txta half\">\n";
 	foreach($stp as $i){
 		echo "$i\n";
 	}
-	echo "</div>\n";
+	echo "</div>\n\n";
 
-	echo "<h3>SNMP</h3>";
-	echo "<div class=\"textpad code txta\">\n";
+	echo "<h2>SNMP</h2>\n";
+	echo "<div class=\"textpad code pre txta half\">\n";
 	foreach($snmp as $i){
 		echo "$i\n";
 	}
-	echo "</div>\n";
+	echo "</div>\n\n";
 
-	echo "<h3>$srvlbl</h3>";
-	echo "<div class=\"textpad code txta\">\n";
+	echo "<h2>$srvlbl</h2>\n";
+	echo "<div class=\"textpad code pre txta half\">\n";
 	foreach($srv as $i){
 		echo "$i\n";
 	}
-	echo "</div>\n";
+	echo "</div>\n\n";
 
-	echo "<h3>Logging</h3>";
-	echo "<div class=\"textpad code txta\">\n";
+	echo "<h2>Logging</h2>\n";
+	echo "<div class=\"textpad code pre txta half\">\n";
 	foreach($log as $i){
 		echo "$i\n";
 	}
-	echo "</div>\n";
+	echo "</div>\n\n";
 
 }elseif (array_key_exists('tef',$_FILES) and file_exists($_FILES['tef']['tmp_name'])) {
 	$lines = file($_FILES['tef']['tmp_name']);
 	foreach ($lines as $line_num => $l) {
 		$line = rtrim($l);
 		if( preg_match("/^(-*\s|->\s)?(show|walkmib) /",$line) ){
-			echo "<h3 class=\"imga\">$line</h3>\n";
+			echo "\n<h2 class=\"imga\">$line</h2>\n";
 			if( preg_match("/^show interfaces brief$/",$line) ){
 				$getif = 1;
 			}else{
@@ -191,12 +202,12 @@ if($dev){
 			}else{
 				$iscfg = 0;
 			}
-		}elseif($iscfg){										# Highlight Config
-			if(!preg_match("/^$|Building configuration/",$line)){					# Ignore those lines to be consistent with Devices-Config
+		}elseif($iscfg){									# Highlight Config
+			if(!preg_match("/^$|Building configuration/",$line)){				# Ignore those lines to be consistent with Devices-Config
 				if($sln) $devln++;
 				echo Shoconf($line,0,$devln);
 			}
-		}elseif($getif and preg_match("/^\s+[A-L]{0,1}[0-9]{1,2}/",$line,$ifs) ){			# POST IF status on HP from "sh int brief"
+		}elseif($getif and preg_match("/^\s+[A-L]{0,1}[0-9]{1,2}/",$line,$ifs) ){		# POST IF status on HP from "sh int brief"
 			if( preg_match("/\sDown\s/",$line) ){
 				$ifstat[$ifs[0]] = 0;
 				echo "<span class=\"drd\">$line</span>\n";
@@ -205,14 +216,14 @@ if($dev){
 				echo "<span class=\"olv\">$line</span>\n";
 			}
 
-		}elseif($setif and preg_match("/^\s+[A-L]{0,1}[0-9]{1,2}/",$line,$ifs) ){			# Set IF status on HP in according sections
+		}elseif($setif and preg_match("/^\s+[A-L]{0,1}[0-9]{1,2}/",$line,$ifs) ){		# Set IF status on HP in according sections
 			if($ifstat[$ifs[0]]){
 				echo "<span class=\"olv\">$line</span>\n";
 			}else{
 				echo "<span class=\"drd\">$line</span>\n";
 			}
 
-		}elseif( preg_match("/^[I] [0-9]/",$line) ){							# HP syslog entries
+		}elseif( preg_match("/^[I] [0-9]/",$line) ){						# HP syslog entries
 			$lstyl = "blu";
 			echo "<span class=\"blu\" title=\"Info\">$line</span>\n";
 		}elseif( preg_match("/^[W] [0-9]/",$line) ){
@@ -222,7 +233,7 @@ if($dev){
 			$lstyl = "red warn";
 			echo "<span class=\"red warn\" title=\"Major!\">$line</span>\n";
 
-		}elseif( preg_match("/^\s+Bcast\/Mcast Rx/",$line) ){						# Check Excess Bcast on HP
+		}elseif( preg_match("/^\s+Bcast\/Mcast Rx/",$line) ){					# Check Excess Bcast on HP
 			$bval = preg_split("/\s+/",str_replace(",","",$line) );
 			$uval = preg_split("/\s+/",str_replace(",","",$lines[($line_num-1)]) );
 			if($uval[4]){
@@ -234,11 +245,11 @@ if($dev){
 				}
 			}else{
 				$relbc = 0;
-				$bcstat = "gry";				
+				$bcstat = "gry";
 			}
 			echo "<span class=\"$bcstat\" title=\"Rx Broadcasts = $relbc%\">$line</span>\n";
 
-		}elseif( preg_match("/^\s+Received ([0-9]+) broadcasts/",$line, $bval) ){			# Check Excess Bcast on Cisco
+		}elseif( preg_match("/^\s+Received ([0-9]+) broadcasts/",$line, $bval) ){		# Check Excess Bcast on Cisco
 			preg_match("/^\s+([0-9]+) packets input/",$lines[($line_num-1)],$uval );
 			if($uval[1]){
 				$relbc = round($bval[1] / $uval[1] * 100);
@@ -249,7 +260,7 @@ if($dev){
 				}
 			}else{
 				$relbc = 0;
-				$bcstat = "gry";				
+				$bcstat = "gry";
 			}
 			echo "<span class=\"$bcstat\" title=\"Rx Broadcasts = $relbc%\">$line</span>\n";
 

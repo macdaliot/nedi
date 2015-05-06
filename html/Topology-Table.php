@@ -5,7 +5,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 
 ini_set('default_socket_timeout',3);    								# Tweak this, if you don't want to wait long for osm or weather info
-  
+
 $printable = 1;
 
 include_once ("inc/header.php");
@@ -22,8 +22,9 @@ $nsd = isset($_GET['nsd']) ? $_GET['nsd'] : "";
 $img = isset($_GET['img']) ? $_GET['img'] : "";
 $pop = isset($_GET['pop']) ? $_GET['pop'] : "";
 
-$sub   = 0;
-$alarr = array();
+$sub    = 0;
+$alarr  = array();
+$monarr = array();
 
 if( isset($_GET['map']) ){
 	$map = $_GET['map'];
@@ -49,40 +50,37 @@ if( count($dreg) == 1 ){
 }
 
 if( !isset($_GET['print']) ) { ?>
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
+<table class="content">
+<tr class="bgmain">
 <td class="ctr s">
-
-<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
-
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td>
-
 </td>
 <td class="ctr m">
-
 <?php
-echo "<a href=\"?map=$map\"><img src=\"img/16/bbup.png\" title=\"$toplbl\"></a>";
-if($cty) echo "<a href=\"?reg=".urlencode($reg)."&map=$map\"><img src=\"img/16/glob.png\" title=\"$place[r] $reg\"></a>";
-if($bld) echo "<a href=\"?reg=".urlencode($reg)."&cty=".urlencode($cty)."&map=$map\"><img src=\"img/16/fort.png\" title=\"$place[c] $cty\"></a>";
-if($flr) echo "<a href=\"?reg=".urlencode($reg)."&cty=".urlencode($cty)."&bld=".urlencode($bld)."&map=$map\"><img src=\"img/16/home.png\" title=\"$place[b] $bld\"></a>";
+echo "\t<a href=\"?map=$map\"><img src=\"img/16/bbup.png\" title=\"$toplbl\"></a>\n";
+if($cty) echo "\t<a href=\"?reg=".urlencode($reg)."&map=$map\"><img src=\"img/16/glob.png\" title=\"$place[r] $reg\"></a>\n";
+if($bld) echo "\t<a href=\"?reg=".urlencode($reg)."&cty=".urlencode($cty)."&map=$map\"><img src=\"img/16/fort.png\" title=\"$place[c] $cty\"></a>\n";
+if($flr) echo "\t<a href=\"?reg=".urlencode($reg)."&cty=".urlencode($cty)."&bld=".urlencode($bld)."&map=$map\"><img src=\"img/16/home.png\" title=\"$place[b] $bld\"></a>\n";
 echo "\n</td>\n<td class=\"ctr m\">\n";
 if($pop){
-	echo "<img src=\"img/16/bcls.png\" onclick=\"document.location.href='?".str_replace("&pop=1","",$_SERVER[QUERY_STRING])."';\"  title=\"$nonlbl $poplbl\">\n";
+	echo "\t<img src=\"img/16/bcls.png\" onclick=\"document.location.href='?".str_replace("&pop=1","",$_SERVER[QUERY_STRING])."';\"  title=\"$nonlbl $poplbl\">\n";
 }else{
-	echo "<img src=\"img/16/nods.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&pop=1';\"  title=\"$poplbl\">\n";
+	echo "\t<img src=\"img/16/nods.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&pop=1';\"  title=\"$poplbl\">\n";
 }
 if($bld){
 	if($nsd){
-		echo "<img src=\"img/16/bcls.png\" onclick=\"document.location.href='?".str_replace("&nsd=1","",$_SERVER[QUERY_STRING])."';\"  title=\"$nonlbl SNMP: hide\">\n";
+		echo "\t<img src=\"img/16/bcls.png\" onclick=\"document.location.href='?".str_replace("&nsd=1","",$_SERVER[QUERY_STRING])."';\"  title=\"$nonlbl SNMP: hide\">\n";
 	}else{
-		echo "<img src=\"img/16/wlan.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&nsd=1';\"  title=\"$nonlbl SNMP: $sholbl\">\n";
+		echo "\t<img src=\"img/16/wlan.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&nsd=1';\"  title=\"$nonlbl SNMP: $sholbl\">\n";
 	}
-		
+
 	if(!$rom){
 		if($img){
-			echo "<img src=\"img/16/icon.png\" onclick=\"document.location.href='?".str_replace("&img=1","",$_SERVER[QUERY_STRING])."';\"  title=\"Device Icons\">\n";
+			echo "\t<img src=\"img/16/icon.png\" onclick=\"document.location.href='?".str_replace("&img=1","",$_SERVER[QUERY_STRING])."';\"  title=\"Device Icons\">\n";
 		}else{
-			echo "<img src=\"img/16/foto.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&img=1';\"  title=\"Device $imglbl\">\n";
+			echo "\t<img src=\"img/16/foto.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&img=1';\"  title=\"Device $imglbl\">\n";
 		}
 	}
 }else{
@@ -97,7 +95,7 @@ if($bld){
 		echo "<img src=\"img/16/paint.png\" onclick=\"document.location.href='?$_SERVER[QUERY_STRING]&map=1';\"  title=\"NeDimaps\">\n";
 	}
 }
-echo "</td>\n</tr></table>\n<p>\n\n";
+echo "</td>\n</tr>\n</table>\n<p>\n\n";
 }
 
 if(!$reg){

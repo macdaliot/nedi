@@ -22,17 +22,20 @@ $link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" name="usr" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-Device <SELECT size="1" name="ip" onchange="this.form.submit();">
-<OPTION VALUE="">------------
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td>
+	Device <select size="1" name="ip" onchange="this.form.submit();">
+		<option value="">------------
 <?php
 $query	= GenQuery('devices','s','device,inet_ntoa(devip)','','',array('devos'),array('='),array('MSM') );
 $res	= DbQuery($query,$link);
 if($res){
 	while( $d = DbFetchRow($res) ){
-		echo "<option value=\"$d[1]\"".( ($ip == $d[1])?" selected":"").">$d[0]\n";
+		echo "\t\t<option value=\"$d[1]\"".( ($ip == $d[1])?" selected":"").">$d[0]\n";
 	}
 	DbFreeResult($res);
 }else{
@@ -40,15 +43,19 @@ if($res){
 	die ( mysql_error() );
 }
 ?>
-</SELECT>
-<img src="img/16/brld.png" title="Reload with current IP" onClick="document.location.href='?ip='+document.usr.ip.value;">
-</th>
-<th>User <input type="text" name="us" size="12">
-</th>
-<th width="80">
-<input type="submit" class="button" value="<?= $addlbl ?>">
-</th>
-</tr></table></form><p>
+	</select>
+	<img src="img/16/brld.png" title="Reload with current IP" onClick="document.location.href='?ip='+document.usr.ip.value;">
+</td>
+<td>
+	User <input type="text" name="us" size="12">
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $addlbl ?>">
+</td>
+</tr>
+</table>
+</form>
+<p>
 <?php
 }
 
@@ -82,23 +89,58 @@ if($ip){
 
 ?>
 <h2><?= $usrlbl ?> <?= $lstlbl ?></h2>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th>ID</th>
-<th><?= $namlbl ?></th>
-<th>Access Ctrl</th>
-<th>Active</th>
-<th>Expired</th>
-<th>Exausted</th>
-<th>1st Login Expired</th>
-<th>Period</th>
-<th>Not Begun</th>
-<th>Not Ended</th>
-<th><?= $timlbl ?> Left</th>
-<th><?= $fislbl ?></th>
-<th>Session Left</th>
-<th><?= $laslbl ?></th>
-<th><?= $cmdlbl ?></th>
 
+<table class="content">
+	<tr class="bgsub">
+		<th>
+			ID
+		</th>
+		<th>
+			<?= $namlbl ?>
+
+		</th>
+		<th>
+			Access Ctrl
+		</th>
+		<th>
+			Active
+		</th>
+		<th>
+			Expired
+		</th>
+		<th>
+			Exausted
+		</th>
+		<th>
+			1st Login Expired
+		</th>
+		<th>
+			Period
+		</th>
+		<th>
+			Not Begun
+		</th>
+		<th>
+			Not Ended
+		</th>
+		<th>
+			<?= $timlbl ?> Left
+		</th>
+		<th>
+			<?= $fislbl ?>
+
+		</th>
+		<th>
+			Session Left
+		</th>
+		<th>
+			<?= $laslbl ?>
+
+		</th>
+		<th>
+			<?= $cmdlbl ?>
+
+		</th>
 </tr>
 <?php
 		$users = SoapGetList("soapGetUserAccountList","username");

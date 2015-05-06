@@ -9,7 +9,7 @@ $exportxls = 1;
 include_once ("inc/header.php");
 
 $_GET		= sanitize($_GET);
-$dest		= isset($_GET['Dest']) ? preg_replace('/[^\w+\/\.-]/','',$_GET['Dest']) : $_SERVER['REMOTE_ADDR'];
+$dest		= isset($_GET['Dest']) ? preg_replace('/[^\w+\/\.-:]/','',$_GET['Dest']) : $_SERVER['REMOTE_ADDR'];
 $ping_count	= isset($_GET['Count']) ? preg_replace('/[^\d+]/','',$_GET['Count']) : 3;
 $ping_size	= isset($_GET['Size']) ? preg_replace('/[^\d+]/','',$_GET['Size']) : 32;
 $do		= isset($_GET['Do']) ? $_GET['Do'] : '';
@@ -20,21 +20,26 @@ $do		= isset($_GET['Do']) ? $_GET['Do'] : '';
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" action="<?= $self ?>.php" name="nettools">
-<table class="content" ><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-<a href="log/kitty.exe"><img src="img/16/kons.png" title="Kitty"></a>
-<a href="log/iperf.exe"><img src="img/16/tap.png" title="Iperf"></a>
-</th><th>
-<?= $dstlbl ?> <input type="text" name="Dest" value="<?= $dest ?>" class="m">
-<?= $qtylbl ?> <input type="number" name="Count" value="<?= $ping_count ?>" class="s">
-<?= $sizlbl ?> <input type="number" name="Size" value="<?= $ping_size ?>" class="s">
-<input type="submit" class="button" value="Lookup" name="Do"/>
-<input type="submit" class="button" value="Ping" name="Do"/>
-<input type="submit" class="button" value="Ping Range" name="Do"/>
-<input type="submit" class="button" value="Traceroute" name="Do"/>
-<input type="submit" class="button" value="Scan" name="Do"/>
-</th>
+<table class="content" ><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td class="ctr s">
+	<a href="log/kitty.exe"><img src="img/16/kons.png" title="Kitty"></a>
+	<a href="log/iperf.exe"><img src="img/16/tap.png" title="Iperf"></a>
+</td>
+<td class="ctr">
+	<?= $dstlbl ?> <input type="text" name="Dest" value="<?= $dest ?>" class="m"> &nbsp;
+	<?= $qtylbl ?> <input type="number" name="Count" value="<?= $ping_count ?>" class="s"> &nbsp;
+	<?= $sizlbl ?> <input type="number" name="Size" value="<?= $ping_size ?>" class="s">
+</td>
+<td class="ctr">
+	<input type="submit" class="button" value="Lookup" name="Do"/>
+	<input type="submit" class="button" value="Ping" name="Do"/>
+	<input type="submit" class="button" value="Ping Range" name="Do"/>
+	<input type="submit" class="button" value="Traceroute" name="Do"/>
+	<input type="submit" class="button" value="Scan" name="Do"/>
+</td>
 </table>
 </form>
 
@@ -43,25 +48,26 @@ $do		= isset($_GET['Do']) ? $_GET['Do'] : '';
 session_write_close();
 ob_end_flush();
 if($do == "Ping"){
-	echo "<h2>$ping_count Ping(s) with $ping_size bytes to $dest</h2><div class=\"textpad code txta\">";
+	$ping = ( strpos($dest,':') )?'ping6':'ping';
+	echo "<h2>$ping_count Ping(s) with $ping_size bytes to $dest</h2><div class=\"textpad code pre txtb half\">";
 	if(preg_match("/OpenBSD|Linux/",PHP_OS) ){
-		system("ping -c $ping_count -s $ping_size $dest");
+		system("$ping -c $ping_count -s $ping_size $dest");
 	}elseif(preg_match("/^win/",PHP_OS) ){
-		system("ping -n $ping_count -l $ping_size $dest");
+		system("$ping -n $ping_count -l $ping_size $dest");
 	}
 }elseif($do == "Lookup"){
-	echo "<h2>DNS Lookup $dest</h2><div class=\"textpad code txtb\">";
+	echo "<h2>DNS Lookup $dest</h2><div class=\"textpad code pre txtb tqrt\">";
 	system("nslookup $dest");
-	echo "</div><br><p><h2>Whois $dest</h2><div class=\"textpad code txtb\">";
+	echo "</div><br><p><h2>Whois $dest</h2><div class=\"textpad code pre txtb tqrt\">";
 	system("whois $dest");
 }elseif($do == "Scan"){
-	echo "<h2>Nmap Scan of $dest</h2><div class=\"textpad code txtb\">";
+	echo "<h2>Nmap Scan of $dest</h2><div class=\"textpad code pre txtb\">";
 	system("nmap -sSU -F $dest");
 }elseif($do == "Ping Range"){
-	echo "<h2>Nmap Ping Range of $dest</h2><div class=\"textpad code txtb\">";
+	echo "<h2>Nmap Ping Range of $dest</h2><div class=\"textpad code pre txtb tqrt\">";
 	system("nmap -sP $dest");
 }elseif($do == "Traceroute"){
-	echo "<h2>Traceroute to $dest</h2><div class=\"textpad code txtb\">";
+	echo "<h2>Traceroute to $dest</h2><div class=\"textpad code pre txtb half\">";
 	if(preg_match("/OpenBSD|Linux/",PHP_OS) ){
 		system("traceroute $dest");
 	}elseif(preg_match("/^win/",PHP_OS) ){
@@ -70,30 +76,30 @@ if($do == "Ping"){
 }else{
 # Based on Steffen's idea
 ?>
-<h2>Client <?= $cfglbl ?></h2>
-<div class="textpad txtb">
+<h2><img src="img/32/nwin.png"> Windows <?= $cfglbl ?></h2>
 
-<h3><img src="img/32/nwin.png"> Windows Clients</h3>
-<h4>Kitty & Firefox</h4>
-<div class="txta code">
+<div class="textpad txtb tqrt">
+
+<h3>Kitty & Firefox</h3>
+<div class="txta code pre">
 
 <?= $sellbl ?> telnet:// -> Kitty.exe
 
-<b>about:config</b>
+<strong>about:config</strong>
 network.protocol-handler.app.ssh		STRING "C:\Program Files\Kitty.exe"
 network.protocol-handler.external.ssh		BOOL   true
-network.protocol-handler.expose.ssh		BOOL   true
+network.protocol-handler.expose.ssh		BOOL   true (false seems to work better now??!)
 network.protocol-handler.warn-external.ssh	BOOL   false
 </div>
 
-<h4>Kitty & IE</h4>
-<div class="txta code">
+<h3>Kitty & IE</h3>
+<div class="txta code pre">
 <?= $cmdlbl ?> kitty.exe -sshhandler || <?= $cmdlbl ?> <a href="log/telnet-ssh-kitty.reg">telnet-ssh-kitty.reg</a>
 </div>
 
-<h4>Radmin</h4>
-<div class="txta code">
-<b>radminlink.reg</b>
+<h3>Radmin</h3>
+<div class="txta code pre">
+<strong>radminlink.reg</strong>
 REGEDIT4
 
 [HKEY_CLASSES_ROOT\radmin]
@@ -107,7 +113,7 @@ REGEDIT4
 [HKEY_CLASSES_ROOT\radmin\shell\open\command]
 @="\"C:\\Program Files\\admin Viewer 3.0\\RADMINlink.bat\" \"%1\""
 <hr>
-<b>radminlink.bat</b>
+<strong>radminlink.bat</strong>
 @ECHO OFF
 
 SET HOSTIP=%1
@@ -118,18 +124,23 @@ echo Herausgefilterte IP: %HOSTIP%
 "C:\Program Files\Radmin Viewer 3.0\Radmin.exe" /connect:%HOSTIP%
 </div>
 
-<h3><img src="img/32/nlin.png"> *nix Clients</h3>
+</div>
+<br>
 
-<h4>Xterm & Firefox</h4>
+<h2><img src="img/32/nlin.png"> *nix <?= $cfglbl ?></h2>
 
-<div class="txta code">
+<div class="textpad txtb tqrt">
 
-<b>about:config</b>
+<h3>Xterm & Firefox</h3>
+
+<div class="txta code pre">
+
+<strong>about:config</strong>
 network.protocol-handler.expose.ssh;false
 network.protocol-handler.expose.telnet;false
 <hr>
 
-<b>cli.sh</b>
+<strong>cli.sh</strong>
 #!/bin/sh
 
 case "$1" in
@@ -142,7 +153,7 @@ case "$1" in
 esac
 <hr>
 
-<b>ssh.sh</b>
+<strong>ssh.sh</strong>
 #!/bin/sh
 
 echo -n "username:"
@@ -160,7 +171,9 @@ chmod 755 ssh.sh
 }
 ?>
 </div>
-<br><p>
+<br>
+<p>
+
 <?php
 include_once ("inc/footer.php");
 ?>

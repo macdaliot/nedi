@@ -49,27 +49,27 @@ sub CiscoPhone{
 		$devhtml =~ s/[^\x20-\x7D]//gi;
 		&misc::Prt("$devhtml\n\n") if  $main::opt{'D'};
 		if( $devhtml =~ m/<b>#?([0-9]{2,10})<\/b>/i ){						# Find Extension on Cisco 7920,40,60,11,10,06
-			$main::dev{$na}{co} = $1;
+			$main::dev{$na}{co} = $1 if defined $1;
 		}elsif( $devhtml =~ m/: ([0-9]{2,10})<\/name>/i ){					# Find Extension on Cisco 7937, tx Kstadler
-			$main::dev{$_[0]}{co} = $1;
+			$main::dev{$_[0]}{co} = $1 if defined $1;
 		}elsif( $devhtml =~ m/<td>([0-9]{2,10})<tr>/i ){					# Find Extension on Cisco 7912
-			$main::dev{$na}{co} = $1;
+			$main::dev{$na}{co} = $1 if defined $1;
 		}
 
-		if( $devhtml =~ m/<(b|strong)>(FCH\w+|INM\w+|PUC\w+)<\/(b|strong)>/i ){			# Find Serial  on Cisco 7920,40,60,11,10,06 8945, 9951,71
-			$main::dev{$na}{sn} = $2;
+		if( $devhtml =~ m/<(b|strong)>(FCH\w+|INM\w+|PUC\w+|PXN\w+|WZP\w+)<\/(b|strong)>/i ){	# Find Serial  on Cisco 7841,7920,40,60,11,10,06 8945, 9951,71
+			$main::dev{$na}{sn} = $2 if defined $2;
 		}elsif( $devhtml =~ m/:    (000\w+)<\/name>/i ){					# Find Serial  on Cisco 7937
-			$main::dev{$na}{sn} = $1;
+			$main::dev{$na}{sn} = $1 if defined $1;
 		}elsif( $devhtml =~ m/<td>(FCH\w+|INM\w+|COP\w+)<tr>/i ){				# Find Serial  on Cisco 7912
-			$main::dev{$na}{sn} = $1;
+			$main::dev{$na}{sn} = $1 if defined $1;
 		}
 
 		if( $devhtml =~ m/<B>CP-CKEM<\/B><\/TD><\/TR><TR><TD><B> <\/B><\/TD><td width=20><\/TD><TD><B>(V\w+)<\/B><\/TD><\/TR><TR><TD><B> <\/B><\/TD><td width=20><\/TD><TD><B>(FCH\w+)<\/B>/i){
 			$main::mod{$na}{1}{sl} = '1';
 			$main::mod{$na}{1}{mo} = 'KEM';
 			$main::mod{$na}{1}{de} = 'Key Expansion Module';
-			$main::mod{$na}{1}{sn} = $2;
-			$main::mod{$na}{1}{hw} = $1;
+			$main::mod{$na}{1}{sn} = $2 if defined $2;
+			$main::mod{$na}{1}{hw} = $1 if defined $1;
 			$main::mod{$na}{1}{fw} = '';
 			$main::mod{$na}{1}{sw} = '';
 			$main::mod{$na}{1}{mc} = '90';
@@ -79,8 +79,8 @@ sub CiscoPhone{
 			$main::mod{$na}{3}{sl} = '1';
 			$main::mod{$na}{3}{mo} = "CP-CAM-$1";
 			$main::mod{$na}{3}{de} = 'Cisco Unified Video Camera';
-			$main::mod{$na}{3}{sn} = $2;
-			$main::mod{$na}{3}{hw} = $3;
+			$main::mod{$na}{3}{sn} = $2 if defined $2;
+			$main::mod{$na}{3}{hw} = $3 if defined $3;
 			$main::mod{$na}{3}{fw} = '';
 			$main::mod{$na}{3}{sw} = '';
 			$main::mod{$na}{3}{mc} = '91';
@@ -120,10 +120,10 @@ sub CiscoAta{
 	if ($response->is_success) {
 		my $devhtml = $response->content;
 		if ( $devhtml =~ m/<td>([0-9]{2,8})<\/td>/i ) {						# Find Extension on Cisco ATA 186
-			$main::dev{$na}{co} = $1;
+			$main::dev{$na}{co} = $1 if $1;
 		}
 		if ( $devhtml =~ m/<td>(FCH\w+|INM\w+)<\/td>/i ) {					# Find Serial  on Cisco ATA 186
-			$main::dev{$na}{sn} = $1;
+			$main::dev{$na}{sn} = $1 if $1;
 		}
 		&misc::Prt("LWP :Contact=$main::dev{$na}{co} SN=$main::dev{$na}{sn}");
 	} else {
@@ -199,5 +199,5 @@ sub GetHTTP{
 		return $response->status_line;
 	}
 }
-	
+
 1;

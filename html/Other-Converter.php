@@ -13,60 +13,71 @@ $txt  = isset($_GET['txt']) ? $_GET['txt'] : "";
 if( !isset($_GET['print']) ) {
 ?>
 <h1>Text Converter</h1>
+
 <form method="get" action="<?= $self ?>.php">
-<table class="content" ><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-<?= $inflbl ?>: <input type="text" name="txt" value="<?= $txt ?>" class="xl">
-</th>
-<th width="80">
-<input type="submit" class="button" value="<?= $sholbl ?>">
-</th>
+<table class="content" >
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td class="ctr">
+	<?= $inflbl ?>: <input type="text" name="txt" value="<?= $txt ?>" class="xl" onfocus="select();">
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $sholbl ?>">
+</td>
 </tr>
-</table></form>
+</table>
+</form>
+<p>
+
 <?php
 }
 
 ?>
 <h2>Decimal, ASCII, HEX</h2>
-<table class="content fixed" ><tr class="<?= $modgroup[$self] ?>2">
+
+<table class="content fixed" >
+	<tr class="bgsub">
 <?php
 
 $ord = preg_split('/\D/', $txt);
 for($i=0;$i<count($ord);$i++){
-	echo "<td>$i</td>";
+	echo "\t\t<td>\n\t\t\t$i\n\t\t</td>\n";
 }
 
 ?>
-</tr><tr class="txta code">
+	</tr>
+	<tr class="txta code">
 <?php
 
 foreach ($ord as $o){
-	echo "<td>$o</td>";
+	echo "\t\t<td>\n\t\t\t$o\n\t\t</td>\n";
 }
 
 ?>
-</tr><tr class="txtb code">
+	</tr>
+	<tr class="txtb code">
 <?php
 
 foreach ($ord as $o){
 	if($o > 31 and $o < 122){
-		echo "<td>".chr($o)."</td>";
+		echo "\t\t<td>\n\t\t\t".chr($o)."\n\t\t</td>\n";
 	}else{
-		echo "<td></td>";
+		echo "\t\t<td>\n\t\t\t\n\t\t</td>\n";
 	}
 }
 
 ?>
-</tr><tr class="txta code">
+	</tr>
+	<tr class="txta code">
 <?php
 
 foreach ($ord as $o){
-	echo "<td>".dechex($o)."</td>";
+	echo "\t\t<td>\n\t\t\t".dechex($o)."\n\t\t</td>\n";
 }
 ?>
-
-</tr>
+	</tr>
 </table>
 
 <?php

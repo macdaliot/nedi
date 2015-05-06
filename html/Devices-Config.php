@@ -29,7 +29,7 @@ $dd = isset($_GET['dd']) ? $_GET['dd'] : "";
 $cm = isset($_GET['cm']) ? $_GET['cm'] : "";
 
 $lic = isset($_GET['lim']) ? preg_replace('/\D+/','',$_GET['lim']) : $listlim;
-$lid = isset($_GET['lid']) ? preg_replace('/\D+/','',$_GET['lid']) : 20;
+$lid = isset($_GET['lid']) ? preg_replace('/\D+/','',$_GET['lid']) : 10;
 
 $cfgup = array();
 
@@ -61,9 +61,9 @@ if($res){
 
 <?php  if( !isset($_GET['print']) and !isset($_GET['xls']) ) { ?>
 <form method="get" action="<?= $self ?>.php" name="cfg">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
+<table class="content"><tr class="bgmain">
 <td class="ctr s">
-	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
 <td class="ctr b">
 	<?= $lstlbl ?><p>
@@ -98,11 +98,11 @@ foreach (array_keys($cfgup) as $d){
 		<option value=""><?= $sellbl ?> ->
 		<option value="v" <?= ($cm == "v")?" selected":"" ?>>Side by Side
 		<option value="i" <?= ($cm == "i")?" selected":"" ?>>IOS <?= $optlbl ?>
-	
+
 		<option value="p" <?= ($cm == "p")?" selected":"" ?>>Procurve <?= $optlbl ?>
-	
+
 		<option value="f" <?= ($cm == "f")?" selected":"" ?>>Ironware <?= $optlbl ?>
-	
+
 	</select>
 </td>
 <td class="ctr b">
@@ -121,6 +121,7 @@ foreach (array_keys($cfgup) as $d){
 </tr></table>
 </form>
 <p>
+
 <?php
 }
 
@@ -171,8 +172,9 @@ if ($gen){
 		foreach ($cmpdev as $ddv){
 			$ud	= rawurlencode($ddv);
 ?>
+
 <table class="content">
-	<tr class="<?= $modgroup[$self] ?>2">
+	<tr class="bgsub">
 		<th>
 			<a href="Devices-Status.php?dev=<?= $ud ?>"><img src="img/dev/<?= $devic[$ddv] ?>.png"><br><?= ($ld == $ddv)?"$ddv ($srclbl)":"$ddv" ?></a>
 		</th>
@@ -180,7 +182,7 @@ if ($gen){
 	<tr class="txta">
 		<td class="top">
 			<a href="?shc=<?= $ud ?>"><img src="img/16/conf.png" title="<?= $sholbl ?>"></a>
-			<div class="code">
+			<div class="code pre">
 <?php
 			if($ld == $ddv){
 				$lnr = 0;
@@ -196,7 +198,7 @@ if ($gen){
 				if ($cfgok == 1) {
 					$ddvc = DbFetchRow($res);
 					DbFreeResult($res);
-					echo PHPDiff( Opdiff($rdvc[1],$cm), Opdiff($ddvc[1],$cm),($cm == 'v')?1:0 );		
+					echo PHPDiff( Opdiff($rdvc[1],$cm), Opdiff($ddvc[1],$cm),($cm == 'v')?1:0 );
 					echo "			</div>\n		</td>\n	</tr>\n</table>\n<p>\n";
 				}else{
 					echo "<h4>$ddv: $cfgok $vallbl</h4>\n";
@@ -217,7 +219,7 @@ if ($gen){
 			$ina	='device';
 		}
 		echo "<h3>$cols[$ina] $opa '$sta'</h3>\n\n";
-		TblHead("$modgroup[$self]2",2);
+		TblHead("bgsub",2);
 
 		$query	= GenQuery('configs','s','configs.*,length(config) as cfgl,length(changes) as chgl,inet_ntoa(devip),type,devos,icon,cliport',$ord,$lid,array($ina),array($opa),array($sta),array(),'LEFT JOIN devices USING (device)');
 
@@ -230,12 +232,12 @@ if ($gen){
 				$row++;
 				$ud  = rawurlencode($con[0]);
 				TblRow($bg);
-				TblCell($con[0],"Devices-Status.php?dev=$ud","$bi ctr b s","+<img src=\"img/dev/$con[9].png\" title=\"$con[7]\"><br>");
+				TblCell($con[0],'',"$bi ctr b s","+<a href=\"Devices-Status.php?dev=$ud\"><img src=\"img/dev/$con[9].png\" title=\"$con[7]\"></a><br>");
 				TblCell( Devcli($con[6],$con[10]) );
 				TblCell($con[8]);
-				TblCell( substr(implode("\n",preg_grep("/$sta/i",explode("\n",$con[1]) ) ),0,$lic),"?shc=$ud",'code' );
+				TblCell( substr(implode("\n",preg_grep("/$sta/i",explode("\n",$con[1]) ) ),0,$lic),"?shc=$ud",'code','','white-space: pre-line');
 				TblCell($con[4]);
-				TblCell( substr(implode("\n",preg_grep("/$sta/i",explode("\n",$con[2]) ) ),0,$lic),'','code' );
+				TblCell( substr(implode("\n",preg_grep("/$sta/i",explode("\n",$con[2]) ) ),0,$lic),'','code','','white-space: pre-line');
 				TblCell($con[5]);
 				list($u1c,$u2c) = Agecol($con[3],$con[3],$row % 2);
 				TblCell( date($_SESSION['timf'],$con[3]),'','nw','',"background-color:#$u1c" );
@@ -247,7 +249,7 @@ if ($gen){
 		}
 ?>
 </table>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2"><td>
+<table class="content"><tr class="bgsub"><td>
 <?= $row ?> Devices
 </td></tr></table>
 <?php
@@ -273,7 +275,7 @@ if ($gen){
 	$charr	= preg_replace("/(^\s*[0-9]{1,4}\+.*)$/","<span class='olv'>$1</span>",$charr);
 ?>
 <table class="content">
-	<tr class="<?= $modgroup[$self] ?>2">
+	<tr class="bgsub">
 		<th>
 			<img src="img/32/note.png"><br><?= $cfglbl ?> (<?= date($_SESSION['timf'],$cfg[3]) ?>)
 		</th>
@@ -287,12 +289,12 @@ if ($gen){
 			<a href="?shc=<?= $ucfg ?>&sln=<?= $sln ?>&smo=<?=!$smo ?>"><img src="img/16/say.png" title="motd"></a>
 			<a href="System-Export.php?act=c&exptbl=configs&query=SELECT+config+FROM+configs+where+DEVICE%3D%22<?= $ucfg ?>%22&type=plain"><img src="img/16/flop.png" title="<?= (($verb1)?"$explbl $cfglbl":"$cfglbl $explbl") ?>"></a>
 			<a href="Devices-Status.php?dev=<?= $ucfg ?>"><img src="img/16/sys.png" title="Device-Status"></a>
-			<a href="Devices-Doctor.php?dev=<?= $ucfg ?>"><img src="img/16/cinf.png" title="<?= $cfglbl ?> <?= $sumlbl ?>"></a>
+			<a href="Devices-Doctor.php?dev=<?= $ucfg ?>"><img src="img/16/info.png" title="<?= $cfglbl ?> <?= $sumlbl ?>"></a>
 			<?= (Devcli($cfg[4],$cfg[5],2)) ?>
 <?php if($isadmin)
 	echo "			<a href=\"?dco=$ucfg\"><img src=\"img/16/bcnl.png\" onclick=\"return confirm('$dellbl $cfglbl?')\" title=\"$dellbl $cfglbl!\"></a>\n";
 ?>
-			<div class="code">
+			<div class="code pre">
 <?php
 	$lnr = 0;
 	foreach ( explode("\n",$cfg[1]) as $cl ){
@@ -320,7 +322,7 @@ if (is_dir("$nedipath/conf/$shc")){
 ?>
 </form>
 
-			<div class="code">
+			<div class="code pre">
 <?= implode("\n",$charr) ?>
 			</div>
 		</td>
@@ -342,7 +344,7 @@ if (is_dir("$nedipath/conf/$shc")){
 include_once ("inc/footer.php");
 
 function Opdiff($cfg,$mo){
-	
+
 	$config = "";
 	foreach ( explode("\n",$cfg) as $l ){
 		$row++;
@@ -362,22 +364,22 @@ function Opdiff($cfg,$mo){
     /**
         Diff implemented in pure php, written from scratch.
         Copyright (C) 2003  Daniel Unterberger <diff.phpnet@holomind.de>
-        Copyright (C) 2005  Nils Knappmeier next version 
-        
+        Copyright (C) 2005  Nils Knappmeier next version
+
         This program is free software; you can redistribute it and/or
         modify it under the terms of the GNU General Public License
         as published by the Free Software Foundation; either version 2
         of the License, or (at your option) any later version.
-        
+
         This program is distributed in the hope that it will be useful,
         but WITHOUT ANY WARRANTY; without even the implied warranty of
         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
         GNU General Public License for more details.
-        
+
         You should have received a copy of the GNU General Public License
         along with this program; if not, write to the Free Software
         Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-        
+
         http://www.gnu.org/licenses/gpl.html
 
         About:
@@ -391,17 +393,17 @@ function Opdiff($cfg,$mo){
         Contact: d.u.diff@holomind.de <daniel unterberger>
     **/
 
-    
+
 ## PHPDiff returns the differences between $old and $new, formatted
 ## in the standard diff(1) output format.
-function PHPDiff($old,$new,$sbs) 
+function PHPDiff($old,$new,$sbs)
 {
    # split the source text into arrays of lines
    $t1 = explode("\n",$old);
-   $x=array_pop($t1); 
+   $x=array_pop($t1);
    if ($x>'') $t1[]="$x\n\\ No newline at end of file";
    $t2 = explode("\n",$new);
-   $x=array_pop($t2); 
+   $x=array_pop($t2);
    if ($x>'') $t2[]="$x\n\\ No newline at end of file";
 
    # build a reverse-index array using the line as key and line number as value
@@ -416,7 +418,7 @@ function PHPDiff($old,$new,$sbs)
    # walk this loop until we reach the end of one of the lists
    while ($a1<count($t1) && $a2<count($t2)) {
      # if we have a common element, save it and go to the next
-     if ($t1[$a1]==$t2[$a2]) { $actions[]=4; $a1++; $a2++; continue; } 
+     if ($t1[$a1]==$t2[$a2]) { $actions[]=4; $a1++; $a2++; continue; }
 
      # otherwise, find the shortest move (Manhattan-distance) from the
      # current location
@@ -424,12 +426,12 @@ function PHPDiff($old,$new,$sbs)
      $s1=$a1; $s2=$a2;
      while(($s1+$s2-$a1-$a2) < ($best1+$best2-$a1-$a2)) {
        $d=-1;
-       foreach((array)@$r1[$t2[$s2]] as $n) 
+       foreach((array)@$r1[$t2[$s2]] as $n)
          if ($n>=$s1) { $d=$n; break; }
        if ($d>=$s1 && ($d+$s2-$a1-$a2)<($best1+$best2-$a1-$a2))
          { $best1=$d; $best2=$s2; }
        $d=-1;
-       foreach((array)@$r2[$t1[$s1]] as $n) 
+       foreach((array)@$r2[$t1[$s1]] as $n)
          if ($n>=$s2) { $d=$n; break; }
        if ($d>=$s2 && ($s1+$d-$a1-$a2)<($best1+$best2-$a1-$a2))
          { $best1=$s1; $best2=$d; }
@@ -469,7 +471,7 @@ function PHPDiff($old,$new,$sbs)
 				$out[] = "<td></td>\n<td class=\"good top\">";
 				while ($y0<$y1) {$out[] = "$t2[$y0]\n";$y0++;}   # added elems
 				$out[] = "</td>\n";
-			}else{ 
+			}else{
 				$out[] = "<td class=\"warn top\">";
 				while ($x0<$x1) {$out[] = "$t1[$x0]\n";$x0++;}   # changed elems
 				$out[] = "</td>\n<td class=\"warn top\">";

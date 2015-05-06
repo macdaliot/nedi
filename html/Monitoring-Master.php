@@ -22,47 +22,42 @@ $bld = isset($_GET['bld']) ? $_GET['bld'] : "";
 
 ?>
 <h1>Monitoring Master</h1>
+
 <form method="get" name="dynfrm" action="<?= $self ?>.php">
-<input type="hidden" name="reg" value="<?= $reg ?>">
-<input type="hidden" name="cty" value="<?= $cty ?>">
-<input type="hidden" name="bld" value="<?= $bld ?>">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a>
+<table class="content"><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td class="ctr top">
+	<h3><?= $stalbl ?></h3>
 
-</th>
-<td valign="top" align="center">
-
-<h3><?= $stalbl ?></h3>
-<p>
 <?php
 $link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 list($nmon,$lastok,$monal,$deval,$slow) = TopoMon($loc);
-StatusMon($nmon,$lastok,$monal,$_SESSION['gsiz'],$deval);
-StatusSlow($slow,$_SESSION['gsiz']);
+
+StatusMon( $_SESSION['gsiz'] );
 ?>
 
 </td>
-<td valign="top" align="center">
-
-<h3>Incidents <?= $notlbl ?> <?= $acklbl ?></h3>
+<td class="ctr top">
+	<h3><?= $inclbl ?> <?= $notlbl ?> <?= $acklbl ?></h3>
 <?php
 StatusIncidents($loc,$_SESSION['gsiz'],1);
 ?>
 
 </td>
-<th width="80">
-
-<span id="counter"><?= $refresh ?></span>
-<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
-
-</th></tr></table>
+<td class="ctr s">
+	<span id="counter"><?= $refresh ?></span>
+	<img src="img/16/exit.png" title="Stop" onClick="stop_countdown(interval);">
+</td>
+</tr>
+</table>
 </form>
 <p>
 
 <h2><?= $msglbl ?> <?= $tim['t'] ?></h2>
 
-<table class="full"><tr>
-<td  width="20%" class="helper">
+<table class="full"><tr><td class="helper qrt">
 
 <h3>Devices</h3>
 <?php
@@ -72,10 +67,22 @@ StatusIncidents($loc,$_SESSION['gsiz'],1);
 		$nlev = DbNumRows($res);
 		if($nlev){
 ?>
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th><img src="img/16/dev.png"><br>Device</th>
-<th><img src="img/16/bell.png"><br><?= $msglbl ?></th>
-<th><img src="img/16/cog.png"><br><?= $cmdlbl ?></th>
+<table class="content">
+	<tr class="bgsub">
+		<th>
+			<img src="img/16/dev.png"><br>
+			Device
+		</th>
+		<th>
+			<img src="img/16/bell.png"><br>
+			<?= $msglbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/cog.png"><br>
+			<?= $cmdlbl ?>
+
+		</th>
 <?php
 			$row = 0;
 			while( ($r = DbFetchRow($res)) ){
@@ -83,19 +90,21 @@ StatusIncidents($loc,$_SESSION['gsiz'],1);
 				$row++;
 				$s    = substr($r[0],0,$_SESSION['lsiz']);		# Shorten labels
 				$mbar = Bar($r[2],0,'si');
-				echo "<tr class=\"$bg\"><th class=\"$bi\" nowrap><a href=\"Devices-Status.php?dev=".urlencode($r[0])."\">$s</th>\n";
-				echo "<td nowrap>$mbar <a href=\"$r[1]://".urlencode($r[0])."/Monitoring-Events.php?in[]=level&op[]=>&st[]=150&co[]=AND&in[]=time&op[]=>&st[]=$firstmsg\">$r[2]</a></td>\n";
-				echo "<th nowrap>\n";
-				echo "<a href=\"$r[1]://".urlencode($r[0])."/Monitoring-Health.php\"><img src=\"img/16/hlth.png\" title=\"$r[0] Health\"></a>\n";
-				echo "<a href=\"$r[1]://".urlencode($r[0])."/Monitoring-Setup.php\"><img src=\"img/16/bino.png\" title=\"$r[0] $monlbl $cfglbl\"></a>\n";
-				echo "<a href=\"$r[1]://".urlencode($r[0])."/Reports-Combination.php?in[]=&op[]=~&st[]=&rep=mon\"><img src=\"img/16/chrt.png\" title=\"$r[0] $inclbl $sumlbl\"></a>\n";
-				echo "<a href=\"$r[1]://".urlencode($r[0])."/Reports-Monitoring.php?rep[]=lat&rep[]=evt\"><img src=\"img/16/dbin.png\" title=\"$r[0] $monlbl $stslbl\"></a>\n";
-				echo "<a href=\"$r[1]://".urlencode($r[0])."/System-Services.php\"><img src=\"img/16/cog.png\" title=\"$r[0] $srvlbl\"></a>\n";
-				echo "</th></tr>\n";
+				$ud   = urlencode($r[0]);
+				TblRow($bg);
+				TblCell( $r[0],"Devices-Status.php?dev=$ud","$bi b" );
+				TblCell( "$mbar $r[2]","Monitoring-Events.php?in[]=device&op[]==&st[]=$ud&co[]=AND&in[]=time&op[]=>&st[]=$firstmsg",'nw' );
+				TblCell( "<a href=\"$r[1]://$ud/Monitoring-Health.php\"><img src=\"img/16/hlth.png\" title=\"$r[0] Health\"></a>\n".
+					 "\t\t\t<a href=\"$r[1]://$ud/Monitoring-Setup.php\"><img src=\"img/16/bino.png\" title=\"$r[0] $monlbl $cfglbl\"></a>\n".
+					 "\t\t\t<a href=\"$r[1]://$ud/Reports-Combination.php?in[]=&op[]=~&st[]=&rep=mon\"><img src=\"img/16/chrt.png\" title=\"$r[0] $inclbl $sumlbl\"></a>\n".
+					 "\t\t\t<a href=\"$r[1]://$ud/Reports-Monitoring.php?rep[]=lat&rep[]=evt\"><img src=\"img/16/dbin.png\" title=\"$r[0] $monlbl $stslbl\"></a>\n".
+					 "\t\t\t<a href=\"$r[1]://$ud/System-Services.php\"><img src=\"img/16/cog.png\" title=\"$r[0] $srvlbl\"></a>\n"
+					,'','ctr nw' );
+				echo "\t</tr>\n";
 			}
 			echo "</table>\n";
 		}else{
-			echo "<p><h5>$nonlbl</h5>";
+			echo "<p>\n<h5>$nonlbl</h5>\n";
 		}
 		DbFreeResult($res);
 	}else{
@@ -103,15 +112,14 @@ StatusIncidents($loc,$_SESSION['gsiz'],1);
 	}
 ?>
 
-</td>
-<td width="75%" class="helper">
+</td><td class="helper tqrt">
 
 <h3><?= $mlvl[200] ?> & <?= $mlvl[250] ?> <?= $lstlbl ?></h3>
 <?php
 
 Events($_SESSION['lim'],array('level','time','location'),array('>=','>','~'),array(200,$firstmsg,$loc),array('AND','AND'),2);
 
-echo "</td></tr></table>";
+echo "\n</td></tr></table>\n\n";
 if($_SESSION['opt']){
 	MonAvail('','','',$_SESSION['lim'],'');
 }

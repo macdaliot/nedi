@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 session_start();
 if( !preg_match("/net/",$_SESSION['group']) ){
@@ -22,14 +22,14 @@ $graph = "rt-svg.php?t=$t&r=$r&ip=$_GET[ip]&c=$_GET[c]&v=$_GET[v]&i=$_GET[i]&in=
 </head>
 
 <body>
-<div class="net2">
+<div class="bgmain">
 	<form method="get" name="iv">
 		<img src="../img/16/grph.png">
 		<span class="b">
 			<?= $_GET['d'] ?>
 		</span>
 		&nbsp;<?= $typlbl ?>
-		
+
 		<input type="hidden" name="ip" value="<?= $_GET['ip'] ?>">
 		<input type="hidden" name="c" value="<?= $_GET['c'] ?>">
 		<input type="hidden" name="d" value="<?= $_GET['d'] ?>">
@@ -45,7 +45,7 @@ $graph = "rt-svg.php?t=$t&r=$r&ip=$_GET[ip]&c=$_GET[c]&v=$_GET[v]&i=$_GET[i]&in=
 			<option value="d" <?= ($t == 'd')?"selected":"" ?>><?= $dcalbl ?>
 		</select>
 		<?= $rptlbl ?>
-		
+
 		<select name="r" size="1" onchange="this.form.submit();">
 			<option value="1" <?= ($r == 1)?"selected":"" ?>>1
 			<option value="3" <?= ($r == 3)?"selected":"" ?>>3
@@ -55,7 +55,7 @@ $graph = "rt-svg.php?t=$t&r=$r&ip=$_GET[ip]&c=$_GET[c]&v=$_GET[v]&i=$_GET[i]&in=
 			<option value="300" <?= ($r == 300)?"selected":"" ?>>300
 		</select>
 		<?= $tim['s'] ?>
-		
+
 	</form>
 </div>
 <object data="<?= $graph ?>" type="image/svg+xml" width="100%" height="90%">

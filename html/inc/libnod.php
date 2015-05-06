@@ -112,6 +112,7 @@ function Nimg($m) {
 	elseif (stristr($m,"March"))				{return	 "mar";}
 	elseif (stristr($m,"Matsushita"))			{return  "mat";}
 	elseif (stristr($m,"MICRO-STAR"))			{return  "msi";}
+	elseif (stristr($m,"MICROSENS"))			{return  "mis";}
 	elseif (stristr($m,"Microsoft Corporation"))		{return  "ms";}
 	elseif (stristr($m,"MINOLTA"))				{return  "min";}
 	elseif (stristr($m,"MITAC INTERNATIONAL"))		{return  "mit";}
@@ -237,7 +238,7 @@ function Nimg($m) {
 // Emulate good old nbtstat on port 137
 function NbtStat($ip) {
 
-	global $timeout;
+	global $timeout, $nonlbl, $rpylbl;
 
 	if ($ip == "0.0.0.0") {
 		return "<img src=\"img/16/bcls.png\"> No IP!";
@@ -279,7 +280,7 @@ function NbtStat($ip) {
 				}
 				return "<img src=\"img/16/bchk.png\"> $na $gr $co";
 			}else{
-				return "<img src=\"img/16/bstp.png\"> No response";
+				return "<img src=\"img/16/bstp.png\"> $nonlbl $rpylbl";
 			}
 		}
 	}
@@ -355,6 +356,104 @@ function Wake($ip, $mac, $port){
 	}
 	echo "<h4>WoL $sndlbl $ip $errlbl</h4>\n";
 	return false;
+}
+
+//===================================================================
+// Draw Node's Metric Chart
+function MetricChart($id, $sz, $str){
+
+	global $spdlbl,$debug,$anim;
+
+	if($sz == 4){
+		$w = 320;
+		$h = 200;
+		$f = 9;
+	}elseif($sz == 3){
+		$w = 200;
+		$h = 100;
+		$f = 8;
+	}else{
+		$w = 110;
+		$h = 70;
+		$f = 8;
+	}
+
+	$i = 0;
+	if( preg_match('/[M-Z]/',$str) ){
+		foreach( str_split($str) as $ch ){
+			$met['labels'][] = $i++;
+			$snr['data'][] = 3*(90-ord($ch));
+		}
+		$snr['label']           = "SNR";
+		$snr['fillColor']       = "rgba(100,200,100,0.5)";
+		$snr['strokeColor']     = "rgba(50,150,50,1)";
+		$snr['highlightFill']   = "rgba(75,175,75,0.5)";
+		$snr['highlightStroke'] = "rgba(25,150,25,1)";
+		$met['datasets'][]      = $snr;
+		$typ = 'Bar';
+	}else{
+		foreach( str_split($str) as $ch ){
+			$met['labels'][] = $i++;
+			$v = 76 - ord($ch);
+			if( $v > 5 ){
+				$spd['data'][] = $v-6;
+				$dup['data'][] = 0;
+			}else{
+				$spd['data'][] = $v;
+				$dup['data'][] = 1;
+			}
+		}
+		$spd['label']       = $spdlbl;
+		$spd['fillColor']   = "rgba(100,150,200,0.5)";
+		$spd['strokeColor'] = "rgba(100,150,200,1)";
+		$spd['pointColor']  = "rgba(100,150,200,1)";
+		$spd['pointHighlightFill']  = "rgba(20,30,20,1)";
+		$dup['label']       = 'Duplex';
+		$dup['fillColor']   = "rgba(200,100,100,0.5)";
+		$dup['strokeColor'] = "rgba(200,100,100,1)";
+		$dup['pointColor']  = "rgba(200,100,100,1)";
+		$dup['pointHighlightFill']  = "rgba(40,20,20,1)";
+		$met['datasets'][]  = $spd;
+		$met['datasets'][]  = $dup;
+		$typ = 'Line';
+	}
+
+?>
+<canvas id="<?= $id ?>" class="genpad" width="<?= $w ?>" height="<?= $h ?>"></canvas>
+
+<script language="javascript">
+var data = <?= json_encode($met,JSON_NUMERIC_CHECK) ?>
+
+var ctx = document.getElementById("<?= $id ?>").getContext("2d");
+var myNewChart = new Chart(ctx).<?= $typ ?>(data, {pointDotRadius : 2, scaleFontSize: <?= $f ?><?= $anim ?>});
+</script>
+
+<?php
+	if($debug){
+		echo "<div class=\"textpad code pre txta\">\n";
+		print_r($met);
+		echo "</div>\n";
+	}
+}
+
+//===================================================================
+// Delete node and related tables
+function NodDelete($dln){
+
+	global $link,$delbl,$errlbl,$updlbl,$nedipath;
+
+	$query	= GenQuery('nodes','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln $dellbl OK</h5>";}
+	$query	= GenQuery('nodarp','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln IP ARP $dellbl OK</h5>";}
+	$query	= GenQuery('nodnd','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln IPv6 ND $dellbl OK</h5>";}
+	$query	= GenQuery('iptrack','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln iptrack $dellbl OK</h5>";}
+	$query	= GenQuery('iftrack','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln iptrack $dellbl OK</h5>";}
+	$query	= GenQuery('nbrtrack','d','','','',array('mac'),array('='),array($dln) );
+	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$dln nbrtrack $dellbl OK</h5>";}
 }
 
 ?>

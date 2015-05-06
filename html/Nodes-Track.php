@@ -28,7 +28,7 @@ if( isset($_GET['col']) ){
 }elseif( isset($_SESSION['ntrcol']) ){
 	$col = $_SESSION['ntrcol'];
 }else{
-	$col = array('tgtNS','nodetrack.device','nodetrack.ifname','value','source','alias','name');
+	$col = array('tgtNS','nodetrack.device','nodetrack.ifname','value','source','alias','nodip');
 }
 
 $del = isset($_GET['del']) ? $_GET['del'] : "";
@@ -45,7 +45,7 @@ $cols = array(	"tgtNS"=>"$tgtlbl",
 		"source"=>$srclbl,
 		"alias"=>"IF Alias",
 		"comment"=>"IF $cmtlbl",
-		"name"=>$namlbl,
+		"nodip"=>"IP $adrlbl",
 		"nodes.mac"=>"MAC $adrlbl",
 		"nodes.vlanid"=>"Vlan",
 		"oui"=>"OUI $venlbl",
@@ -60,32 +60,33 @@ $cols = array(	"tgtNS"=>"$tgtlbl",
 <?php  if( !isset($_GET['print']) ) { ?>
 
 <form method="get" action="<?= $self ?>.php" name="track">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-
+<table class="content"><tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
 <td>
 <?php Filters(); ?>
 
 </td>
-<th>
-
-<select multiple name="col[]" size="6">
+<td class="ctr">
+	<select multiple name="col[]" size="6">
 <?php
 foreach ($cols as $k => $v){
-       echo "<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
+       echo "\t\t<option value=\"$k\"".((in_array($k,$col))?" selected":"").">$v\n";
 }
 ?>
-</select>
-
-</th>
-<th width="80">
-
-<input type="submit" class="button" value="<?= $sholbl ?>">
+	</select>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" value="<?= $sholbl ?>">
+	<p>
+	<input type="submit" class="button" name="del" value="<?= $dellbl ?>" onclick="return confirm('Tracker <?= $dellbl ?>?')" >
+</td>
+</tr>
+</table>
+</form>
 <p>
-<input type="submit" class="button" name="del" value="<?= $dellbl ?>" onclick="return confirm('Tracker <?= $dellbl ?>?')" >
 
-</th>
-</tr></table></form><p>
 <?php
 }
 $link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
@@ -97,9 +98,9 @@ if($del){
 if( count($in) ){
 	Condition($in,$op,$st,$co);
 
-	TblHead("$modgroup[$self]2",1);
+	TblHead("bgsub",1);
 
-	$query	= GenQuery('nodetrack','s','nodetrack.device as device,nodetrack.ifname as ifname,value,source,alias,comment,name,nodes.mac as mac,oui,nodes.vlanid as vlanid,usrname,time',$ord,$lim,$in,$op,$st,$co, 'JOIN interfaces USING (device,ifname) LEFT JOIN nodes USING (device,ifname)');
+	$query	= GenQuery('nodetrack','s','nodetrack.device as device,nodetrack.ifname as ifname,value,source,alias,comment,nodip,nodes.mac as mac,oui,nodes.vlanid as vlanid,usrname,time',$ord,$lim,$in,$op,$st,$co, 'JOIN interfaces USING (device,ifname) LEFT JOIN nodes USING (device,ifname) LEFT JOIN nodarp USING (mac)');
 	$res	= DbQuery($query,$link);
 	if($res){
 		$usta = urlencode($sta);
@@ -154,79 +155,80 @@ if( count($in) ){
 			foreach ($col as $c){
 				if( $p = strpos($c,".") ){$c = substr($c,$p+1);}
 				if($c == 'tgtNS'){
-					echo "<th class=\"$bst\" width=\"50\">";
+					echo "\t\t<td class=\"$bst ctr xs\">\n";
 					if($trk['mac']){
 						$img = Nimg("$trk[mac];$trk[oui]");
 ?>
-<a href="Nodes-Status.php?mac=<?= $trk['mac'] ?>&vid=<?= $trk['vlanid'] ?>"><img src="img/oui/<?= $img ?>.png" title="<?= $trk['mac'] ?> (<?= $trk['oui'] ?>)"></a>
+			<a href="Nodes-Status.php?mac=<?= $trk['mac'] ?>&vid=<?= $trk['vlanid'] ?>"><img src="img/oui/<?= $img ?>.png" title="<?= $trk['mac'] ?> (<?= $trk['oui'] ?>)"></a>
 <?php
 					}else{
-						echo "<img src=\"img/p45.png\">";
+						echo "\t\t\t<img src=\"img/p45.png\">\n";
 					}
-					echo "</th>";
+					echo "\t\t</td>\n";
 				}elseif($c == 'value'){
-					echo "<td class=\"blu\"><b>$trk[$c]</b></td>";
+					echo "\t\t<td class=\"blu\"><b>$trk[$c]</b></td>";
 				}elseif($c == 'device'){
-					echo "<td nowrap>\n";
+					echo "\t\t<td class=\"nw\">\n";
 					if( !isset($_GET['print']) and strpos($_SESSION['group'],$modgroup['Devices-Status']) !== false ){
-						echo "<a href=\"Devices-Status.php?dev=".urlencode($trk[$c])."\"><img src=\"img/16/sys.png\"></a>\n";
+						echo "\t\t\t<a href=\"Devices-Status.php?dev=".urlencode($trk[$c])."\"><img src=\"img/16/sys.png\"></a>\n";
 					}
-					echo "<a href=\"?in[]=nodetrack.device&op[]==&st[]=".urlencode($trk[$c])."\">$trk[$c]</a></td>";
+					echo "\t\t\t<a href=\"?in[]=nodetrack.device&op[]==&st[]=".urlencode($trk[$c])."\">$trk[$c]</a>\n\t\t</td>\n";
 				}elseif($c == $trk['source']){
-					echo "<td class=\"blu\">$trk[$c]</td>";
+					echo "\t\t<td class=\"blu\">\n\t\t\t$trk[$c]\n\t\t</td>\n";
+				}elseif($c == 'nodip'){
+					echo "\t\t<td>\n\t\t\t".long2ip($trk[$c])."\n\t\t</td>\n";
 				}elseif($c == "time"){
-					echo "<td bgcolor=\"#$cc\">".date($_SESSION['timf'], $trk[$c])."</td>";
+					echo "\t\t<td bgcolor=\"#$cc\">\n\t\t\t".date($_SESSION['timf'], $trk[$c])."\n\t\t</td>\n";
 				}elseif($c == 'cfgNS'){
 ?>
-<td>
-<form method="get">
-<input type="hidden" name="in[]" value="<?= $in[0] ?>">
-<input type="hidden" name="op[]" value="<?= $op[0] ?>">
-<input type="hidden" name="st[]" value="<?= $st[0] ?>">
-<input type="hidden" name="co[]" value="<?= $co[0] ?>">
-<input type="hidden" name="in[]" value="<?= $in[1] ?>">
-<input type="hidden" name="op[]" value="<?= $op[1] ?>">
-<input type="hidden" name="st[]" value="<?= $st[1] ?>">
-<input type="hidden" name="co[]" value="<?= $co[1] ?>">
-<input type="hidden" name="in[]" value="<?= $in[2] ?>">
-<input type="hidden" name="op[]" value="<?= $op[2] ?>">
-<input type="hidden" name="st[]" value="<?= $st[2] ?>">
-<input type="hidden" name="co[]" value="<?= $co[2] ?>">
-<input type="hidden" name="in[]" value="<?= $in[2] ?>">
-<input type="hidden" name="op[]" value="<?= $op[2] ?>">
-<input type="hidden" name="st[]" value="<?= $st[2] ?>">
-<input type="hidden" name="co[]" value="<?= $co[2] ?>">
+		<td>
+			<form method="get">
+				<input type="hidden" name="in[]" value="<?= $in[0] ?>">
+				<input type="hidden" name="op[]" value="<?= $op[0] ?>">
+				<input type="hidden" name="st[]" value="<?= $st[0] ?>">
+				<input type="hidden" name="co[]" value="<?= $co[0] ?>">
+				<input type="hidden" name="in[]" value="<?= $in[1] ?>">
+				<input type="hidden" name="op[]" value="<?= $op[1] ?>">
+				<input type="hidden" name="st[]" value="<?= $st[1] ?>">
+				<input type="hidden" name="co[]" value="<?= $co[1] ?>">
+				<input type="hidden" name="in[]" value="<?= $in[2] ?>">
+				<input type="hidden" name="op[]" value="<?= $op[2] ?>">
+				<input type="hidden" name="st[]" value="<?= $st[2] ?>">
+				<input type="hidden" name="co[]" value="<?= $co[2] ?>">
+				<input type="hidden" name="in[]" value="<?= $in[2] ?>">
+				<input type="hidden" name="op[]" value="<?= $op[2] ?>">
+				<input type="hidden" name="st[]" value="<?= $st[2] ?>">
+				<input type="hidden" name="co[]" value="<?= $co[2] ?>">
+				<input type="hidden" name="dev" value="<?= $trk['device'] ?>">
+				<input type="hidden" name="ifn" value="<?= $trk['ifname'] ?>">
+				<input type="text" name="val" size="15" value="<?= $trk['value'] ?>" onfocus="select();"  onchange="this.form.submit();" title="<?= $wrtlbl ?> <?= $namlbl ?>">
+				<select size="1" name="src" onchange="this.form.submit();" title="<?= $namlbl ?> <?= $srclbl ?>">
+					<option value=""><?= $sellbl ?>
 
-<input type="hidden" name="dev" value="<?= $trk['device'] ?>">
-<input type="hidden" name="ifn" value="<?= $trk['ifname'] ?>">
-<input type="text" name="val" size="15" value="<?= $trk['value'] ?>" onfocus="select();"  onchange="this.form.submit();" title="<?= $wrtlbl ?> <?= $namlbl ?>">
-<select size="1" name="src" onchange="this.form.submit();" title="<?= $namlbl ?> <?= $srclbl ?>">
-<option value=""><?= $sellbl ?>
-<option value="-">-
-<option value="name"><?= $namlbl ?>
-<option value="mac">MAC <?= $adrlbl ?>
-<option value="alias">IF Alias
-<option value="comment">IF <?= $cmtlbl ?>
-</select> <?= $cfgst ?>
-</form>
-</td>
+					<option value="-">-
+					<option value="name"><?= $namlbl ?>
+
+					<option value="mac">MAC <?= $adrlbl ?>
+
+					<option value="alias">IF Alias
+					<option value="comment">IF <?= $cmtlbl ?>
+
+				</select> <?= $cfgst ?>
+
+			</form>
+		</td>
 <?php
 				}else{
-					echo "<td>$trk[$c]</td>";
+					echo "\t\t<td>$trk[$c]</td>";
 				}
 			}
-			echo "	</tr>\n";
+			echo "\t</tr>\n";
 		}
 		DbFreeResult($res);
 	}else{
 		print DbError($link);
 	}
-?>
-</table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> <?= $vallbl ?></td></tr>
-</table>
-<?php
+	TblFoot("bgsub", count($col), "$row $vallbl".(($ord)?", $srtlbl: $ord":"") );
 }
 include_once ("inc/footer.php");
 ?>

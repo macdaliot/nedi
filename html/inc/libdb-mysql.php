@@ -42,7 +42,7 @@ function DbFreeResult($r){
 	global $debug;
 
 	if($debug){
-		echo "<div class=\"textpad code good\" style=\"width:600px\">";
+		echo "<div class=\"textpad code pre good xxl\">";
 		debug_print_backtrace();
 		echo DecFix(memory_get_usage(),1).'B @'.round(microtime(1) - $debug,2)."s</div>\n";
 	}
@@ -55,6 +55,16 @@ function DbAffectedRows($r){
 
 function DbEscapeString($r){
         return mysql_real_escape_string($r);
+}
+
+# We might get 'table.column' sent to this function, not just a bare column name.
+#
+# Do not further quote the result of this function.
+function DbEscapeIdentifier($i){
+	# PHP appears to have no standard MySQL-related function for this,
+	# so we approximate it as best we can.
+	$c = explode(".", $i);
+	return "`" . implode("`.`", array_map(mysql_real_escape_string, $c)) . "`";
 }
 
 function DbError($r){
@@ -78,12 +88,12 @@ function AddRecord($table,$key,$col,$val){
 	$mres	= DbQuery("SELECT * FROM $table WHERE $key",$link);
 	if($mres){
 		if( DbNumRows($mres) ){
-			$status = "<img src=\"img/16/bdis.png\" title=\"$alrlbl OK\" vspace=\"4\">";
+			$status = "<img src=\"img/16/bdis.png\" title=\"$alrlbl OK\">";
 		}else{
 			if( !DbQuery("INSERT INTO $table ($col) VALUES ($val)",$link) ){
-				$status = "<img src=\"img/16/bcnl.png\" title=\"".DbError($link)."\" vspace=\"4\">";
+				$status = "<img src=\"img/16/bcnl.png\" title=\"".DbError($link)."\">";
 			}else{
-				$status = "<img src=\"img/16/bchk.png\" title=\"$addlbl OK\" vspace=\"4\">";
+				$status = "<img src=\"img/16/bchk.png\" title=\"$addlbl OK\">";
 			}
 		}
 	}else{
@@ -106,8 +116,6 @@ function AddDevs($col){
 // Adapt operator and value for special fields
 function AdOpVal($c,$o,$v){
 
-	global $debug;
-
 	if( preg_match("/^(first|last|start|end|time|(if|ip|os|as)?update)/",$c) and !preg_match("/^[0-9]+$/",$v) ){
 		$v = strtotime($v);
 	}elseif( preg_match("/^(if)?mac$/",$c) ){
@@ -128,7 +136,8 @@ function AdOpVal($c,$o,$v){
 			}
 		}
 	}elseif( preg_match("/^(if|nod|mon)ip6$/",$c) ){
-		$c = "HEX($c)";
+		$v = inet_pton($v);
+		#$c = "HEX($c)";TODO migrate to IPv6 fields as soon as mysql supports them!
 	}
 	if( strstr($o, 'COL ') ){
 		$o = substr($o,4);
@@ -154,7 +163,7 @@ function AdOpVal($c,$o,$v){
 //
 // $tbl	= table to apply query to
 // $do 	s= select (is default), i=insert (using $in for columns and $st for values), o=optimize, d=delete, p=drop db
-//	b=show DBs ($col used as operator with $tbl), h=show tables, c=show columns, t=truncate, u=update (using $in,$op,$st to set values 
+//	b=show DBs ($col used as operator with $tbl), h=show tables, c=show columns, t=truncate, u=update (using $in,$op,$st to set values
 //	and "WHERE $col" to match, $ord $lim as normal), g=group
 // $col	= column(s) to display or to group by (separate with ; to exlude from grouping)
 // $ord	= order by (where ifname also takes numerical interface sorting (e.g. 0/1) into account)
@@ -162,7 +171,7 @@ function AdOpVal($c,$o,$v){
 // $in,op,st	= array of columns,operators and strings to be used for WHERE in UPDATE, INSERT, SELECT and DELETE queries
 // $co	= combines current values with the next series of $in,op,st
 //
-// SELECT and DELETE columns treatment: 
+// SELECT and DELETE columns treatment:
 // * ip:	Input will be converted to decimal, in case of dotted notation and masked if a prefix is set.
 // * time:	Time will be turned into EPOC, if it's not a number already.
 // * mac:	. : - are removed
@@ -174,7 +183,7 @@ function GenQuery($tbl,$do='s',$col='*',$ord='',$lim='',$rawin=array(),$rawop=ar
 	$tbl = mysql_real_escape_string($tbl);								# Mitigate SQL injection
 	$ord = mysql_real_escape_string($ord);
 	$lim = mysql_real_escape_string($lim);
-	
+
 	$in = array_map( 'mysql_real_escape_string', $rawin );
 	$op = array_map( 'mysql_real_escape_string', $rawop );
 	$st = array_map( 'mysql_real_escape_string', $rawst );
@@ -229,7 +238,9 @@ function GenQuery($tbl,$do='s',$col='*',$ord='',$lim='',$rawin=array(),$rawop=ar
 
 		if(isset($_SESSION) and $_SESSION['view'] and (strstr($jn,'JOIN devices') or $tbl == 'devices')){
 			$viewq = explode(' ', $_SESSION['view']);
-			$w = (($w)?"$w AND ":"WHERE ").AdOpVal( $viewq[0],$viewq[1],$viewq[2] );
+			$w = (($w)?"WHERE ($w) AND ":"WHERE ").AdOpVal( $viewq[0],$viewq[1],$viewq[2] );
+		}elseif($w){
+			$w = "WHERE $w";
 		}
 
 		if($do == 'd'){
@@ -250,7 +261,7 @@ function GenQuery($tbl,$do='s',$col='*',$ord='',$lim='',$rawin=array(),$rawop=ar
 	}
 
 	if($debug){
-		echo "<div class=\"textpad code warn\" style=\"width:600px\">";
+		echo "<div class=\"textpad code pre warn xxl\">";
 		debug_print_backtrace();
 		echo "<p><a href=\"System-Export.php?act=c&query=".urlencode($qry)."\">$qry</a>\n";
 		echo DecFix(memory_get_usage(),1).'B @'.round(microtime(1) - $debug,2)."s</div>\n";

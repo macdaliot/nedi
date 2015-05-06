@@ -1,4 +1,5 @@
-  
+  Generated: Mon, 13 Oct 2014 05:00:03 -0400
+
   OUI     			Organization
   IAB Range    			Organization
   				Address
@@ -1692,8 +1693,8 @@
   00-50-C2	(hex)		QuesCom
   110000-110FFF	(base 16)	QuesCom
   				Arche des Dolines
-				7 rue Soutrane
-				06560 Valbonne  
+				79 Rue de Sevres
+				 92100 Boulogne Billancourt  
 				FRANCE
 
   00-50-C2	(hex)		Endusis Limited
@@ -5414,8 +5415,8 @@
 				BRESCIA  25020
 				ITALY
 
-  00-50-C2	(hex)		Vishay Nobel AB
-  365000-365FFF	(base 16)	Vishay Nobel AB
+  00-50-C2	(hex)		VPG
+  365000-365FFF	(base 16)	VPG
   				Box 423
 				Karlskoga  SE-691 27
 				SWEDEN
@@ -8585,8 +8586,8 @@
 				Troeglitz  06729
 				GERMANY
 
-  00-50-C2	(hex)		C21 Technology Limited
-  562000-562FFF	(base 16)	C21 Technology Limited
+  00-50-C2	(hex)		C21 Systems Limited
+  562000-562FFF	(base 16)	C21 Systems Limited
   				Dunston Innovation Centre
 				Dunston Road
 				Chesterfield Derbyshire S41 8NG
@@ -8749,11 +8750,10 @@
 				San Jose CA 95131
 				UNITED STATES
 
-  00-50-C2	(hex)		CYBERSYS
-  57C000-57CFFF	(base 16)	CYBERSYS
-  				35 chemin du vieux chene
-				ZIRST
-				MEYLAN ISERE 38240
+  00-50-C2	(hex)		éolane
+  57C000-57CFFF	(base 16)	éolane
+  				667 rue Aristide Berges
+				38330 Montbonnot St Martin  
 				FRANCE
 
   00-50-C2	(hex)		Sierra Video Systems
@@ -13496,10 +13496,10 @@
 				Schweitenkirchen Bayern 85301
 				GERMANY
 
-  00-50-C2	(hex)		Oliotalo - Objecthouse Oy
-  872000-872FFF	(base 16)	Oliotalo - Objecthouse Oy
-  				Lämmittäjänkatu 4 B
-				Helsinki Uusimaa 00880
+  00-50-C2	(hex)		Oliotalo Oy
+  872000-872FFF	(base 16)	Oliotalo Oy
+  				Sinikalliontie 18 B
+				02630 Espoo  
 				FINLAND
 
   00-50-C2	(hex)		XRONET Corporation
@@ -14499,9 +14499,10 @@
 				Richardson TX 75080
 				UNITED STATES
 
-  00-50-C2	(hex)		Selex Sensors & Airborne Systems
-  913000-913FFF	(base 16)	Selex Sensors & Airborne Systems
-  				Christopher Martin Road
+  00-50-C2	(hex)		Selex Ex Ltd
+  913000-913FFF	(base 16)	Selex Ex Ltd
+  				A Finmeccanica Company
+				Christopher Martin Road
 				Basildon Essex SS14 3EL
 				UNITED KINGDOM
 
@@ -26911,8 +26912,8 @@
 				Coventry West Midlands CV4 7EZ
 				UNITED KINGDOM
 
-  40-D8-55	(hex)		Vishay Nobel AB
-  0DE000-0DEFFF	(base 16)	Vishay Nobel AB
+  40-D8-55	(hex)		VPG
+  0DE000-0DEFFF	(base 16)	VPG
   				Box 423
 				Karlskoga  SE-691 27
 				SWEDEN

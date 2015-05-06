@@ -10,36 +10,55 @@ include_once ("inc/header.php");
 
 <h1>Information</h1>
 
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td>
-
-	<table class="full">
-	<tr class="<?= $modgroup[$self] ?>2">
-	<th>Language: <?= $_SESSION['lang'] ?></th>
-	<th>Theme: <?= $_SESSION['theme'] ?></th>
-	<th><?= $optlbl ?>: <?= $_SESSION['opt'] ?></th>
-
-	</tr>
-	<tr class="<?= $modgroup[$self] ?>2">
-
-	<th>Volume: <?= $_SESSION['vol']  ?></th>
-	<th><?= $collbl ?>: <?= $_SESSION['col']  ?></th>
-	<th><?= $limlbl ?>: <?= $_SESSION['lim']  ?>/<?= $_SESSION['lsiz']  ?></th>
-
-	</tr>
-	<tr class="<?= $modgroup[$self] ?>2">
-
-	<th><?= $gralbl ?> <?= $sizlbl ?>: <?= $_SESSION['gsiz'] ?></th>
-	<th><?= $trflbl ?> Bit/s: <?= $_SESSION['gbit'] ?></th>
-	<th>Fahrenheit: <?= $_SESSION['far'] ?></th>
-
-	</tr></table>
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
-</tr></table>
+<td>
+	<table class="full">
+		<tr>
+			<td>Language: <?= $_SESSION['lang'] ?></td>
+			<td>Theme: <?= $_SESSION['theme'] ?></td>
+			<td><?= $optlbl ?>: <?= $_SESSION['opt'] ?></td>
+		</tr>
+		<tr>
+			<td>Volume: <?= $_SESSION['vol']  ?></td>
+			<td><?= $collbl ?>: <?= $_SESSION['col']  ?></td>
+			<td><?= $limlbl ?>: <?= $_SESSION['lim']  ?>/<?= $_SESSION['lsiz']  ?></td>
+		</tr>
+		<tr>
+			<td><?= $gralbl ?> <?= $sizlbl ?>: <?= $_SESSION['gsiz'] ?></td>
+			<td><?= $trflbl ?> Bit/s: <?= $_SESSION['gbit'] ?></td>
+			<td>Fahrenheit: <?= $_SESSION['far'] ?></td>
+		</tr>
+	</table>
+</td>
+</tr>
+</table>
 <p>
-<?php phpinfo(); ?>
+
+<div class="textpad bgsub tqrt">
+<?php
+
+// Fixed CSS issues, with help from php.net:
+ob_start () ;
+phpinfo () ;
+$pinfo = ob_get_contents () ;
+ob_end_clean () ;
+
+// the name attribute "module_Zend Optimizer" of an anker-tag is not xhtml valid, so replace it with "module_Zend_Optimizer"
+echo ( str_replace ( "module_Zend Optimizer", "module_Zend_Optimizer", preg_replace ( '%^.*<body>(.*)</body>.*$%ms', '$1', $pinfo ) ) ) ;
+
+?>
+</div>
 
 <style type="text/css">
-td, th { border: 1px solid #000000; font-size: 100%; vertical-align: baseline;}
+	td.e {	background-color: #eee;
+		font-size: 100%;
+		font-weight: bold;
+		vertical-align: baseline;
+	}
+	td.v {	background-color: #ddd;
+	}
 </style>

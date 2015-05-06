@@ -1,14 +1,14 @@
-# Definition for 1.3.6.1.4.1.9.1.1045 created by Defgen 1.8 on 19.Sep 2013 (mr.IP)
-
+# Definition for 1.3.6.1.4.1.9.1.1045 created by Defgen 1.9 on 4.Sep 2014 (remo)
+ 
 # General
 SNMPv	2HC
 Type	cisco2911
 Typoid	
 Sysdes	
-OS	IOS
+OS	IOS-rtr
 Icon	rsbn
 Size	1
-Bridge	normalX
+Bridge	
 ArpND	phy
 Dispro	CDP
 Serial	1.3.6.1.4.1.9.3.6.3.0
@@ -24,7 +24,7 @@ Mode
 StartX	
 EndX	
 IFname	1.3.6.1.2.1.31.1.1.1.1
-IFaddr	adr
+IFaddr	adr	
 IFalia	1.3.6.1.2.1.31.1.1.1.18
 IFalix	
 InBcast	1.3.6.1.2.1.31.1.1.1.9

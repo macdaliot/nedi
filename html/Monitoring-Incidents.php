@@ -19,7 +19,6 @@ $grp = isset($_GET['grp']) ? $_GET['grp'] : "";
 $end = isset($_GET['end']) ? 'checked':'';
 $lim = isset($_GET['lim']) ? preg_replace('/\D+/','',$_GET['lim']) : 20;
 $off = (isset($_GET['off']) and !isset($_GET['sho']))? $_GET['off'] : 0;
-
 $nof = $off;
 
 if( isset($_GET['p']) ){
@@ -27,9 +26,11 @@ if( isset($_GET['p']) ){
 }elseif( isset($_GET['n']) ){
 	$nof = $off + $lim;
 }
-$dlim = ($lim)?"$lim OFFSET $nof":'';
 
-$link	= DbConnect($dbhost,$dbuser,$dbpass,$dbname);
+echo "<h1>Monitoring Incidents</h1>\n";
+
+$dlim = ($lim)?"$lim OFFSET $nof":'';
+$link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
 if($dli){
 	$query	= GenQuery('incidents','d','','','',array('id'),array('='),array($dli) );
 	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>Incident $dli $dellbl OK</h5>";}
@@ -42,57 +43,83 @@ if($dli){
 	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5> Incident $ucm $updlbl OK</h5>";}
 }
 ?>
-<h1>Monitoring Incidents</h1>
 
 <?php  if( !isset($_GET['print']) ) { ?>
-
 <form method="get" action="<?= $self ?>.php">
-<table class="content"><tr class="<?= $modgroup[$self] ?>1">
-<th width="50"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<th>
-<img src="img/16/abc.png" title="<?= $clalbl ?>"> 
-<select name="grp">
-<option value=""><?= $fltlbl ?> ->
+<table class="content">
+<tr class="bgmain">
+<td class="ctr s">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
+</td>
+<td>
+	<img src="img/16/abc.png" title="<?= $clalbl ?>">
+	<select name="grp">
+		<option value=""><?= $fltlbl ?> ->
 <?php
 foreach (array_keys($igrp) as $ig){
-	echo "<option value=\"$ig\" ";
+	echo "\t\t<option value=\"$ig\" ";
 	if($ig == $grp){echo "selected ";}
 	echo (strpos($ig,'0')?"style=\"color:blue\">$igrp[$ig]\n":">- $igrp[$ig]\n");
 }
 ?>
-</select>
-
-<img src="img/16/bbrt.png" title="<?= $fltlbl ?> <?= $stco['100'] ?> (<?= $nonlbl ?> <?= $endlbl ?>)"> 
-<input type="checkbox" name="end" <?= $end ?> onchange="this.form.submit();">
-
-</th>
-<th>
-	
-<img src="img/16/form.png" title="<?= $limlbl ?>"> 
-<select name="lim">
+	</select>
+	<img src="img/16/bbrt.png" title="<?= $fltlbl ?> <?= $stco['100'] ?> (<?= $nonlbl ?> <?= $endlbl ?>)">
+	<input type="checkbox" name="end" <?= $end ?> onchange="this.form.submit();">
+</td>
+<td>
+	<img src="img/16/form.png" title="<?= $limlbl ?>">
+	<select name="lim">
 <?php selectbox("limit",$lim) ?>
-</select>
-</th>
-<th width="80"><input type="submit" class="button" name="sho" value="<?= $sholbl ?>">
+	</select>
+</td>
+<td class="ctr s">
+	<input type="submit" class="button" name="sho" value="<?= $sholbl ?>"><br>
+	<input type="hidden" name="off" value="<?= $nof ?>">
+	<input type="submit" class="button" name="p" value=" < ">
+	<input type="submit" class="button" name="n" value=" > ">
+</td>
+</tr>
+</table>
+</form>
 <p>
-<input type="hidden" name="off" value="<?= $nof ?>">
-<input type="submit" class="button" name="p" value=" < ">
-<input type="submit" class="button" name="n" value=" > ">
-</th>
-</tr></table></form><p>
+
 <?php } ?>
 
 <h2><?= ($grp)?$igrp[$grp]:"" ?> <?= $inclbl ?> <?= $lstlbl ?></h2>
 
-<table class="content"><tr class="<?= $modgroup[$self] ?>2">
-<th width="80" colspan="2"><img src="img/16/eyes.png"><br><?= $inclbl ?></th>
-<th colspan="2"><img src="img/16/trgt.png"><br><?= $tgtlbl ?></th>
-<th><img src="img/16/bblf.png"><br><?= $sttlbl ?></th>
-<th><img src="img/16/bbrt.png"><br><?= $endlbl ?></th>
-<th colspan="2"><img src="img/16/user.png"><br><?= $usrlbl ?></th>
-<th colspan="2"><img src="img/16/find.png"><br><?= $inflbl ?></th>
-</tr>
+<table class="content">
+	<tr class="bgsub">
+		<th width="80" colspan="2">
+			<img src="img/16/eyes.png"><br>
+			<?= $inclbl ?>
 
+		</th>
+		<th colspan="2">
+			<img src="img/16/trgt.png"><br>
+			<?= $tgtlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/bblf.png"><br>
+			<?= $sttlbl ?>
+
+		</th>
+		<th>
+			<img src="img/16/bbrt.png"><br>
+			<?= $endlbl ?>
+
+		</th>
+		<th colspan="2">
+			<img src="img/16/user.png"><br>
+			<?= $usrlbl ?>
+
+		</th>
+		<th colspan="2">
+			<img src="img/16/find.png"><br>
+			<?= $inflbl ?>
+
+		</th>
+	</tr>
 <?php
 $flte = ($end)?'AND':'';
 if(strpos($grp,'0') ){
@@ -124,57 +151,57 @@ if($res){
 		$ud = urlencode($i[2]);
 		list($fc,$lc) = Agecol($i[4],$i[5],$row % 2);
 		TblRow($bg);
-		echo "<th class=\"$bi\"><a href=\"?id=$i[0]\">$i[0]</a></th><th class=\"".$mbak[$i[1]]."\" width=\"40\"><img src=\"img/16/" . $mico[$i[1]] . ".png\" title=\"" . $mlvl[$i[1]] . "\"></th>\n";
-		echo "<td><a href=\"Monitoring-Setup.php?in[]=name&op[]=%3D&st[]=$ud\">$i[2]</a></td><td>$i[3] deps</td>\n";
-		echo "<td bgcolor=#$fc>$fs</td><td bgcolor=#$fc>$ls</td><th>$i[6]</th><td>$at</td><td>";
+		echo "\t\t<td class=\"$bi ctr xs b\">\n\t\t\t<a href=\"?id=$i[0]\">$i[0]</a>\n\t\t</td>\n";
+		echo "\t\t<td class=\"".$mbak[$i[1]]." ctr xs\">\n\t\t\t<img src=\"img/16/" . $mico[$i[1]] . ".png\" title=\"" . $mlvl[$i[1]] . "\">\n\t</td>\n";
+		echo "\t\t<td>\n\t\t\t<a href=\"Monitoring-Setup.php?in[]=name&op[]=%3D&st[]=$ud\">$i[2]</a>\n\t\t</td>\n";
+		echo "\t\t<td>\n\t\t\t$i[3] deps\n\t\t</td>\n";
+		echo "\t\t<td style=\"background-color:#$fc\">\n\t\t\t$fs\n\t\t</td>\n";
+		echo "\t\t<td style=\"background-color:#$lc\">\n\t\t\t$ls\n\t\t</td>\n";
+		echo "\t\t<td>\n\t\t\t$i[6]\n\t\t</td>\n\t\t<td>\n\t\t\t$at\n\t\t</td>\n\t\t<td>\n";
 
 		if( isset($_GET['print']) ){
-			echo "<img src=\"img/16/".IncImg($i[8]).".png\">".$igrp[$i[8]]."</td><td>$i[9]";
+			echo "\t\t\t<img src=\"img/16/".IncImg($i[8]).".png\">".$igrp[$i[8]]."\n\t\t</td>\n\t\t<td>\n\t\t\t$i[9]";
 		}else{
 ?>
-<form method="get" action="<?= $self ?>.php">
-<img src="img/16/<?=IncImg($i[8]) ?>.png">
-<input type="hidden" name="ugr" value="<?= $i[0] ?>">
-<input type="hidden" name="usr" value="<?= ($i[6])?$i[6]:$_SESSION['user'] ?>">
-<input type="hidden" name="tme" value="<?= ($i[7])?$i[7]:time() ?>">
-<input type="hidden" name="lim" value="<?= $lim ?>">
-<input type="hidden" name="off" value="<?= $nof ?>">
-<select size="1" name="grp" onchange="this.form.submit();" title="<?= $sellbl ?> <?= $clalbl ?>">
+		<form method="get" action="<?= $self ?>.php">
+			<img src="img/16/<?=IncImg($i[8]) ?>.png">
+			<input type="hidden" name="ugr" value="<?= $i[0] ?>">
+			<input type="hidden" name="usr" value="<?= ($i[6])?$i[6]:$_SESSION['user'] ?>">
+			<input type="hidden" name="tme" value="<?= ($i[7])?$i[7]:time() ?>">
+			<input type="hidden" name="lim" value="<?= $lim ?>">
+			<input type="hidden" name="off" value="<?= $nof ?>">
+			<select size="1" name="grp" onchange="this.form.submit();" title="<?= $sellbl ?> <?= $clalbl ?>">
 <?php
 		foreach (array_keys($igrp) as $ig){
-			echo "<option value=\"$ig\" ".(strpos($ig,'0')?"style=\"color: blue\" ":"");
+			echo "\t\t\t\t<option value=\"$ig\" ".(strpos($ig,'0')?"style=\"color: blue\" ":"");
 			if($ig == $i[8]){echo "selected ";}
 			echo (strpos($ig,'0')?"style=\"color: blue\">$igrp[$ig]\n":">- $igrp[$ig]\n");
 		}
 ?>
-</select>
-</td><td>
-</form>
-<form method="get" action="<?= $self ?>.php">
-<input type="hidden" name="usr" value="<?= ($i[6])?$i[6]:$_SESSION['user'] ?>">
-<input type="hidden" name="ucm" value="<?= $i[0] ?>">
-<input type="hidden" name="lim" value="<?= $lim ?>">
-<input type="hidden" name="off" value="<?= $nof ?>">
-<input type="text" name="cmt" size="30" value="<?= $i[9] ?>" onchange="this.form.submit();">
-<a href="<?= $self ?>.php?dli=<?= $i[0] ?>"><img src="img/16/bcnl.png" onclick="return confirm('<?= $dellbl ?> Incident <?= $i[0] ?>?');" title="<?= $dellbl ?> Incident"></a>
-</form>
-</td>
-</tr>
+			</select>
+		</form>
+		</td>
+		<td>
+		<form method="get" action="<?= $self ?>.php">
+			<input type="hidden" name="usr" value="<?= ($i[6])?$i[6]:$_SESSION['user'] ?>">
+			<input type="hidden" name="ucm" value="<?= $i[0] ?>">
+			<input type="hidden" name="lim" value="<?= $lim ?>">
+			<input type="hidden" name="off" value="<?= $nof ?>">
+			<input type="text" name="cmt" size="30" value="<?= $i[9] ?>" onchange="this.form.submit();">
+			<a href="<?= $self ?>.php?dli=<?= $i[0] ?>"><img src="img/16/bcnl.png" onclick="return confirm('<?= $dellbl ?> Incident <?= $i[0] ?>?');" title="<?= $dellbl ?> Incident"></a>
+		</form>
+		</td>
+	</tr>
 <?php
 		}
 		$nin++;
 		if($nin == $lim){break;}
 	}
+	TblFoot("bgsub", 10, "$row $vallbl" );
 	DbFreeResult($res);
 }else{
 	print DbError($link);
 }
-	?>
-</table>
-<table class="content">
-<tr class="<?= $modgroup[$self] ?>2"><td><?= $row ?> Incidents</td></tr>
-</table>
-	<?php
 
 include_once ("inc/footer.php");
 ?>

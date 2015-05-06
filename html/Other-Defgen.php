@@ -198,7 +198,7 @@ setTimeout("history.go(-1)",2000);
 	}
 	fclose($hdle);
 
-	echo "<table align=\"center\" bgcolor=\"#cccccc\" cellpadding=\"20\"><tr><td><pre>$def</pre></td></tr></table>\n";
+	echo "<div class=\"txta tqrt textpad code pre\">$def</div>\n";
 	include_once ("inc/footer.php");
 	exit(0);
 }
@@ -214,8 +214,8 @@ function update() {
 		alert('Controls disabled!');
 	}else{
 		document.gen.so.value = document.bld.so.value;
-		document.gen.def.value = "# Definition for " + document.bld.so.value + " created by Defgen 1.8 on <?= date('j.M Y') ?> (<?= $_SESSION['user'] ?>)\n" +
-		" \n# General\n" +
+		document.gen.def.value = "# Definition for " + document.bld.so.value + " created by Defgen 2.0 on <?= date('j.M Y') ?> (<?= $_SESSION['user'] ?>)\n" +
+		" \n# Main\n" +
 		"SNMPv\t" + document.bld.ver.options[document.bld.ver.selectedIndex].value + "\n" +
 		"Type\t" + document.bld.typ.value + "\n" +
 		"Typoid\t" + document.bld.to.value + "\n" +
@@ -279,9 +279,9 @@ function setgen(gen) {
 		document.bld.ico.value = "w2gn";
 		document.bld.hgt.value = "1";
 		document.bld.to.value = "1.3.6.1.2.1.47.1.1.1.1.13.1";
-		document.bld.ver.selectedIndex  = 2;
+		document.bld.ver.selectedIndex  = 3;
 		document.bld.os.selectedIndex   = 0;
-		document.bld.brg.selectedIndex  = 1;
+		document.bld.brg.selectedIndex  = 3;
 		document.bld.arp.selectedIndex  = 1;
 		document.bld.dpr.value = "LLDP";
 		document.bld.vln.value = "1.3.6.1.2.1.17.7.1.4.3.1.1";
@@ -415,32 +415,47 @@ function walk(oid) {
 
 //-->
 </script>
-<table class="content" ><tr class="<?= $modgroup[$self] ?>2">
-<th width="50" rowspan="3" class="<?= $modgroup[$self] ?>1"><a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png"></a></th>
-<td>
-
 <form name="bld">
-<table width="100%">
 
-<tr><th align="right">IP</th>
-<td><input type="text" name="ip" value="<?= $ip ?>" class="m" onfocus="select();" title="target's IP address">
-<?= (Devcli($ip,22,1)) ?>
-<?= (Devcli($ip,23,1)) ?>
+<table class="content">
+<tr class="bgmain">
+<td class="ctr">
+	<a href="<?= $self ?>.php"><img src="img/32/<?= $selfi ?>.png" title="<?= $self ?>"></a>
 </td>
+<td class="ctr">
+	IP
+	<input type="text" name="ip" value="<?= $ip ?>" class="m" onfocus="select();" title="<?= $tgtlbl ?> IP <?= $adrlbl ?>">
+<?= (Devcli($ip,22,1)) ?>
 
-<th align="right">Community</th><td><input type="text" name="co" value="<?= $co ?>" class="m" onfocus="select();" title="target's SNMP community"></td></tr>
+<?= (Devcli($ip,23,1)) ?>
 
-<tr class="<?= $modgroup[$self] ?>1"><th colspan="4">
-<img src="img/16/bcnl.png" align="right" onClick="setgen();" title="<?= $reslbl ?>">
-<img src="img/16/idea.png" align="right" onClick="setgen('1');" title="Standard System OIDs">
-<img src="img/16/dev.png" align="left" >
-<?= $manlbl ?>
-</th></tr>
+</td>
+<td class="ctr">
+	Community
+	<input type="text" name="co" value="<?= $co ?>" class="m" onfocus="select();" title="target's SNMP community">
+</td>
+</tr>
+</table>
+<p>
 
-<tr><th align="right">
-SysObjId</th><td>
-<input type="text" name="so" value="<?= $so ?>" class="l" title="SysObj ID -> <?= $fillbl ?> <?= $namlbl ?>" onfocus="select();" onchange="update();">
-<br>
+<table class="bgmain content">
+	<tr class="bgsub">
+		<td class="ctr b" colspan="4">
+			<img src="img/16/dev.png">
+			<?= $manlbl ?>
+
+			<div class="frgt">
+				<img src="img/16/bcnl.png" onClick="setgen();" title="<?= $reslbl ?>">
+				<img src="img/16/idea.png" onClick="setgen('1');" title="Standard System OIDs">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			SysObjId
+		</td>
+		<td>
+			<input type="text" name="so" value="<?= $so ?>" class="l" title="SysObj ID -> <?= $fillbl ?> <?= $namlbl ?>" onfocus="select();" onchange="update();"><br>
 <?php
 $mybase = substr($so, 0, -strlen(strrchr($so, ".")));
 $mytyp  = substr(strrchr($so, "."), 1);
@@ -457,410 +472,625 @@ sort($df);
 foreach ($df as $f){
 	if($f == $so){
 ?>
-<img src="img/16/brld.png" title="<?= $reslbl ?> Form" onClick="document.location.href='?ip='+document.bld.ip.value+'&co='+document.bld.co.value+'&so='+document.bld.so.value;">
-<?			
+			<img src="img/16/brld.png" title="<?= $reslbl ?> Form" onClick="document.location.href='?ip='+document.bld.ip.value+'&co='+document.bld.co.value+'&so='+document.bld.so.value;">
+<?
 	}elseif($isadmin){
 ?>
-<a href="<?= $self ?>.php?ip=<?= $ip ?>&co=<?= $co ?>&so=<?= $so ?>&sc=<?= $f ?>"><img src="img/16/geom.png" title="<?= $coplbl ?> <?= $srclbl ?> <?= $f ?>" <?= $wrw ?>></a>
+			<a href="<?= $self ?>.php?ip=<?= $ip ?>&co=<?= $co ?>&so=<?= $so ?>&sc=<?= $f ?>"><img src="img/16/geom.png" title="<?= $coplbl ?> <?= $srclbl ?> <?= $f ?>" <?= $wrw ?>></a>
 <?php
 	}
 }
 
 ?>
-</td><th align="right">
-Typeoid</th><td>
-<input type="text" name="to" value="<?= $to ?>" class="l" title="<?= $altlbl ?> device <?= $typlbl ?>" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.to.value);">
-</td></tr>
-<tr><th align="right">
-<?= $typlbl ?></th><td>
-<input type="text" name="typ" value="<?= $typ ?>" class="m" title="SNMP Sysobj <?= $typlbl ?>" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get('1.3.6.1.2.1.1.1.0');">
-</td><th align="right">
-OS</th><td>
-<select size="1" name="os" title="Operating System" onchange="update();">
-<option value="other"><?= $mlvl['10'] ?>
-<option value="Printer"<?= ($os == "Printer")?" selected":"" ?>>Printer
-<option value="">--------
-<option value="ArubaOS"<?=($os == "ArubaOS")?" selected":""?>>Aruba OS
-<option value="">--------
-<option value="EOS"<?= ($os == "EOS")?" selected":"" ?>>Enterasys OS
-<option value="">--------
-<option value="XOS"<?= ($os == "XOS")?" selected":"" ?>>Extreme OS
-<option value="Xware"<?= ($os == "Xware")?" selected":"" ?>>ExtremeWare
-<option value="">--------
-<option value="IOS"<?= ($os == "IOS")?" selected":"" ?>>Cisco IOS
-<option value="IOS-old"<?= ($os == "IOS-old")?" selected":"" ?>>IOS < 12.1
-<option value="IOS-css"<?= ($os == "IOS-css")?" selected":"" ?>>IOS CSS
-<option value="IOS-pix"<?= ($os == "IOS-pix")?" selected":"" ?>>IOS PIX
-<option value="IOS-asa"<?= ($os == "IOS-asa")?" selected":"" ?>>IOS ASA
-<option value="IOS-fv"<?= ($os == "IOS-fv")?" selected":"" ?>>IOS FWSM
-<option value="IOS-rtr"<?= ($os == "IOS-rtr")?" selected":"" ?>>IOS Router
-<option value="IOS-wlc"<?= ($os == "IOS-wlc")?" selected":"" ?>>IOS Wlan Ctrlr
-<option value="IOS-ap"<?= ($os == "IOS-ap")?" selected":"" ?>>IOS Wlan-AP
-<option value="NXOS"<?= ($os == "NXOS")?" selected":"" ?>>Nexus OS
-<option value="CatOS"<?= ($os == "CatOS")?" selected":"" ?>>Cisco CatOS
-<option value="Cvpn"<?= ($os == "Cvpn")?" selected":"" ?>>Cisco vpn
-<option value="">--------
-<option value="DPC"<?=($os == "DPC")?" selected":""?>>Dell Powerconnect
-<option value="">--------
-<option value="FortiOS"<?=($os == "FortiOS")?" selected":""?>>FortiOS
-<option value="">--------
-<option value="Hirschmann"<?=($os == "Hirschmann")?" selected":""?>>Hirschmann
-<option value="">--------
-<option value="Comwar3"<?= ($os == "Comwar3")?" selected":"" ?>>HP Comware 3
-<option value="Comware"<?= ($os == "Comware")?" selected":"" ?>>HP Comware
-<option value="MSM"<?= ($os == "MSM")?" selected":"" ?>>HP MSM
-<option value="ProCurve"<?= ($os == "ProCurve")?" selected":"" ?>>HP ProCurve
-<option value="SROS"<?= ($os == "SROS")?" selected":"" ?>>HP SROS
-<option value="TMS"<?= ($os == "TMS")?" selected":"" ?>>HP TMS
-<option value="VC"<?= ($os == "VC")?" selected":"" ?>>HP VC
-<option value="">--------
-<option value="HuaweiVRP"<?= ($os == "HuaweiVRP")?" selected":"" ?>>Huawei VRP
-<option value="">--------
-<option value="Ironware"<?= ($os == "Ironware")?" selected":"" ?>>Ironware
-<option value="">--------
-<option value="JunOS"<?= ($os == "JunOS")?" selected":"" ?>>Juniper OS
-<option value="NetScreen"<?= ($os == "NetScreen")?" selected":"" ?>>NetScreen OS
-<option value="">--------
-<option value="LANCOM"<?= ($os == "LANCOM")?" selected":"" ?>>LANCOM
-<option value="">--------
-<option value="Maipu"<?= ($os == "Maipu")?" selected":"" ?>>Maipu
-<option value="">--------
-<option value="Netgear"<?= ($os == "Netgear")?" selected":"" ?>>Netgear
-<option value="">--------
-<option value="Baystack"<?= ($os == "Baystack")?" selected":"" ?>>Nortel Legacy
-<option value="Nortel"<?= ($os == "Nortel")?" selected":"" ?>>Nortel (CLI)
-<option value="">--------
-<option value="Omnistack"<?= ($os == "Omnistack")?" selected":"" ?>>Omnistack
-<option value="">--------
-<option value="ZDOS"<?= ($os == "ZDOS")?" selected":"" ?>>Ruckus ZDOS
-<option value="">--------
-<option value="ESX"<?= ($os == "ESX")?" selected":"" ?>>VMware ESX
-</select>
+		</td>
+		<td class="rgt">
+			Typeoid
+		</td>
+		<td>
+			<input type="text" name="to" value="<?= $to ?>" class="l" title="<?= $altlbl ?> device <?= $typlbl ?>" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.to.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $typlbl ?>
+		</td>
+		<td>
+			<input type="text" name="typ" value="<?= $typ ?>" class="m" title="SNMP Sysobj <?= $typlbl ?>" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get('1.3.6.1.2.1.1.1.0');">
+			<?= file_exists("img/panel/$typ.jpg")?"<img src=\"img/panel/$typ.jpg\" class=\"genpad m\">":"" ?>
+		</td>
+		<td class="rgt">
+			OS
+		</td>
+		<td>
+			<select size="1" name="os" title="Operating System" onchange="update();">
+				<option value="other"><?= $mlvl['10'] ?>
+				<option value="Printer"<?= ($os == "Printer")?" selected":"" ?>>Printer
+				<option value="">--------
+				<option value="ArubaOS"<?=($os == "ArubaOS")?" selected":""?>>Aruba OS
+				<option value="">--------
+				<option value="XOS"<?= ($os == "XOS")?" selected":"" ?>>Extreme OS
+				<option value="Xware"<?= ($os == "Xware")?" selected":"" ?>>ExtremeWare
+				<option value="EOS"<?= ($os == "EOS")?" selected":"" ?>>Enterasys OS B2
+				<option value="EOSB2"<?= ($os == "EOSB2")?" selected":"" ?>>Enterasys OS
+				<option value="">--------
+				<option value="IOS"<?= ($os == "IOS")?" selected":"" ?>>Cisco IOS
+				<option value="IOS-old"<?= ($os == "IOS-old")?" selected":"" ?>>IOS < 12.1
+				<option value="IOS-css"<?= ($os == "IOS-css")?" selected":"" ?>>IOS CSS
+				<option value="IOS-pix"<?= ($os == "IOS-pix")?" selected":"" ?>>IOS PIX
+				<option value="IOS-asa"<?= ($os == "IOS-asa")?" selected":"" ?>>IOS ASA
+				<option value="IOS-fv"<?= ($os == "IOS-fv")?" selected":"" ?>>IOS FWSM
+				<option value="IOS-rtr"<?= ($os == "IOS-rtr")?" selected":"" ?>>IOS Router
+				<option value="IOS-wlc"<?= ($os == "IOS-wlc")?" selected":"" ?>>IOS Wlan Ctrlr
+				<option value="IOS-ap"<?= ($os == "IOS-ap")?" selected":"" ?>>IOS Wlan-AP
+				<option value="NXOS"<?= ($os == "NXOS")?" selected":"" ?>>Nexus OS
+				<option value="NXUCS"<?= ($os == "NXUCS")?" selected":"" ?>>Nexus UCS
+				<option value="CSBS"<?= ($os == "CSBS")?" selected":"" ?>>Cisco SMB
+				<option value="CatOS"<?= ($os == "CatOS")?" selected":"" ?>>Cisco CatOS
+				<option value="Cvpn"<?= ($os == "Cvpn")?" selected":"" ?>>Cisco vpn
+				<option value="">--------
+				<option value="DPC"<?=($os == "DPC")?" selected":""?>>Dell Powerconnect
+				<option value="">--------
+				<option value="FortiOS"<?=($os == "FortiOS")?" selected":""?>>FortiOS
+				<option value="">--------
+				<option value="Hirschmann"<?=($os == "Hirschmann")?" selected":""?>>Hirschmann
+				<option value="">--------
+				<option value="Comwar3"<?= ($os == "Comwar3")?" selected":"" ?>>HP Comware 3
+				<option value="Comware"<?= ($os == "Comware")?" selected":"" ?>>HP Comware
+				<option value="MSM"<?= ($os == "MSM")?" selected":"" ?>>HP MSM
+				<option value="ProCurve"<?= ($os == "ProCurve")?" selected":"" ?>>HP ProCurve
+				<option value="SROS"<?= ($os == "SROS")?" selected":"" ?>>HP SROS
+				<option value="TMS"<?= ($os == "TMS")?" selected":"" ?>>HP TMS
+				<option value="VC"<?= ($os == "VC")?" selected":"" ?>>HP VC
+				<option value="">--------
+				<option value="HuaweiVRP"<?= ($os == "HuaweiVRP")?" selected":"" ?>>Huawei VRP
+				<option value="">--------
+				<option value="Ironware"<?= ($os == "Ironware")?" selected":"" ?>>Ironware
+				<option value="Vyatta"<?= ($os == "Vyatta")?" selected":"" ?>>Vyatta
+				<option value="">--------
+				<option value="JunOS"<?= ($os == "JunOS")?" selected":"" ?>>Juniper OS
+				<option value="NetScreen"<?= ($os == "NetScreen")?" selected":"" ?>>NetScreen OS
+				<option value="">--------
+				<option value="LANCOM"<?= ($os == "LANCOM")?" selected":"" ?>>LANCOM
+				<option value="">--------
+				<option value="Maipu"<?= ($os == "Maipu")?" selected":"" ?>>Maipu
+				<option value="">--------
+				<option value="ROS"<?= ($os == "ROS")?" selected":"" ?>>Mikrotik-ROS
+				<option value="">--------
+				<option value="Netgear"<?= ($os == "Netgear")?" selected":"" ?>>Netgear
+				<option value="">--------
+				<option value="Baystack"<?= ($os == "Baystack")?" selected":"" ?>>Nortel Legacy
+				<option value="Nortel"<?= ($os == "Nortel")?" selected":"" ?>>Nortel (CLI)
+				<option value="">--------
+				<option value="Omnistack"<?= ($os == "Omnistack")?" selected":"" ?>>Omnistack
+				<option value="">--------
+				<option value="ZDOS"<?= ($os == "ZDOS")?" selected":"" ?>>Ruckus ZDOS
+				<option value="">--------
+				<option value="ESX"<?= ($os == "ESX")?" selected":"" ?>>VMware ESX
+				<option value="">--------
+				<option value="ZyNOS"<?= ($os == "ZyNOS")?" selected":"" ?>>Zyxel ZyNOS
+			</select>
+			SNMP
+			<select size="1" name="ver" title="HC=64bit, MC=64bit & 32bit" onchange="update();">
+				<option value="1">v1
+				<option value="2"<?= $ver['2'] ?>>v2
+				<option value="2MC"<?= $ver['2MC'] ?>>v2MC
+				<option value="2HC"<?= $ver['2HC'] ?>>v2HC
+			</select>
+			<img src="img/16/walk.png" title="Test 64bit Counters" onClick="walk('1.3.6.1.2.1.31.1.1.1.6');">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Icon
+		</td>
+		<td>
+			<input type="text" name="ico" value="<?= $ico ?>" class="m" onfocus="select();" onchange="update();">
+			<img src="img/16/icon.png" onClick="window.open('inc/browse-img.php','Icons','scrollbars=1,menubar=0,resizable=1,width=600,height=800');" title="<?= $sellbl ?> Icon">
+		</td>
+		<td class="rgt">
+			Bridge
+		</td>
+		<td>
+		<select size="1" name="brg" title="<?= $fwdlbl ?> <?= $lstlbl ?>" onchange="update();" >
+			<option value=""> <?= $nonlbl ?>
 
-SNMP <select size="1" name="ver" title="HC=64bit, MC=64bit & 32bit" onchange="update();">
-<option value="1">v1
-<option value="2"<?= $ver['2'] ?>>v2
-<option value="2MC"<?= $ver['2MC'] ?>>v2MC
-<option value="2HC"<?= $ver['2HC'] ?>>v2HC
-</select>
-<img src="img/16/walk.png" title="Test 64bit Counters" onClick="walk('1.3.6.1.2.1.31.1.1.1.6');">
+			<option value="normal"<?= ($bfd == "normal")?" selected":"" ?>>Normal
+			<option value="normalX"<?= ($bfd == "normalX")?" selected":"" ?>>Normal, IF indexed
+			<option value="qbri"<?= ($bfd == "qbri")?" selected":"" ?>>Q-bridge
+			<option value="qbriX"<?= ($bfd == "qbriX")?" selected":"" ?>>Q-bridge, IF indexed
+			<option value="VLX"<?= ($bfd == "VLX")?" selected":"" ?>>Vlan indexed
+			<option value="VXP"<?= ($bfd == "VXP")?" selected":"" ?>>VLX, w/o Port (N5K)
+			<option value="Aruba"<?= ($bfd == "Aruba")?" selected":"" ?>>Aruba Controller
+			<option value="CAP"<?= ($bfd == "CAP")?" selected":"" ?>>Cisco fat AP
+			<option value="WLC"<?= ($bfd == "WLC")?" selected":"" ?>>Cisco WLC Controller
+			<option value="MSM"<?= ($bfd == "MSM")?" selected":"" ?>>HP MSM Controller
+			<option value="DDWRT"<?= ($bfd == "DDWRT")?" selected":"" ?>>DD-WRT AP
+		</select>
+		<img src="img/16/walk.png" title="normal bridge-fwd" onClick="walk('1.3.6.1.2.1.17.4.3.1.2');">
+		<img src="img/16/walk.png" title="Q-bridge-fwd, 1st #=vlid (use normal if empty)" onClick="walk('1.3.6.1.2.1.17.7.1.2.2.1.2');">
+		<img src="img/16/walk.png" title="IF indexed, if numbers are different" onClick="walk('1.3.6.1.2.1.17.1.4.1.2');">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $sizlbl ?>
 
-</td></tr>
-<tr><th align="right">
-Icon</th><td>
-<input type="text" name="ico" value="<?= $ico ?>" class="m" onfocus="select();" onchange="update();">
-<img src="img/16/icon.png" onClick="window.open('inc/browse-img.php','Icons','scrollbars=1,menubar=0,resizable=1,width=600,height=800');" title="<?= $sellbl ?> Icon">
-</td><th align="right">
-Bridge</th><td>
-<select size="1" name="brg" title="<?= $fwdlbl ?> <?= $lstlbl ?>" onchange="update();" >
-<option value=""> <?= $nonlbl ?>
-<option value="normal"<?= ($bfd == "normal")?" selected":"" ?>>Normal
-<option value="normalX"<?= ($bfd == "normalX")?" selected":"" ?>>Normal, IF indexed
-<option value="qbri"<?= ($bfd == "qbri")?" selected":"" ?>>Q-bridge
-<option value="qbriX"<?= ($bfd == "qbriX")?" selected":"" ?>>Q-bridge, IF indexed
-<option value="VLX"<?= ($bfd == "VLX")?" selected":"" ?>>Vlan indexed
-<option value="VXP"<?= ($bfd == "VXP")?" selected":"" ?>>VLX, w/o Port (N5K)
-<option value="Aruba"<?= ($bfd == "Aruba")?" selected":"" ?>>Aruba Controller
-<option value="CAP"<?= ($bfd == "CAP")?" selected":"" ?>>Cisco fat AP
-<option value="WLC"<?= ($bfd == "WLC")?" selected":"" ?>>Cisco WLC Controller
-<option value="MSM"<?= ($bfd == "MSM")?" selected":"" ?>>HP MSM Controller
-<option value="WRT"<?= ($bfd == "WRT")?" selected":"" ?>>DD-WRT AP
-</select>
-<img src="img/16/walk.png" title="normal bridge-fwd" onClick="walk('1.3.6.1.2.1.17.4.3.1.2');">
-<img src="img/16/walk.png" title="Q-bridge-fwd, 1st #=vlid (use normal if empty)" onClick="walk('1.3.6.1.2.1.17.7.1.2.2.1.2');">
-<img src="img/16/walk.png" title="IF indexed, if numbers are different" onClick="walk('1.3.6.1.2.1.17.1.4.1.2');">
-</td></tr>
-<tr><th align="right">
-<?= $sizlbl ?></th><td>
-<input type="text" name="hgt" value="<?= $hgt ?>" class="s" onfocus="select();" onchange="update();"> RU
+		</td>
+		<td>
+			<input type="text" name="hgt" value="<?= $hgt ?>" class="s" onfocus="select();" onchange="update();"> RU
+			<select size="1" name="pem" title="POWER-ETHERNET-MIB <?= $opolbl ?>" onchange="update();" >
+				<option value=""> PEM->
+				<option value="P"<?= ($pem == "P")?" selected":"" ?>><?= $strlbl ?>
 
-<select size="1" name="pem" title="POWER-ETHERNET-MIB <?= $opolbl ?>" onchange="update();" >
-<option value=""> PEM->
-<option value="P"<?= ($pem == "P")?" selected":"" ?>><?= $strlbl ?>
-<option value="N"<?= ($pem == "N")?" selected":"" ?>>IF-<?= $namlbl ?>2<?= $idxlbl ?>
-<option value="S"<?= ($pem == "S")?" selected":"" ?>>Cisco-StackMib
-</select>
-<img src="img/16/walk.png" onClick="walk('1.3.6.1.2.1.105.1.3.1.1.2');" title="<?= $totlbl ?> PoE">
-<img src="img/16/walk.png" onClick="walk('1.3.6.1.2.1.105.1.1.1.3');" title="IF PoE Admin <?= $stalbl ?>">
-</td><th align="right">
-ARP/ND</th><td>
-<select size="1" name="arp" title="IPv4 & IPv6 <?= $adrlbl ?>" onchange="update();" >
-<option value=""> <?= $nonlbl ?>
-<option value="old"<?= ($arp == "old")?" selected":"" ?>>Old
-<option value="phy"<?= ($arp == "phy")?" selected":"" ?>>IPv4/6
-<option value="oldphy"<?= ($arp == "oldphy")?" selected":"" ?>>Old & IPv4/6
-<option value="oldip6"<?= ($arp == "oldip6")?" selected":"" ?>>Old & IPv6
-<option value="oldcie"<?= ($arp == "oldcie")?" selected":"" ?>>Old & Cisco
-</select>
-<img src="img/16/walk.png" title="IPv4 (ipNetToMedia)" onClick="walk('1.3.6.1.2.1.4.22.1.2');">
-<img src="img/16/walk.png" title="IPv4/6 (ipNetToPhysical)" onClick="walk('1.3.6.1.2.1.4.35.1.4');">
-<img src="img/16/walk.png" title="IPv6 (ipv6Addr)" onClick="walk('1.3.6.1.2.1.55.1.12.1.2');">
-<img src="img/16/walk.png" title="Cisco (cInetNetToMedia)" onClick="walk('1.3.6.1.4.1.9.10.86.1.1.3.1.3');">
-</td></tr>
-<tr><th align="right">
-<?= $serlbl ?></th><td>
-<input type="text" name="sn" value="<?= $sn ?>" class="l" title="OID for SN#" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.sn.value);">
-</td><th align="right">
-<?= $dsclbl ?> <?= $prolbl ?></th><td>
-<input type="text" name="dpr" value="<?= $dpr ?>" class="m" title="e.g. CDP|LLDPXN" onfocus="select();" onchange="update();">
-<span class="<?= $modgroup[$self] ?>1"><img src="img/16/walk.png" title="LLDP" onClick="document.bld.dpr.value = 'LLDP';walk('1.0.8802.1.1.2.1.4.1.1');update();">
-<img src="img/16/walk.png" title="+X index = ifdesc, +XA index = ifalias" onClick="document.bld.dpr.value = 'LLDPX';walk('1.0.8802.1.1.2.1.3.7.1.4');update();">
-<img src="img/16/walk.png" title="+XN index = ifname" onClick="document.bld.dpr.value = 'LLDPXN';walk('1.0.8802.1.1.2.1.3.7.1.3');update();">
-<img src="img/16/walk.png" title="LLDP <?= $neblbl ?> IP <?= $adrlbl ?>" onClick="walk('1.0.8802.1.1.2.1.4.2.1.3');">
-<img src="img/16/walk.png" title="LLDP-MED <?= $invlbl ?>" onClick="walk('1.0.8802.1.1.2.1.5.4795.1.3.3.1');">
-</span>
-<img src="img/16/walk.png" title="Cisco discovery protocol" onClick="document.bld.dpr.value = 'CDP';walk('1.3.6.1.4.1.9.9.23.1.2.1.1');update();">
-<?php #not supported <img src="img/16/walk.png" title="Extreme discovery protocol" onClick="document.bld.dpr.value = 'EDP';walk('1.3.6.1.4.1.1916.1.13');update();"> ?>
-<img src="img/16/walk.png" title="Foundry discovery protocol" onClick="document.bld.dpr.value = 'FDP';walk('1.3.6.1.4.1.1991.1.1.3.20.1.2.1.1');update();">
-<img src="img/16/walk.png" title="Nortel discovery protocol" onClick="document.bld.dpr.value = 'NDP';walk('1.3.6.1.4.1.45.1.6.13.2.1.1');update();">
-</td></tr>
+				<option value="N"<?= ($pem == "N")?" selected":"" ?>>IF-<?= $namlbl ?>2<?= $idxlbl ?>
 
-<tr>
-<th align="right">
-Bootimage</th><td>
-<input type="text" name="bi" value="<?= $bi ?>" class="l" title="OID for bootimage" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.bi.value);">
-</td>
-<th align="right"><?= $deslbl ?></th>
-<td><input type="text" name="des" value="<?= $des ?>" class="l" title="Override standard sysdes for exotic devices/printers" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.des.value);"></td>
-</tr>
+				<option value="S"<?= ($pem == "S")?" selected":"" ?>>Cisco-StackMib
+			</select>
+			<img src="img/16/walk.png" onClick="walk('1.3.6.1.2.1.105.1.3.1.1.2');" title="<?= $totlbl ?> PoE">
+			<img src="img/16/walk.png" onClick="walk('1.3.6.1.2.1.105.1.1.1.3');" title="IF PoE Admin <?= $stalbl ?>">
+		</td>
+		<td class="rgt">
+			ARP/ND
+		</td>
+		<td>
+			<select size="1" name="arp" title="IPv4 & IPv6 <?= $adrlbl ?>" onchange="update();" >
+				<option value=""> <?= $nonlbl ?>
+				<option value="old"<?= ($arp == "old")?" selected":"" ?>>Old
+				<option value="phy"<?= ($arp == "phy")?" selected":"" ?>>IPv4/6
+				<option value="oldphy"<?= ($arp == "oldphy")?" selected":"" ?>>Old & IPv4/6
+				<option value="oldip6"<?= ($arp == "oldip6")?" selected":"" ?>>Old & IPv6
+				<option value="oldcie"<?= ($arp == "oldcie")?" selected":"" ?>>Old & Cisco
+			</select>
+			<img src="img/16/walk.png" title="IPv4 (ipNetToMedia)" onClick="walk('1.3.6.1.2.1.4.22.1.2');">
+			<img src="img/16/walk.png" title="IPv4/6 (ipNetToPhysical)" onClick="walk('1.3.6.1.2.1.4.35.1.4');">
+			<img src="img/16/walk.png" title="IPv6 (ipv6Addr)" onClick="walk('1.3.6.1.2.1.55.1.12.1.2');">
+			<img src="img/16/walk.png" title="Cisco (cInetNetToMedia)" onClick="walk('1.3.6.1.4.1.9.10.86.1.1.3.1.3');">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $serlbl ?>
 
-<tr>
-<th align="right">Vlan <?= $namlbl ?></th>
-<td><input type="text" name="vln" value="<?= $vln ?>" class="l" title="OID for Vlan names, if available" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.vln.value);"></td>
-<th align="right">Vlid <?= $idxlbl ?></th>
-<td><input type="text" name="vnx" value="<?= $vnx ?>" class="l" title="Vlname to Vlid index, if not indexed with OID" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.vnx.value);"></td>
-</tr>
+		</td>
+		<td>
+			<input type="text" name="sn" value="<?= $sn ?>" class="l" title="OID for SN#" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.sn.value);">
+		</td>
+		<td class="rgt">
+			<?= $dsclbl ?> <?= $prolbl ?>
+		</td>
+		<td>
+			<input type="text" name="dpr" value="<?= $dpr ?>" class="s" title="e.g. CDP|LLDPXN" onfocus="select();" onchange="update();">
+			<span class="bgmain"><img src="img/16/walk.png" title="LLDP" onClick="document.bld.dpr.value = 'LLDP';walk('1.0.8802.1.1.2.1.4.1.1');update();">
+				<img src="img/16/walk.png" title="+X <?= $idxlbl ?> = ifdesc, +XA <?= $idxlbl ?> = ifalias" onClick="document.bld.dpr.value = 'LLDPX';walk('1.0.8802.1.1.2.1.3.7.1.4');update();">
+				<img src="img/16/walk.png" title="+XN <?= $idxlbl ?> = ifname" onClick="document.bld.dpr.value = 'LLDPXN';walk('1.0.8802.1.1.2.1.3.7.1.3');update();">
+				<img src="img/16/walk.png" title="LLDP <?= $neblbl ?> IP <?= $adrlbl ?>" onClick="walk('1.0.8802.1.1.2.1.4.2.1.3');">
+				<img src="img/16/walk.png" title="LLDP-MED <?= $invlbl ?>" onClick="walk('1.0.8802.1.1.2.1.5.4795.1.3.3.1');">
+			</span>
+			<img src="img/16/walk.png" title="Cisco discovery protocol" onClick="document.bld.dpr.value = 'CDP';walk('1.3.6.1.4.1.9.9.23.1.2.1.1');update();">
+			<?php #not supported <img src="img/16/walk.png" title="Extreme discovery protocol" onClick="document.bld.dpr.value = 'EDP';walk('1.3.6.1.4.1.1916.1.13');update();"> ?>
+			<img src="img/16/walk.png" title="Foundry discovery protocol" onClick="document.bld.dpr.value = 'FDP';walk('1.3.6.1.4.1.1991.1.1.3.20.1.2.1.1');update();">
+			<img src="img/16/walk.png" title="Nortel discovery protocol" onClick="document.bld.dpr.value = 'NDP';walk('1.3.6.1.4.1.45.1.6.13.2.1.1');update();">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Bootimage
+		</td>
+		<td>
+			<input type="text" name="bi" value="<?= $bi ?>" class="l" title="OID for bootimage" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.bi.value);">
+		</td>
+		<td class="rgt">
+			<?= $deslbl ?>
+		</td>
+		<td>
+			<input type="text" name="des" value="<?= $des ?>" class="l" title="Override standard sysdes for exotic devices/printers" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.des.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Vlan <?= $namlbl ?>
+		</td>
+		<td>
+			<input type="text" name="vln" value="<?= $vln ?>" class="l" title="OID for Vlan names, if available" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.vln.value);">
+		</td>
+		<td class="rgt">
+			Vlid <?= $idxlbl ?>
+		</td>
+		<td>
+			<input type="text" name="vnx" value="<?= $vnx ?>" class="l" title="Vlname to Vlid index, if not indexed with OID" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.vnx.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $grplbl ?>
 
-<tr>
-<th align="right"><?= $grplbl ?></th>
-<td><input type="text" name="grp" value="<?= $grp ?>" class="l" title="Group can be VTP domain on Cisco devices" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.grp.value);"></td>
-<th align="right"><?= $modlbl ?></th>
-<td><input type="text" name="dmo" value="<?= $dmo ?>" class="l" title="Mode (e.g. client, server or transparent for VTP devices)" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.dmo.value);"></td>
-</tr>
+		</td>
+		<td>
+			<input type="text" name="grp" value="<?= $grp ?>" class="l" title="Group can be VTP domain on Cisco devices" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.grp.value);">
+		</td>
+		<td class="rgt">
+			<?= $modlbl ?>
 
-<tr>
-<th align="right"><?= substr($cfglbl,0,4) ?> <?= $chglbl ?></th>
-<td><input type="text" name="cfc" value="<?= $cfc ?>" class="l" title="<?= ($verb1)?"$laslbl $cfglbl $chglbl":"$cfglbl $chglbl $laslbl" ?>" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.cfc.value);"></td>
-<th align="right"><?= substr($cfglbl,0,4) ?> <?= $wrtlbl ?></th>
-<td><input type="text" name="cfw" value="<?= $cfw ?>" class="l" title="<?= ($verb1)?"$laslbl $cfglbl $wrtlbl":"$cfglbl $wrtlbl $laslbl" ?>" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.cfw.value);"></td>
-</tr>
+		</td>
+		<td>
+			<input type="text" name="dmo" value="<?= $dmo ?>" class="l" title="Mode (e.g. client, server or transparent for VTP devices)" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.dmo.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= substr($cfglbl,0,4) ?> <?= $chglbl ?>
 
-<tr class="<?= $modgroup[$self] ?>1"><th colspan="4">
-<img src="img/16/bcnl.png" align="right" onClick="setint('0');" title="<?= $reslbl ?>">
-<img src="img/16/idea.png" align="right" onClick="setint('1');" title="Standard dot3-MIB">
-<img src="img/16/port.png" align="left">
-Interfaces</th></tr>
+		</td>
+		<td>
+			<input type="text" name="cfc" value="<?= $cfc ?>" class="l" title="<?= ($verb1)?"$laslbl $cfglbl $chglbl":"$cfglbl $chglbl $laslbl" ?>" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.cfc.value);">
+		</td>
+		<td class="rgt">
+			<?= substr($cfglbl,0,4) ?> <?= $wrtlbl ?>
 
-<tr><th align="right">
-<?= $idxlbl ?></th><td>
-<input type="text" name="stx" value="<?= $stx ?>" class="s" onfocus="select();" onchange="update();"> <?= $sttlbl ?> &nbsp;
-<input type="text" name="enx" value="<?= $enx ?>" class="s" onfocus="select();" onchange="update();"> <?= $endlbl ?>
-</td><th align="right">
-VRF <?= $inflbl ?></th><td>
-<select size="1" name="vrf" title="MPLS & VRF-Lite" onchange="update();" >
-<option value=""> <?= $nonlbl ?>
-<option value="S"<?= ($vrf == "S")?" selected":"" ?>>MPLS-L3VPN-STD-MIB
-<option value="V"<?= ($vrf == "V")?" selected":"" ?>>MPLS-VPN-MIB
-</select>
-<img src="img/16/walk.png" title="MPLS-L3VPN-STD-MIB" onClick="walk('1.3.6.1.2.1.10.166.11.1.2.2.1');">
-<img src="img/16/walk.png" title="MPLS-VPN-MIB" onClick="walk('1.3.6.1.3.118.1.2.1.1.6');">
-</td></tr>
-<tr><th align="right">
-IF <?= $namlbl ?></th><td>
-<input type="text" name="ina" value="<?= $ina ?>" class="l" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ina.value);">
-</td><th align="right">
-IF <?= $adrlbl ?></th><td>
-<select size="1" name="ifa" title="IPv4 & IPv6 <?= $adrlbl ?>" onchange="update();" >
-<option value=""> <?= $nonlbl ?>
-<option value="old"<?= ($ifa == "old")?" selected":"" ?>>Old
-<option value="adr"<?= ($ifa == "adr")?" selected":"" ?>>IPv4/6
-<option value="oldadr"<?= ($ifa == "oldadr")?" selected":"" ?>>Old & IPv4/6
-<option value="oldip6"<?= ($ifa == "oldip6")?" selected":"" ?>>Old & IPv6
-<option value="oldcie"<?= ($ifa == "oldcie")?" selected":"" ?>>Old & Cisco
-</select>
-<img src="img/16/walk.png" title="Old (ifAddr)" onClick="walk('1.3.6.1.2.1.4.20.1.2');">
-<img src="img/16/walk.png" title="IPv4/6 (ifAddress)" onClick="walk('1.3.6.1.2.1.4.34.1.5');">
-<img src="img/16/walk.png" title="IPv6 (ipv6Addr)" onClick="walk('1.3.6.1.2.1.55.1.8.1.2');">
-<img src="img/16/walk.png" title="Cisco (IetfIpMIB)" onClick="walk('1.3.6.1.4.1.9.10.86.1.1.2.1.3');">
-</td></tr>
-<tr><th align="right">
-IF Alias</th><td>
-<input type="text" name="ial" value="<?= $ial ?>" class="l" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ial.value);">
-</td><th align="right">
-Alias <?= $idxlbl ?></th><td>
-<input type="text" name="iax" value="<?= $iax ?>" class="l" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.iax.value);">
-</td></tr>
-<tr><th align="right">
-IF Duplex</th><td>
-<input type="text" name="idu" value="<?= $idu ?>" class="l" title="dot3StatsDuplexStatus or MAU(1.3.6.1.2.1.26.2.1.1.11) or enterprise" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.idu.value);">
-</td><th align="right">
-Duplex <?= $idxlbl ?></th><td>
-<input type="text" name="idx" value="<?= $idx ?>" class="l" title="Only set, if index is not the same as MIB2 IFindex" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.idx.value);">
-</td></tr>
-<tr><th align="right">
-Duplex <?= substr($vallbl,0,3) ?></th><td>
-<input type="text" name="hdv" value="<?= $hdv ?>" class="s" title="half-duplex <?= $vallbl ?>" onfocus="select();" onchange="update();"> Half &nbsp;
-<input type="text" name="fdv" value="<?= $fdv ?>" class="s" title="full-duplex <?= $vallbl ?>" onfocus="select();" onchange="update();"> Full
-</td><th align="right">
-Broadcast <?= substr($inblbl,0,3) ?></th><td>
-<input type="text" name="brc" value="<?= $brc ?>" class="l" title="Broadcasts entering device" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.brc.value);">
-</td></tr>
-<tr><th align="right">
-<?= $dcalbl ?> <?= substr($inblbl,0,3) ?></th><td>
-<input type="text" name="idi" value="<?= $idi ?>" class="l" title="In discard is usually in the standard IF-mib..." onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.idi.value);">
-</td><th align="right">
-<?= $dcalbl ?> <?= substr($oublbl,0,3) ?></th><td>
-<input type="text" name="odi" value="<?= $odi ?>" class="l" title="...out as well, but this supports the exotic implementations" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.odi.value);">
-</td></tr>
-<tr><th align="right">
-IF Vlan</th><td>
-<input type="text" name="ivl" value="<?= $ivl ?>" class="l" title="dot1qPvid or enterprise" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ivl.value);">
-</td><th align="right">
-Vlan <?= $idxlbl ?></th><td>
-<input type="text" name="ivx" value="<?= $ivx ?>" class="l" title="Only set, if index is not the same as MIB2 IFindex" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ivx.value);">
-</td></tr>
-<tr><th align="right">
-IF Power</th><td>
-<input type="text" name="ipw" value="<?= $ipw ?>" class="l" title="PoE switch should reveal actual power delivery here" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ipw.value);">
-</td><th align="right">
-Power <?= $idxlbl ?></th><td>
-<input type="text" name="ipx" value="<?= $ipx ?>" class="l" title="Use ifnx to find index via IF name (like 1.7 for Gi1/7" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.ipx.value);">
-</td></tr>
+		</td>
+		<td>
+			<input type="text" name="cfw" value="<?= $cfw ?>" class="l" title="<?= ($verb1)?"$laslbl $cfglbl $wrtlbl":"$cfglbl $wrtlbl $laslbl" ?>" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.cfw.value);">
+		</td>
+	</tr>
+</table>
+<p>
 
-<tr class="<?= $modgroup[$self] ?>1"><th colspan="4">
-<img src="img/16/bcnl.png" align="right" onClick="setmod('0');" title="<?= $reslbl ?>">
-<img src="img/16/idea.png" align="right" onClick="setmod('1');" title="Standard Entity-MIB">
-<img src="img/16/print.png" align="right" onClick="setmod('2');" title="Printsupplies MIB">
-<img src="img/16/cubs.png" align="left">
-Modules</th></tr>
+<table class="content bgmain">
+	<tr class="bgsub">
+		<td class="ctr b" colspan="4">
+			<img src="img/16/port.png">
+			Interfaces
+			<div class="frgt">
+			<img src="img/16/bcnl.png" class="rgt" onClick="setint('0');" title="<?= $reslbl ?>">
+			<img src="img/16/idea.png" class="rgt" onClick="setint('1');" title="Standard dot3-MIB">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $idxlbl ?>
 
-<tr><th align="right">
-Slot</th><td>
-<input type="text" name="msl" value="<?= $msl ?>" class="l" title="This OID is required, if you want to track modules" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.msl.value);">
-</td><th align="right">
-</th><td>
-</td></tr>
-<tr><th align="right">
-<?= $clalbl ?> OID</th><td>
-<input type="text" name="mcl" value="<?= $mcl ?>" class="l" title="Classes identify, what an actual module is" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.mcl.value);">
-</td><th align="right">
-<?= $clalbl ?> <?= $vallbl ?></th><td>
-<input type="text" name="mcv" value="<?= $mcv ?>" class="m" title="The actual value (e.g. Entity-MIB modules use 9" onfocus="select();" onchange="update();">
-</td></tr>
-<tr><th align="right">
-<?= $deslbl ?></th><td>
-<input type="text" name="mde" value="<?= $mde ?>" class="l" title="Module description" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.mde.value);">
-</td><th align="right">
-Hardware</th><td>
-<input type="text" name="mhw" value="<?= $mhw ?>" class="l" title="Module hardware version" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.mhw.value);">
-</td></tr>
-<tr><th align="right">
-Software</th><td>
-<input type="text" name="msw" value="<?= $msw ?>" class="l" title="Module software version" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.msw.value);">
-</td><th align="right">
-Firmware</th><td>
-<input type="text" name="mfw" value="<?= $mfw ?>" class="l" title="Module firmware version" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.mfw.value);">
-</td></tr>
-<tr><th align="right">
-<?= $serlbl ?></th><td>
-<input type="text" name="msn" value="<?= $msn ?>" class="l" title="Module serial numbers" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.msn.value);">
-</td><th align="right">
-Model</th><td>
-<input type="text" name="mmo" value="<?= $mmo ?>" class="l" title="Sometimes an additional model# can be fetched" onfocus="select();" onchange="update();">
-<img src="img/16/walk.png" onClick="walk(document.bld.mmo.value);">
-</td></tr>
+		</td>
+		<td>
+			<input type="text" name="stx" value="<?= $stx ?>" class="s" onfocus="select();" onchange="update();"> <?= $sttlbl ?> &nbsp;
+			<input type="text" name="enx" value="<?= $enx ?>" class="s" onfocus="select();" onchange="update();"> <?= $endlbl ?>
 
-<tr class="<?= $modgroup[$self] ?>1"><th colspan="4">
-<img src="img/16/bcnl.png" align="right" onClick="setrrd('0');" title="<?= $reslbl ?>">
-<img src="img/16/idea.png" align="right" onClick="setrrd('1');" title="Possible Standard OIDs">
-<img src="img/16/grph.png" align="left">
-RRD Graphing</th></tr>
+		</td>
+		<td class="rgt">
+			VRF <?= $inflbl ?>
 
-<tr><th align="right">
-% CPU</th><td>
-<input type="text" name="cpu" value="<?= $cpu ?>" class="l" title="Try to use a long average (e.g. 5min)" onfocus="select();" onchange="update();">
- * <input type="text" name="cmu" value="<?= $cmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.cpu.value);">
-</td><th align="right">
-Mem <?= $frelbl ?></th><td>
-<input type="text" name="mcp" value="<?= $mcp ?>" class="l" title="Available memory" onfocus="select();" onchange="update();">
- * <input type="text" name="mmu" value="<?= $mmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.mcp.value);">
-</td></tr>
-<tr><th align="right">
-<?= $tmplbl ?></th><td>
-<input type="text" name="tmp" value="<?= $tmp ?>" class="l" title="Could be used for other values, if temperature is not supported" onfocus="select();" onchange="update();">
- * <input type="text" name="tmu" value="<?= $tmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.tmp.value);">
-</td><th align="right">
-<input type="text" name="cul" value="<?= $cul ?>" class="m" title="Custom Label;C(ounter)|G(auge);Unit" onfocus="select();" onchange="update();"></th><td>
-<input type="text" name="cuv" value="<?= $cuv ?>" class="l" title="Custom Gauge OID" onfocus="select();" onchange="update();">
-<img src="img/16/brgt.png" onClick="get(document.bld.cuv.value);">
-</td></tr>
+		</td>
+		<td>
+			<select size="1" name="vrf" title="MPLS & VRF-Lite" onchange="update();" >
+				<option value=""> <?= $nonlbl ?>
 
+				<option value="S"<?= ($vrf == "S")?" selected":"" ?>>MPLS-L3VPN-STD-MIB
+				<option value="V"<?= ($vrf == "V")?" selected":"" ?>>MPLS-VPN-MIB
+			</select>
+			<img src="img/16/walk.png" title="MPLS-L3VPN-STD-MIB" onClick="walk('1.3.6.1.2.1.10.166.11.1.2.2.1');">
+			<img src="img/16/walk.png" title="MPLS-VPN-MIB" onClick="walk('1.3.6.1.3.118.1.2.1.1.6');">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			IF <?= $namlbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="ina" value="<?= $ina ?>" class="l" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ina.value);">
+		</td>
+		<td class="rgt">
+			IF <?= $adrlbl ?>
+
+		</td>
+		<td>
+			<select size="1" name="ifa" title="IPv4 & IPv6 <?= $adrlbl ?>" onchange="update();" >
+				<option value=""> <?= $nonlbl ?>
+
+				<option value="old"<?= ($ifa == "old")?" selected":"" ?>>Old
+				<option value="adr"<?= ($ifa == "adr")?" selected":"" ?>>IPv4/6
+				<option value="oldadr"<?= ($ifa == "oldadr")?" selected":"" ?>>Old & IPv4/6
+				<option value="oldip6"<?= ($ifa == "oldip6")?" selected":"" ?>>Old & IPv6
+				<option value="oldcie"<?= ($ifa == "oldcie")?" selected":"" ?>>Old & Cisco
+			</select>
+			<img src="img/16/walk.png" title="Old (ifAddr)" onClick="walk('1.3.6.1.2.1.4.20.1.2');">
+			<img src="img/16/walk.png" title="IPv4/6 (ifAddress)" onClick="walk('1.3.6.1.2.1.4.34.1.5');">
+			<img src="img/16/walk.png" title="IPv6 (ipv6Addr)" onClick="walk('1.3.6.1.2.1.55.1.8.1.2');">
+			<img src="img/16/walk.png" title="Cisco (IetfIpMIB)" onClick="walk('1.3.6.1.4.1.9.10.86.1.1.2.1.3');">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			IF Alias
+		</td>
+		<td>
+			<input type="text" name="ial" value="<?= $ial ?>" class="l" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ial.value);">
+		</td>
+		<td class="rgt">
+			Alias <?= $idxlbl ?>
+		</td>
+		<td>
+			<input type="text" name="iax" value="<?= $iax ?>" class="l" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.iax.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			IF Duplex
+		</td>
+		<td>
+			<input type="text" name="idu" value="<?= $idu ?>" class="l" title="dot3StatsDuplexStatus or MAU(1.3.6.1.2.1.26.2.1.1.11) or enterprise" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.idu.value);">
+		</td>
+		<td class="rgt">
+			Duplex <?= $idxlbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="idx" value="<?= $idx ?>" class="l" title="Only set, if index is not the same as MIB2 IFindex" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.idx.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Duplex <?= substr($vallbl,0,3) ?>
+
+		</td>
+		<td>
+			<input type="text" name="hdv" value="<?= $hdv ?>" class="s" title="half-duplex <?= $vallbl ?>" onfocus="select();" onchange="update();"> Half &nbsp;
+			<input type="text" name="fdv" value="<?= $fdv ?>" class="s" title="full-duplex <?= $vallbl ?>" onfocus="select();" onchange="update();"> Full
+		</td>
+		<td class="rgt">
+			Broadcast <?= substr($inblbl,0,3) ?>
+
+		</td>
+		<td>
+			<input type="text" name="brc" value="<?= $brc ?>" class="l" title="Broadcasts entering device" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.brc.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $dcalbl ?> <?= substr($inblbl,0,3) ?>
+
+		</td>
+		<td>
+			<input type="text" name="idi" value="<?= $idi ?>" class="l" title="In discard is usually in the standard IF-mib..." onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.idi.value);">
+		</td>
+		<td class="rgt">
+			<?= $dcalbl ?> <?= substr($oublbl,0,3) ?>
+
+		</td>
+		<td>
+			<input type="text" name="odi" value="<?= $odi ?>" class="l" title="...out as well, but this supports the exotic implementations" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.odi.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			IF Vlan
+		</td>
+		<td>
+			<input type="text" name="ivl" value="<?= $ivl ?>" class="l" title="dot1qPvid or enterprise" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ivl.value);">
+		</td>
+		<td class="rgt">
+			Vlan <?= $idxlbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="ivx" value="<?= $ivx ?>" class="l" title="Only set, if index is not the same as MIB2 IFindex" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ivx.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			IF Power
+		</td>
+		<td>
+			<input type="text" name="ipw" value="<?= $ipw ?>" class="l" title="PoE switch should reveal actual power delivery here" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ipw.value);">
+		</td>
+		<td class="rgt">
+			Power <?= $idxlbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="ipx" value="<?= $ipx ?>" class="l" title="Use ifnx to find index via IF name (like 1.7 for Gi1/7" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.ipx.value);">
+		</td>
+	</tr>
+</table>
+<p>
+
+<table class="bgmain content">
+	<tr class="bgsub">
+		<td class="ctr b" colspan="4">
+			<img src="img/16/cubs.png">
+			Modules
+			<div class="frgt">
+				<img src="img/16/bcnl.png" class="rgt" onClick="setmod('0');" title="<?= $reslbl ?>">
+				<img src="img/16/idea.png" class="rgt" onClick="setmod('1');" title="Standard Entity-MIB">
+				<img src="img/16/print.png" class="rgt" onClick="setmod('2');" title="Printsupplies MIB">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Slot
+		</td>
+		<td>
+			<input type="text" name="msl" value="<?= $msl ?>" class="l" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.msl.value);">
+		</td>
+		<td class="rgt">
+		</td>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $clalbl ?> OID
+		</td>
+		<td>
+			<input type="text" name="mcl" value="<?= $mcl ?>" class="l" title="Classes identify, what an actual module is" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.mcl.value);">
+		</td>
+		<td class="rgt">
+			<?= $clalbl ?> <?= $vallbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="mcv" value="<?= $mcv ?>" class="m" title="The actual value (e.g. Entity-MIB modules use 9" onfocus="select();" onchange="update();">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $deslbl ?>
+
+		</td>
+		<td>
+			<input type="text" name="mde" value="<?= $mde ?>" class="l" title="Module description" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.mde.value);">
+		</td>
+		<td class="rgt">
+			Hardware
+		</td>
+		<td>
+			<input type="text" name="mhw" value="<?= $mhw ?>" class="l" title="Module hardware version" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.mhw.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			Software
+		</td>
+		<td>
+			<input type="text" name="msw" value="<?= $msw ?>" class="l" title="Module software version" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.msw.value);">
+		</td>
+		<td class="rgt">
+			Firmware
+		</td>
+		<td>
+			<input type="text" name="mfw" value="<?= $mfw ?>" class="l" title="Module firmware version" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.mfw.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $serlbl ?>
+		</td>
+		<td>
+			<input type="text" name="msn" value="<?= $msn ?>" class="l" title="Module serial numbers" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.msn.value);">
+		</td>
+		<td class="rgt">
+			Model
+		</td>
+		<td>
+			<input type="text" name="mmo" value="<?= $mmo ?>" class="l" title="Sometimes an additional model# can be fetched" onfocus="select();" onchange="update();">
+			<img src="img/16/walk.png" onClick="walk(document.bld.mmo.value);">
+		</td>
+	</tr>
+</table>
+<p>
+
+<table class="bgmain content">
+	<tr class="bgsub">
+		<td class="ctr b" colspan="4">
+			<img src="img/16/port.png">
+			<?= $gralbl ?>
+			<div class="frgt">
+				<img src="img/16/bcnl.png" class="rgt" onClick="setrrd('0');" title="<?= $reslbl ?>">
+				<img src="img/16/idea.png" class="rgt" onClick="setrrd('1');" title="Possible Standard OIDs">
+				<img src="img/16/grph.png" class="lft">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			% CPU
+		</td>
+		<td>
+			<input type="text" name="cpu" value="<?= $cpu ?>" class="l" title="Try to use a long average (e.g. 5min)" onfocus="select();" onchange="update();">
+			* <input type="text" name="cmu" value="<?= $cmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.cpu.value);">
+		</td>
+		<td class="rgt">
+			Mem <?= $frelbl ?>
+		</td>
+		<td>
+			<input type="text" name="mcp" value="<?= $mcp ?>" class="l" title="Available memory" onfocus="select();" onchange="update();">
+			 * <input type="text" name="mmu" value="<?= $mmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.mcp.value);">
+		</td>
+	</tr>
+	<tr>
+		<td class="rgt">
+			<?= $tmplbl ?>
+		</td>
+		<td>
+			<input type="text" name="tmp" value="<?= $tmp ?>" class="l" title="Could be used for other values, if temperature is not supported" onfocus="select();" onchange="update();">
+			 * <input type="text" name="tmu" value="<?= $tmu ?>" class="s" title="x10, x0.1..." onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.tmp.value);">
+		</td>
+		<td class="rgt">
+			<input type="text" name="cul" value="<?= $cul ?>" class="m" title="Custom Label;C(ounter)|G(auge);Unit" onfocus="select();" onchange="update();"></th><td>
+			<input type="text" name="cuv" value="<?= $cuv ?>" class="l" title="Custom Gauge OID" onfocus="select();" onchange="update();">
+			<img src="img/16/brgt.png" onClick="get(document.bld.cuv.value);">
+		</td>
+	</tr>
 </table>
 </form>
-
-</td>
-</tr>
-<tr class="<?= $modgroup[$self] ?>2"><th>
-<?php  if( $isadmin and $ip) { ?>
-<div style="float:right;margin:2px 2px">
-<form method="post" name="nedi" action="System-NeDi.php">
-<input type="hidden" name="mde" value="d">
-<input type="hidden" name="sed" value="a">
-<input type="hidden" name="opt" value="<?= $ip ?>">
-<input type="image" src="img/16/radr.png" value="Submit" title="<?= $dsclbl ?>">
-</form>
-</div>
-<?php } ?>
-
-<div style="float:right;margin:2px 2px">
-<a href="mailto:def@nedi.ch?subject=<?= $so ?>.def&body=<?= $mailbody ?>"><img src="img/16/mail.png"  title="<?= ($verb1)?"$sndlbl NeDi":"NeDi  $sndlbl" ?>"></a>
-</div>
-
-<form method="post" name="gen" action="<?= $self ?>.php">
-<input type="button" value="<?= $updlbl ?>" name="up" onClick="update();" title="<?= $updlbl ?> .def <?= $tim[n] ?>">
-- <input type="text" name="so" value="<?= $so ?>" class="l" title="Filename">.def
-<?php  if( $isadmin) { ?>
-<input type="submit" class="button" value="<?= $wrtlbl ?>" name="wr" title="<?= $wrtlbl ?> .def <?= $fillbl ?>" disabled="true" <?= $wrw ?>>
-<?php } ?>
 <p>
-<textarea rows="24" name="def" cols="100" onChange="dis='1';document.gen.wr.disabled=false;alert('Controls disabled!');"><?= $def ?></textarea>
-</td></tr>
-</form>
-</th></tr></table>
 
+<table class="bgmain content">
+	<tr class="bgsub">
+		<td class="ctr">
+<?php  if( $isadmin and $ip) { ?>
+			<div style="float:right;margin:2px 2px">
+				<form method="post" name="nedi" action="System-NeDi.php">
+					<input type="hidden" name="mde" value="d">
+					<input type="hidden" name="sed" value="a">
+					<input type="hidden" name="opt" value="<?= $ip ?>">
+					<input type="image" src="img/16/radr.png" value="Submit" title="<?= $dsclbl ?>">
+				</form>
+			</div>
+<?php } ?>
+
+			<div style="float:right;margin:2px 2px">
+				<a href="mailto:def@nedi.ch?subject=<?= $so ?>.def&body=<?= $mailbody ?>"><img src="img/16/mail.png"  title="<?= ($verb1)?"$sndlbl NeDi":"NeDi  $sndlbl" ?>"></a>
+			</div>
+			<form method="post" name="gen" action="<?= $self ?>.php">
+				<input type="button" value="<?= $updlbl ?>" name="up" onClick="update();" title="<?= $updlbl ?> .def <?= $tim[n] ?>">
+				- <input type="text" name="so" value="<?= $so ?>" class="l" title="Filename">.def
+<?php  if( $isadmin) { ?>
+				<input type="submit" class="button" value="<?= $wrtlbl ?>" name="wr" title="<?= $wrtlbl ?> .def <?= $fillbl ?>" disabled="true" <?= $wrw ?>>
+<?php } ?>
+				<p>
+				<textarea rows="24" name="def" cols="100" onChange="dis='1';document.gen.wr.disabled=false;alert('Controls disabled!');">
+					<?= $def ?>
+
+				</textarea>
+			</form>
+		</td>
+	</tr>
+</table>
 <?php
 include_once ("inc/footer.php");
 ?>

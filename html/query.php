@@ -24,51 +24,62 @@ require_once ("inc/libmisc.php");
 ReadConf('usr');
 require_once ("inc/libdb-" . strtolower($backend) . ".php");
 
+#$_POST['u'] = "admin";
+#$_POST['p'] = "admin";
+#$_POST['m'] = "j";
+#$_POST['t'] = "devices";
+#$_POST['q'] = "snmpversion > 0";
+#print $_SERVER['REMOTE_ADDR'];
+
+$_GET  = sanitize($_GET);
 $_POST = sanitize($_POST);
+$table = isset($_GET['t']) ? $_GET['t'] : '';
+$table = isset($_POST['t']) ? $_POST['t'] : $table;
+$query = isset($_GET['q']) ? $_GET['q'] : '';
+$query = isset($_POST['q']) ? $_POST['q'] : $query;
 
 header("Content-type: text/plain");
 
-#$_POST['u'] = "admin";
-#$_POST['p'] = "admin";
-#$_POST['m'] = "json";
-#$_POST['q'] = "select * from incidents";
-
+$link = DbConnect( $dbhost,$dbuser,$dbpass,$dbname );
 if( isset($_POST['u']) and isset($_POST['p']) ){
-	$pass = hash("sha256","NeDi".$_POST['u'].$_POST['p']);							# Salt & pw
-	$link = DbConnect($dbhost,$dbuser,$dbpass,$dbname);
-	$query= GenQuery('users','s','*','','',array('usrname','password'),array('=','='),array($_POST['u'],$pass),array('AND') );
-	$res  = DbQuery($query,$link);
-	$uok  = DbNumRows($res);
-	DbFreeResult($res);
+	$pass = hash( "sha256","NeDi".$_POST['u'].$_POST['p'] );					# Salt & pw
+	$usrq = GenQuery( 'users','s','*','','',array('usrname','password','groups'),array('=','=','&'),array($_POST['u'],$pass,1),array('AND','AND') );
+	$res  = DbQuery( $usrq,$link );
+	$uok  = DbNumRows( $res );
+	DbFreeResult( $res );
+}
 
-	if($uok == 1) {
-		$res = DbQuery($_POST['q'],$link);
+if( $uok == 1 ){
+	if( $table ){
+		$res = DbQuery( "SELECT * FROM $table".(($query)?" WHERE $query":""),$link );
 		$sys = posix_uname();
-		$sys['nedi'] = "1.1.155"; 
-		if($_POST['m']){
-			if($res){
-				while($l = DbFetchArray($res)) {
-					$rows[] = $l;
+		if( array_key_exists( 'domainname',$sys ) ) unset($sys['domainname']);
+		$sys['nedi'] = "1.4.300p3";
+		if( $_POST['m'] == 'csv' ){
+			echo implode( ';;',$sys )."\n";
+			if( $res ){
+				while( $l = DbFetchRow( $res ) ){
+					echo implode( ';;',$l )."\n";
 				}
-				array_unshift($rows,$sys);
-				print json_encode($rows);
 			}else{
-				echo "ERR :DB - ".DbError($link);
+				echo "ERR :CSV - ".DbError( $link );
 			}
 		}else{
-			echo join(';;',$sys)."\n";
-			if($res){
-				while($l = DbFetchRow($res)) {
-					echo join(';;',$l)."\n";
+			if( $res ){
+				$rows[] = $sys;
+				while( $l = DbFetchArray( $res ) ){
+					$rows[] = $l;
 				}
+				header('Content-type: application/json');
+				print json_encode($rows);
 			}else{
-				echo "ERR :DB - ".DbError($link);
+				echo "ERR :JSON - ".DbError($link);
 			}
 		}
-		DbFreeResult($res);
+		DbFreeResult( $res );
 	}else{
-		echo "ERR :Incorrect password!";
+		echo "ERR :Missing table!";
 	}
 }else{
-	echo "ERR :Need credentials!";
+	echo "ERR :Invalid credentials!";
 }

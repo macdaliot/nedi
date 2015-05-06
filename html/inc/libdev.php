@@ -41,11 +41,11 @@ function ModClass($cl){
 	global $mlvl, $nonlbl, $stco;
 
 	if 	($cl == 1) {return array($mlvl['10'],"ugrp");}
-	elseif	($cl == 2) {return array($stco['250'],"bbox");}
+	elseif	($cl == 2) {return array($stco['250'],"qmrk");}
 	elseif	($cl == 3) {return array("Chassis","dev");}
-	elseif	($cl == 4) {return array("Backplane","cinf");}
+	elseif	($cl == 4) {return array("Backplane","card");}
 	elseif	($cl == 5) {return array("Container","pkg");}
-	elseif	($cl == 6) {return array("Power Supply","flas");}
+	elseif	($cl == 6) {return array("Power Supply","psup");}
 	elseif	($cl == 7) {return array("Fan","fan");}
 	elseif	($cl == 8) {return array("Sensor","radr");}
 	elseif	($cl == 9) {return array("Module","pcm");}
@@ -425,8 +425,8 @@ function PrintSupply($t){
 	elseif	($t == 9)	{return "<img src=\"img/16/bbox.png\" title=\"opc\">";}
 	elseif	($t == 10)	{return "<img src=\"img/16/foto.png\" title=\"developer\">";}
 	elseif	($t == 11)	{return "<img src=\"img/16/bomb.png\" title=\"fuserOil\">";}
-	elseif	($t == 12)	{return "<img src=\"img/16/3d.png\" title=\"solidWax\">";}
-	elseif	($t == 13)	{return "<img src=\"img/16/3d.png\" title=\"ribbonWax\">";}
+	elseif	($t == 12)	{return "<img src=\"img/16/flask.png\" title=\"solidWax\">";}
+	elseif	($t == 13)	{return "<img src=\"img/16/flask.png\" title=\"ribbonWax\">";}
 	elseif	($t == 14)	{return "<img src=\"img/16/bdis.png\" title=\"wasteWax\">";}
 	elseif	($t == 15)	{return "<img src=\"img/16/bomb.png\" title=\"fuser\">";}
 	elseif	($t == 16)	{return "<img src=\"img/16/clip.png\" title=\"coronaWire\">";}
@@ -458,8 +458,8 @@ function PrintSupply($t){
 // If graphs are disabled in User-Profile, they're not drawn at all
 function IfGraphs($ud,$ui,$opt,$sz){
 
-	global $trflbl,$errlbl,$stalbl, $inblbl, $maxlbl;
-	
+	global $anim,$trflbl,$errlbl,$stalbl, $inblbl, $maxlbl;
+
 	if($sz){
 		$sz -= 1;
 ?>
@@ -490,19 +490,22 @@ function IfGraphs($ud,$ui,$opt,$sz){
 
 //===================================================================
 // Creates a Radargraph using interface information
-function IfRadar($id,$sz,$c,$ti,$to,$ei,$eo,$di,$do,$bi,$s=0){
+function IfRadar($id,$sz,$c,$ti,$to,$ei,$eo,$di,$do,$bi){
 
-	global $trflbl,$errlbl,$dcalbl,$inblbl,$oublbl;
+	global $trflbl,$errlbl,$dcalbl,$inblbl,$oublbl,$debug,$anim;
 
 	if($sz == 4){
 		$w = 220;
 		$h = 200;
+		$f = 9;
 	}elseif($sz == 3){
-		$w = 120;
+		$w = 110;
 		$h = 100;
+		$f = 7;
 	}else{
 		$w = 80;
 		$h = 70;
+		$f = 0;
 	}
 	$in  = substr($inblbl,0,1);
 	$out = substr($oublbl,0,1);
@@ -514,24 +517,72 @@ function IfRadar($id,$sz,$c,$ti,$to,$ei,$eo,$di,$do,$bi,$s=0){
 
 <script language="javascript">
 var data = {
-	<?PHP if($s){?>
+
 	labels : ["<?= $trf ?> <?= $in ?>","<?= $trf ?> <?= $out ?>","<?= $err ?> <?= $in ?>","<?= $err ?> <?= $out ?>","<?= $dca ?>  <?= $in ?>","<?= $dca ?> <?= $out ?>","Bcast"],
-	<?PHP }?>
 	datasets : [
 		{
 			fillColor : "rgba(<?= substr($c,0,1)*30 ?>,<?= substr($c,1,1)*30 ?>,<?= substr($c,2,1)*30 ?>,0.4)",
 			strokeColor : "rgba(<?= substr($c,0,1)*25 ?>,<?= substr($c,1,1)*25 ?>,<?= substr($c,2,1)*25 ?>,1)",
 			pointColor : "rgba(<?= substr($c,0,1)*20 ?>,<?= substr($c,1,1)*20 ?>,<?= substr($c,2,1)*20 ?>,1)",
 			pointStrokeColor : "#fff",
-			data : [<?= $ti ?>,<?= $to ?>,<?= $ei * 1000 ?>,<?= $eo * 1000 ?>,<?= $di * 1000 ?>,<?= $do * 1000 ?>,<?= $bi * 1000 ?>]
+			data : [<?= intval($ti/1000) ?>,<?= intval($to/1000) ?>,<?= $ei ?>,<?= $eo ?>,<?= $di ?>,<?= $do ?>,<?= $bi ?>]
 		}
 	]
 }
 var ctx = document.getElementById("<?= $id ?>").getContext("2d");
-var myNewChart = new Chart(ctx).Radar(data,{pointLabelFontSize : 8});
+var myNewChart = new Chart(ctx).Radar(data,{pointLabelFontSize : <?= $f ?><?= $anim ?>});
 </script>
 
-<?PHP
+<?php
+	if($debug){
+		echo "<div class=\"textpad code pre txta\">\n";
+		echo "$id,$sz,$c,$ti,$to,$ei,$eo,$di,$do,$bi,$anim";
+		echo "</div>\n";
+	}
+}
+
+//===================================================================
+// Return link style based on forward bandwidth or utilisation
+function LinkStyle($bw=0,$utl=0){
+
+	global $lit;
+
+	if($lit == 'l'){
+		$w = 4;
+		if($utl == 0){										# No traffic
+			return array($w,'gainsboro');
+		}elseif($utl < 2){
+			return array($w,'cornflowerblue');
+		}elseif($utl < 5){
+			return array($w,'blue');
+		}elseif($utl < 10){
+			return array($w,'green');
+		}elseif($utl < 25){
+			return array($w,'limegreen');
+		}elseif($utl < 50){
+			return array($w,'yellow');
+		}elseif($utl < 75){
+			return array($w,'orange');
+		}else{
+			return array($w,'red');
+		}
+	}else{
+		if($bw == 0){										# No bandwidth
+			return array('1','lightgray');
+		}elseif($bw == 11000000 or $bw == 54000000 or $bw == 300000000 or $bw == 450000000){	# Most likely Wlan
+			return array('5','gainsboro');
+		}elseif($bw < 10000000){								# Most likely serial links
+			return array(intval($bw/1000000),'limegreen');
+		}elseif($bw < 100000000){								# 10 Mbit Ethernet
+			return array(intval($bw/10000000),'blue');
+		}elseif($bw < 1000000000){								# 100 Mbit Ethernet
+			return array(intval($bw/100000000),'orange');
+		}elseif($bw < 10000000000){								# 1 Gbit Ethernet
+			return array(intval($bw/1000000000),'red');
+		}else{											# 10 Gbit Ethernet
+			return array(intval($bw/10000000000),'purple');
+		}
+	}
 }
 
 //===================================================================
@@ -602,8 +653,16 @@ function DevVendor($so,$ic=''){
 		return array('Alcatel-Lucent','alu');
 	}elseif( $ic == 'p' or $s[6] == 1916 ){
 		return array('Extreme Networks','ext');
+	}elseif( $s[6] == 259 ){
+		return array('Accton','acc');
 	}elseif( $s[6] == 2636 ){
 		return array('Juniper','jun');
+	}elseif( $s[6] == 890 ){
+		return array('Zyxel','zyx');
+	}elseif( $s[6] == 789 ){
+		return array('Netapp','nap');
+	}elseif( $s[6] == 3181){
+		return array('Microsens','mis');
 	}elseif( $s[6] == 12356){
 		return array('Fortinet','for');
 	}elseif( $ic == 'v' or $s[6] == 6876 ){
@@ -642,13 +701,48 @@ function Staimg($s){
 	}elseif($s == 150){
 		return "<img src=\"img/16/warn.png\" title=\"$stco[$s]\">";
 	}elseif($s == 160){
-		return "<img src=\"img/16/ring.png\" title=\"$stco[$s]\">";
+		return "<img src=\"img/16/bcls.png\" title=\"$stco[$s]\">";
 	}elseif($s == 200){
 		return "<img src=\"img/16/bstp.png\" title=\"$stco[$s]\">";
 	}elseif($s == 250){
-		return "<img src=\"img/16/bbox.png\" title=\"$stco[$s]\">";
+		return "<img src=\"img/16/qmrk.png\" title=\"$stco[$s]\">";
 	}else{
-		return "<img src=\"img/16/bcls.png\" title=\"$nonlbl $invlbl\">";
+		return "<img src=\"img/16/bdis.png\" title=\"$nonlbl $invlbl\">";
+	}
+}
+
+//===================================================================
+// Crosscheck Assets
+function InvCheck($sn,$ty,$cl,$lo,$co){
+
+	global $link,$chglbl,$invlbl,$addlbl,$igrp,$wtylbl;
+
+	$usn    = urlencode($sn);
+	$uty    = urlencode($ty);
+	$ulo    = urlencode($lo);
+	$uco    = urlencode($co);
+
+	$query	= GenQuery('inventory','s','state,endmaint,endwarranty,comment','','',array('serial'),array('='),array($sn));
+	$dires	= DbQuery($query,$link);
+	$dinv = DbFetchRow($dires);
+	DbFreeResult($dires);
+	if( $dinv[0] ){
+		$ist = '';
+		$stl = "$wtylbl ".date($_SESSION['timf'],$dinv[2]).", $igrp[31]  ".date($_SESSION['timf'],$dinv[1]);
+		$mst = SupportBg($dinv[1]);
+		$wst = SupportBg($dinv[2]);
+		if($mst == 'crit' or $wst == 'crit'){
+			$ist = 'class="genpad crit"';
+		}elseif($mst == 'warn' or $wst == 'warn'){
+			$ist = 'class="genpad warn"';
+		}elseif($mst == 'good' and $wst == 'good'){
+			$ist = 'class="genpad good"';
+		}elseif($mst == 'good' or $wst == 'good'){
+			$ist = 'class="genpad good part"';
+		}
+		return "<a href=\"Assets-Inventory.php?chg=$usn\" $ist title=\"$invlbl $chglbl, $stl\">".Staimg($dinv[0])." $sn </a>&nbsp; $dinv[3]";
+	}elseif($sn and $sn != '-'){
+		return "<a href=\"Assets-Inventory.php?sta=150&sn=$usn&ty=$uty&cl=$cl&lo=$ulo&co=$uco\" title=\"$invlbl $addlbl\">$sn </a>";
 	}
 }
 
@@ -693,7 +787,7 @@ function Tic2Sec($ticks){
 
 //===================================================================
 // Delete device, related tables and files
-function DevDelete($dld,$dtxt){
+function DevDelete($dld,$dtxt){#TODO change inventory state of dev and modules to used?
 
 	global $link,$delbl,$errlbl,$updlbl,$nedipath;
 
@@ -727,7 +821,7 @@ function DevDelete($dld,$dtxt){
 		}
 		echo (rmdir("$nedipath/rrd/$devdir"))?"<h5>$nedipath/rrd/$devdir $dellbl OK</h5>":"<h4>$nedipath/rrd/$devdir $dellbl $errlbl</h4>";
 	}
-	if( file_exists ( "$nedipath/rrd/$devdir/*.rrd" ) ){
+	if( file_exists ( "$nedipath/conf/$devdir/*.rrd" ) ){
 		foreach (glob("$nedipath/conf/$devdir/*.cfg") as $cfg){
 			echo (unlink($cfg))?"<h5>$cfg $dellbl OK</h5>":"<h4>$cfg $dellbl $errlbl</h4>";
 		}
@@ -735,7 +829,6 @@ function DevDelete($dld,$dtxt){
 	}
 
 	$query = GenQuery('events','i','','','',array('level','time','source','info','class','device'),array(),array('100',time(),$dld,"device$dtxt deleted by $_SESSION[user]",'usrd',$dld) );
-	if( !DbQuery($query,$link) ){echo "<h4>".DbError($link)."</h4>";}else{echo "<h5>$msglbl $updlbl OK</h5>";}
 }
 
 ?>
